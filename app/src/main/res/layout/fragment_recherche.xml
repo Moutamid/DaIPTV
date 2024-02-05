@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/black"
+    android:orientation="vertical"
+    tools:context=".fragments.RechercheFragment">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:background="@drawable/bg_gradient"
+        android:backgroundTint="@color/black_bg"
+        android:padding="12dp"
+        android:drawableStart="@drawable/microphone_solid"
+        android:drawableTint="@color/grey2"
+        android:hint="Search channel, movie, series"
+        android:drawablePadding="12dp" />
+
+
+
+</LinearLayout>

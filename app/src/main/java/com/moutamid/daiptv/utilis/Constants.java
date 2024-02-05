@@ -18,6 +18,7 @@ import java.net.URL;
 
 public class Constants {
     public static final String USER = "USER";
+    public static final String USER_LIST = "USER_LIST";
     public static final String PASS_USER = "PASS_USER";
     public static final String MY_LIST = "MY_LIST";
 

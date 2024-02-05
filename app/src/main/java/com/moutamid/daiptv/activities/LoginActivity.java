@@ -11,6 +11,8 @@ import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.databinding.ActivityLoginBinding;
 import com.moutamid.daiptv.models.UserModel;
 
+import java.util.ArrayList;
+
 public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
 
@@ -28,7 +30,10 @@ public class LoginActivity extends AppCompatActivity {
                         binding.password.getEditText().getText().toString(),
                         binding.url.getEditText().getText().toString()
                 );
+                ArrayList<UserModel> userList = Stash.getArrayList(Constants.USER_LIST, UserModel.class);
+                userList.add(userModel);
                 Stash.put(Constants.PASS_USER, userModel);
+                Stash.put(Constants.USER_LIST, userList);
                 startActivity(new Intent(this, CreateActivity.class));
                 finish();
             }

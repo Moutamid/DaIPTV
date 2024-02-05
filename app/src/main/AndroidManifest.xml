@@ -17,6 +17,9 @@
         android:theme="@style/Theme.DaIPTV"
         tools:targetApi="31">
         <activity
+            android:name=".activities.ManageProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.MyListActivity"
             android:exported="false" />
         <activity

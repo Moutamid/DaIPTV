@@ -17,9 +17,15 @@ import android.widget.TextView;
 import com.fxn.stash.Stash;
 import com.google.android.material.button.MaterialButton;
 import com.moutamid.daiptv.activities.EditProfileActivity;
+import com.moutamid.daiptv.activities.ManageProfileActivity;
 import com.moutamid.daiptv.activities.MyListActivity;
 import com.moutamid.daiptv.adapters.ParentAdapter;
 import com.moutamid.daiptv.databinding.ActivityMainBinding;
+import com.moutamid.daiptv.fragments.ChannelsFragment;
+import com.moutamid.daiptv.fragments.FilmFragment;
+import com.moutamid.daiptv.fragments.HomeFragment;
+import com.moutamid.daiptv.fragments.RechercheFragment;
+import com.moutamid.daiptv.fragments.SeriesFragment;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -32,7 +38,6 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     UserModel userModel;
-    int[] images = {R.drawable.imag1,R.drawable.imag12,R.drawable.imag13,R.drawable.imag4,R.drawable.imag5};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,29 +64,49 @@ public class MainActivity extends AppCompatActivity {
         binding.profile.setOnClickListener(this::showMenu);
         binding.ancher.setOnClickListener(this::showMenu);
 
-        ArrayList<Integer> items = new ArrayList<>();
-        ArrayList<ParentItemModel> parent = new ArrayList<>();
-        for (int i=0; i<=10; i++) {
-            int j = new Random().nextInt(images.length);
-            items.add(images[j]);
-        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
 
-        parent.add(new ParentItemModel("Horror", items));
-        Collections.shuffle(items);
-        parent.add(new ParentItemModel("Drama", items));
-        Collections.shuffle(items);
-        parent.add(new ParentItemModel("Movie", items));
-        Collections.shuffle(items);
-        parent.add(new ParentItemModel("Sci-Fi", items));
-        Collections.shuffle(items);
-        parent.add(new ParentItemModel("News", items));
-        Collections.shuffle(items);
-        parent.add(new ParentItemModel("Sports", items));
 
-        binding.recycler.setHasFixedSize(false);
-        binding.recycler.setLayoutManager(new LinearLayoutManager(this));
-
-        binding.recycler.setAdapter(new ParentAdapter(this, parent));
+        binding.Accueil.setOnClickListener(v -> {
+            binding.indicatorAccueil.setVisibility(View.VISIBLE);
+            binding.indicatorChaines.setVisibility(View.GONE);
+            binding.indicatorFilms.setVisibility(View.GONE);
+            binding.indicatorSeries.setVisibility(View.GONE);
+            binding.indicatorRecherche.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
+        });
+        binding.Chaines.setOnClickListener(v -> {
+            binding.indicatorAccueil.setVisibility(View.GONE);
+            binding.indicatorChaines.setVisibility(View.VISIBLE);
+            binding.indicatorFilms.setVisibility(View.GONE);
+            binding.indicatorSeries.setVisibility(View.GONE);
+            binding.indicatorRecherche.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChannelsFragment()).commit();
+        });
+        binding.Films.setOnClickListener(v -> {
+            binding.indicatorAccueil.setVisibility(View.GONE);
+            binding.indicatorChaines.setVisibility(View.GONE);
+            binding.indicatorFilms.setVisibility(View.VISIBLE);
+            binding.indicatorSeries.setVisibility(View.GONE);
+            binding.indicatorRecherche.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FilmFragment()).commit();
+        });
+        binding.series.setOnClickListener(v -> {
+            binding.indicatorAccueil.setVisibility(View.GONE);
+            binding.indicatorChaines.setVisibility(View.GONE);
+            binding.indicatorFilms.setVisibility(View.GONE);
+            binding.indicatorSeries.setVisibility(View.VISIBLE);
+            binding.indicatorRecherche.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new SeriesFragment()).commit();
+        });
+        binding.Recherche.setOnClickListener(v -> {
+            binding.indicatorAccueil.setVisibility(View.GONE);
+            binding.indicatorChaines.setVisibility(View.GONE);
+            binding.indicatorFilms.setVisibility(View.GONE);
+            binding.indicatorSeries.setVisibility(View.GONE);
+            binding.indicatorRecherche.setVisibility(View.VISIBLE);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new RechercheFragment()).commit();
+        });
 
     }
 
@@ -99,20 +124,34 @@ public class MainActivity extends AppCompatActivity {
         View customLayout = LayoutInflater.from(this).inflate(R.layout.custom_popup_menu, null);
         PopupWindow popupWindow = new PopupWindow(customLayout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
+        binding.ancher.animate().rotation(270f).setDuration(400).start();
+
         TextView name = customLayout.findViewById(R.id.name);
         name.setText(userModel.username);
 
         MaterialButton edit = customLayout.findViewById(R.id.edit);
         MaterialButton list = customLayout.findViewById(R.id.list);
         MaterialButton help = customLayout.findViewById(R.id.help);
+        MaterialButton manage = customLayout.findViewById(R.id.manage);
 
         help.setOnClickListener(v -> popupWindow.dismiss());
         list.setOnClickListener(v -> popupWindow.dismiss());
         edit.setOnClickListener(v -> popupWindow.dismiss());
 
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                binding.ancher.animate().rotation(90f).setDuration(400).start();
+            }
+        });
+
         edit.setOnClickListener(v -> {
             popupWindow.dismiss();
             startActivity(new Intent(this, EditProfileActivity.class));
+        });
+        manage.setOnClickListener(v -> {
+            popupWindow.dismiss();
+            startActivity(new Intent(this, ManageProfileActivity.class));
         });
         list.setOnClickListener(v -> {
             popupWindow.dismiss();
@@ -120,12 +159,16 @@ public class MainActivity extends AppCompatActivity {
         });
         help.setOnClickListener(v -> {
             popupWindow.dismiss();
-            Uri mailtoUri = Uri.parse("mailto:example123@gmail.com" +
-                    "?subject=" + Uri.encode("Help & Support") +
-                    "&body=" + Uri.encode("Your Complain??"));
+            try {
+                Uri mailtoUri = Uri.parse("mailto:example123@gmail.com" +
+                        "?subject=" + Uri.encode("Help & Support") +
+                        "&body=" + Uri.encode("Your Complain??"));
 
-            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, mailtoUri);
-            startActivity(emailIntent);
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, mailtoUri);
+                startActivity(emailIntent);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         });
         popupWindow.showAsDropDown(view);
     }
