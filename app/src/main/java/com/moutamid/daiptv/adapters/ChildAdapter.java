@@ -1,6 +1,7 @@
 package com.moutamid.daiptv.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
+import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.SplashActivity;
 
 import java.util.ArrayList;
@@ -49,6 +51,10 @@ public class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.ChildVH> {
                     })
                     .show();
             return true;
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            context.startActivity(new Intent(context, DetailActivity.class));
         });
 
         holder.add.setOnClickListener(v -> {
