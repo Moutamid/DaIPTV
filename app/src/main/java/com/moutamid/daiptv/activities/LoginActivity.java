@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
                 );
                 ArrayList<UserModel> userList = Stash.getArrayList(Constants.USER_LIST, UserModel.class);
                 userList.add(userModel);
-                Stash.put(Constants.PASS_USER, userModel);
+                Stash.put(Constants.USER, userModel);
                 Stash.put(Constants.USER_LIST, userList);
                 startActivity(new Intent(this, CreateActivity.class));
                 finish();

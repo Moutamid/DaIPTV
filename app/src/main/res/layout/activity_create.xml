@@ -9,12 +9,22 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:indeterminateDrawable="@drawable/progress_bar"
         android:indeterminateBehavior="repeat"
         android:layout_marginBottom="24dp"
         android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="0%"
+        android:textStyle="bold"
+        android:textColor="@color/grey2"
+        android:textSize="20sp" />
 
 
     <TextView
@@ -22,11 +32,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
+        android:layout_above="@id/help"
+        android:layout_marginBottom="6dp"
         android:text="Getting channels..."
         android:textColor="@color/grey2"
         android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/help"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:text="This may take some time dont close the app"
+        android:textColor="@color/grey2"
+        android:textSize="13dp" />
 
 
 </RelativeLayout>

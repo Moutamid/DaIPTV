@@ -7,7 +7,7 @@
     android:background="@color/black"
     tools:context=".fragments.HomeFragment">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -24,8 +24,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/parent_item"
+            android:layout_below="@id/banner"
+            android:layout_marginTop="-100dp"
             android:paddingBottom="15dp"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </androidx.core.widget.NestedScrollView>
