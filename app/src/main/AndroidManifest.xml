@@ -34,7 +34,7 @@
             android:exported="false" />
         <activity
             android:name=".activities.CreateActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"
             android:exported="false" />
