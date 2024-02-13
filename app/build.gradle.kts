@@ -43,6 +43,8 @@ dependencies {
 //    implementation("com.github.hty527.iPlayer:exo:2.1.20")
 
 
+    implementation("androidx.paging:paging-runtime:3.2.1")
+
     implementation("androidx.room:room-runtime:2.6.1")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
 

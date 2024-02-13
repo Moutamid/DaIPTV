@@ -2,9 +2,10 @@ package com.moutamid.daiptv.models;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "channelsGroups")
+@Entity(tableName = "channelsGroups", indices = @Index(value = "channelGroup", unique = true))
 public class ChannelsGroupModel {
     @PrimaryKey(autoGenerate = true)
     int ID = 0;

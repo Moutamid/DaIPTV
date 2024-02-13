@@ -2,8 +2,13 @@ package com.moutamid.daiptv.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +23,7 @@ import com.moutamid.daiptv.databinding.FragmentChannelsBinding;
 import com.moutamid.daiptv.models.ChannelsGroupModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.utilis.Constants;
+import com.moutamid.daiptv.viewmodels.ChannelViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +31,11 @@ import java.util.List;
 public class ChannelsFragment extends Fragment {
     FragmentChannelsBinding binding;
     AppDatabase database;
-
+    boolean isAll = true;
+    String selectedGroup = "";
+    ChanelsAdapter adapter;
+    ChannelViewModel itemViewModel;
+    private static final String TAG = "ChannelsFragment";
     public ChannelsFragment() {
         // Required empty public constructor
     }
@@ -37,16 +47,31 @@ public class ChannelsFragment extends Fragment {
 
         addButton();
 
-        List<ChannelsModel> list = database.channelsDAO().getAll();
-
-        ChanelsAdapter adapter = new ChanelsAdapter(requireContext(), list);
+        adapter = new ChanelsAdapter(requireContext());
         binding.channelsRC.setAdapter(adapter);
+
+        itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
+        showAllItems();
 
         return binding.getRoot();
     }
 
+    // Implement a method to switch between different groups or show all items
+    private void switchGroup(String group) {
+        itemViewModel.getItemsByGroup(group).observe(getViewLifecycleOwner(), adapter::submitList);
+    }
+
+    // Call this method when you want to show all items
+    private void showAllItems() {
+        itemViewModel.getAll().observe(getViewLifecycleOwner(), adapter::submitList);
+    }
+
+    private MaterialButton selectedButton = null;
     private void addButton() {
         List<ChannelsGroupModel> list = database.groupDAO().getAll();
+
+        addAllButton();
+
         for (ChannelsGroupModel model : list) {
             MaterialButton button = new MaterialButton(requireContext());
             button.setText(model.getChannelGroup());
@@ -55,12 +80,50 @@ public class ChannelsFragment extends Fragment {
             button.setCornerRadius(12);
             button.setGravity(Gravity.START | Gravity.CENTER);
             binding.sidePanel.addView(button);
+            button.setStrokeColorResource(R.color.transparent);
+            button.setStrokeWidth(2);
+
+            if (selectedButton == null || button.getText().toString().equals(selectedGroup)) {
+                button.setStrokeColorResource(R.color.red);
+                selectedButton = button;
+            }
 
             button.setOnClickListener(v -> {
-                List<ChannelsModel> channels = database.channelsDAO().getAllByGroup(button.getText().toString());
-                ChanelsAdapter adapter = new ChanelsAdapter(requireContext(), channels);
-                binding.channelsRC.setAdapter(adapter);
+                isAll = false;
+                selectedGroup = button.getText().toString();
+                switchGroup(selectedGroup);
+                if (selectedButton != null) {
+                    selectedButton.setStrokeColorResource(R.color.transparent); // Remove stroke from previously selected button
+                }
+                button.setStrokeColorResource(R.color.red); // Add stroke to newly selected button
+                selectedButton = button;
+
             });
         }
+    }
+
+    private void addAllButton() {
+        MaterialButton button = new MaterialButton(requireContext());
+        button.setText(R.string.all);
+        button.setTextColor(getResources().getColor(R.color.white));
+        button.setBackgroundColor(getResources().getColor(R.color.transparent));
+        button.setCornerRadius(12);
+        button.setGravity(Gravity.START | Gravity.CENTER);
+        binding.sidePanel.addView(button);
+        button.setStrokeColorResource(R.color.red);
+        button.setStrokeWidth(2);
+
+        selectedButton = button;
+
+        button.setOnClickListener(v -> {
+            isAll = true;
+            selectedGroup = "";
+            showAllItems();
+            if (selectedButton != null) {
+                selectedButton.setStrokeColorResource(R.color.transparent); // Remove stroke from previously selected button
+            }
+            button.setStrokeColorResource(R.color.red); // Add stroke to newly selected button
+            selectedButton = button;
+        });
     }
 }
