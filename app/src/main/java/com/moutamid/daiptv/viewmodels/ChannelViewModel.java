@@ -20,8 +20,8 @@ public class ChannelViewModel extends AndroidViewModel {
         repository = new ChannelRepository(application);
     }
 
-    public LiveData<PagedList<ChannelsModel>> getAll(){
-        return new LivePagedListBuilder<>(repository.getAllItems(),
+    public LiveData<PagedList<ChannelsModel>> getAll(String type){
+        return new LivePagedListBuilder<>(repository.getAllItems(type),
                 new PagedList.Config.Builder()
                         .setPageSize(PAGE_SIZE)
                         .setEnablePlaceholders(true)
@@ -30,8 +30,8 @@ public class ChannelViewModel extends AndroidViewModel {
     }
 
 
-    public LiveData<PagedList<ChannelsModel>> getItemsByGroup(String group) {
-        return new LivePagedListBuilder<>(repository.getItemsByGroup(group),
+    public LiveData<PagedList<ChannelsModel>> getItemsByGroup(String group, String type) {
+        return new LivePagedListBuilder<>(repository.getItemsByGroup(group, type),
                 new PagedList.Config.Builder()
                         .setPageSize(PAGE_SIZE)
                         .setEnablePlaceholders(true)

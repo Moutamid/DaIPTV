@@ -15,6 +15,8 @@ import com.fxn.stash.Stash;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.models.ChannelsGroupModel;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.MoviesGroupModel;
+import com.moutamid.daiptv.models.SeriesGroupModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.databinding.ActivityCreateBinding;
@@ -33,8 +35,6 @@ public class CreateActivity extends AppCompatActivity {
     ActivityCreateBinding binding;
     private static final String TAG = "FileReader";
     private final String EXT_INF_SP = "#EXTINF:";
-    private final String KOD_IP_DROP_TYPE = "#KODIPROP:inputstream.adaptive.license_type=";
-    private final String KOD_IP_DROP_KEY = "#KODIPROP:inputstream.adaptive.license_key=";
     private final String TVG_NAME = "tvg-name=";
     private final String TVG_LOGO = "tvg-logo=";
     private final String GROUP_TITLE = "group-title=";
@@ -54,17 +54,19 @@ public class CreateActivity extends AppCompatActivity {
 
         database = AppDatabase.getInstance(this);
 
-        new ReadFileAsyncTask("tv_channels_dummy.m3u").execute();
+        new ReadFileAsyncTask("m3u_data.txt").execute();
     }
 
     private class ReadFileAsyncTask extends AsyncTask<Void, Integer, List<ChannelsModel>> {
         private String fileName;
-
-        private WeakReference<TextView> progressTextView;
+        int totalLines = 500000;
+        private final WeakReference<TextView> progressTextView;
+        private final WeakReference<TextView> message;
 
         ReadFileAsyncTask(String fileName) {
             this.fileName = fileName;
             this.progressTextView = new WeakReference<>(binding.progress);
+            this.message = new WeakReference<>(binding.message);
         }
 
         @Override
@@ -87,7 +89,6 @@ public class CreateActivity extends AppCompatActivity {
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStreamReader));
 
                 String currentLine;
-                long totalLines = 10000;
                 ChannelsModel channel = new ChannelsModel();
                 while ((currentLine = bufferedReader.readLine()) != null) {
                     i++;
@@ -95,16 +96,6 @@ public class CreateActivity extends AppCompatActivity {
                     publishProgress(progress);
 
                     currentLine = currentLine.replaceAll("\"", "");
-
-                    if (currentLine.startsWith(KOD_IP_DROP_TYPE)) {
-                        channel.setChannelDrmType(currentLine.split(KOD_IP_DROP_TYPE)[1].trim());
-                        continue;
-                    }
-
-                    if (currentLine.startsWith(KOD_IP_DROP_KEY)) {
-                        channel.setChannelDrmKey(currentLine.split(KOD_IP_DROP_KEY)[1].trim());
-                        continue;
-                    }
 
                     if (currentLine.startsWith(EXT_INF_SP)) {
                         channel.setChannelName(currentLine.split(TVG_NAME).length > 1 ? currentLine.split(TVG_NAME)[1].split(TVG_LOGO)[0] : currentLine.split(COMMA)[1]);
@@ -118,11 +109,52 @@ public class CreateActivity extends AppCompatActivity {
 
                     if (currentLine.startsWith(HTTP) || currentLine.startsWith(HTTPS)) {
                         channel.setChannelUrl(currentLine);
+
+                        String[] a = currentLine.split("8080/", 2);
+                        String[] b = new String[2];
+                        if (a.length > 1){
+                            b = a[1].split("/", 2);
+                        } else {
+                            b[0] = Constants.TYPE_CHANNEL;
+                        }
+
+                        b[0] = b[0].equals(Constants.TYPE_MOVIE) || b[0].equals(Constants.TYPE_SERIES) ? b[0] : Constants.TYPE_CHANNEL;
+
+                        channel.setType(b[0]);
+
                         Log.d(TAG, "getChannelUrl: " + channel.getChannelUrl());
                         channelList.add(channel);
                         database.channelsDAO().insert(channel);
+
                         ChannelsGroupModel groupModel = new ChannelsGroupModel(channel.getChannelGroup());
-                        database.groupDAO().insert(groupModel);
+                        MoviesGroupModel moviesGroupModel = new MoviesGroupModel(channel.getChannelGroup());
+                        SeriesGroupModel seriesGroupModel = new SeriesGroupModel(channel.getChannelGroup());
+
+                        if (b[0].equals(Constants.TYPE_MOVIE)){
+                            runOnUiThread(() -> {
+                                if (message != null && message.get() != null) {
+                                    // Update your TextView with the progress
+                                    message.get().setText("Getting Films...");
+                                }
+                            });
+                            database.moviesGroupDAO().insert(moviesGroupModel);
+                        } else if (b[0].equals(Constants.TYPE_SERIES)){
+                            runOnUiThread(() -> {
+                                if (message != null && message.get() != null) {
+                                    // Update your TextView with the progress
+                                    message.get().setText("Getting Series...");
+                                }
+                            });
+                            database.seriesGroupDAO().insert(seriesGroupModel);
+                        } else {
+                            runOnUiThread(() -> {
+                                if (message != null && message.get() != null) {
+                                    // Update your TextView with the progress
+                                    message.get().setText("Getting Channels...");
+                                }
+                            });
+                            database.channelsGroupDAO().insert(groupModel);
+                        }
                         channel = new ChannelsModel();
                     }
 

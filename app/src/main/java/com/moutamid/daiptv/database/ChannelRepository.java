@@ -14,12 +14,12 @@ public class ChannelRepository {
         itemDao = db.channelsDAO();
     }
 
-    public DataSource.Factory<Integer, ChannelsModel> getAllItems() {
-        return itemDao.getAllItems();
+    public DataSource.Factory<Integer, ChannelsModel> getAllItems(String type) {
+        return itemDao.getAllItems(type);
     }
 
-    public DataSource.Factory<Integer, ChannelsModel> getItemsByGroup(String group) {
-        return itemDao.getAllByGroup(group);
+    public DataSource.Factory<Integer, ChannelsModel> getItemsByGroup(String group, String type) {
+        return itemDao.getAllByGroup(group, type);
     }
 
 }

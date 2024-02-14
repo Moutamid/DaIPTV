@@ -22,11 +22,8 @@ public class ChannelsModel {
     @ColumnInfo(name = "channelGroup")
     public String channelGroup;
 
-    @ColumnInfo(name = "channelDrmKey")
-    public String channelDrmKey;
-
-    @ColumnInfo(name = "channelDrmType")
-    public String channelDrmType;
+    @ColumnInfo(name = "type")
+    public String type;
 
     public int getID() {
         return ID;
@@ -68,19 +65,11 @@ public class ChannelsModel {
         this.channelGroup = channelGroup;
     }
 
-    public String getChannelDrmKey() {
-        return channelDrmKey;
+    public String getType() {
+        return type;
     }
 
-    public void setChannelDrmKey(String channelDrmKey) {
-        this.channelDrmKey = channelDrmKey;
-    }
-
-    public String getChannelDrmType() {
-        return channelDrmType;
-    }
-
-    public void setChannelDrmType(String channelDrmType) {
-        this.channelDrmType = channelDrmType;
+    public void setType(String type) {
+        this.type = type;
     }
 }

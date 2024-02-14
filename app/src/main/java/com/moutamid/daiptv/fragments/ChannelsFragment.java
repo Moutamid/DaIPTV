@@ -58,17 +58,18 @@ public class ChannelsFragment extends Fragment {
 
     // Implement a method to switch between different groups or show all items
     private void switchGroup(String group) {
-        itemViewModel.getItemsByGroup(group).observe(getViewLifecycleOwner(), adapter::submitList);
+        binding.channelsRC.smoothScrollToPosition(0);
+        itemViewModel.getItemsByGroup(group, Constants.TYPE_CHANNEL).observe(getViewLifecycleOwner(), adapter::submitList);
     }
 
     // Call this method when you want to show all items
     private void showAllItems() {
-        itemViewModel.getAll().observe(getViewLifecycleOwner(), adapter::submitList);
+        itemViewModel.getAll(Constants.TYPE_CHANNEL).observe(getViewLifecycleOwner(), adapter::submitList);
     }
 
     private MaterialButton selectedButton = null;
     private void addButton() {
-        List<ChannelsGroupModel> list = database.groupDAO().getAll();
+        List<ChannelsGroupModel> list = database.channelsGroupDAO().getAll();
 
         addAllButton();
 

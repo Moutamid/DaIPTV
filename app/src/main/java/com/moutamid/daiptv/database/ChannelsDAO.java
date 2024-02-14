@@ -18,10 +18,10 @@ public interface ChannelsDAO {
     @Insert(onConflict = REPLACE)
     void insert(ChannelsModel channelsModel);
 
-    @Query("SELECT * FROM channels ORDER BY ID DESC")
-    DataSource.Factory<Integer, ChannelsModel> getAllItems();
+    @Query("SELECT * FROM channels WHERE type =:type ORDER BY ID DESC")
+    DataSource.Factory<Integer, ChannelsModel> getAllItems(String type);
 
-    @Query("SELECT * FROM channels WHERE channelGroup = :channelGroup ORDER BY ID DESC")
-    DataSource.Factory<Integer, ChannelsModel> getAllByGroup(String channelGroup);
+    @Query("SELECT * FROM channels WHERE channelGroup = :channelGroup AND type= :type ORDER BY ID DESC")
+    DataSource.Factory<Integer, ChannelsModel> getAllByGroup(String channelGroup, String type);
 
 }

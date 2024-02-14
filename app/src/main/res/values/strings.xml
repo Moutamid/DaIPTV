@@ -5,4 +5,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus dolore eos labore quis, repellendus similique.</string>
     <string name="all">All</string>
+
+    <!-- TMDb -->
+    <string name="Access_Token">eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNmJlZGYzZTNiZTc1YTI4MTBhNTNmNGE0NDVlN2IxZiIsInN1YiI6IjY1Y2M1YjczMjU4ODIzMDE3ZGE2YTE1MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.QVk-GaWFHybh_289lmRUHepzPwdqDpXYmakDPgDkYqI</string>
+    <string name="API_Key">26bedf3e3be75a2810a53f4a445e7b1f</string>
+
+    <string name="omdbKey">928748b1</string>
 </resources>

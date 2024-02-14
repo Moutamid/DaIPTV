@@ -2,18 +2,16 @@ package com.moutamid.daiptv.database;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.room.Database;
-import androidx.room.DatabaseConfiguration;
-import androidx.room.InvalidationTracker;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
 import com.moutamid.daiptv.models.ChannelsGroupModel;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.MoviesGroupModel;
+import com.moutamid.daiptv.models.SeriesGroupModel;
 
-@Database(entities = {ChannelsModel.class, ChannelsGroupModel.class}, version = 1, exportSchema = false)
+@Database(entities = {ChannelsModel.class, ChannelsGroupModel.class, SeriesGroupModel.class, MoviesGroupModel.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase database;
     private static String Channels_DATABASE = "Channels_DATABASE";
@@ -29,5 +27,7 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract ChannelsDAO channelsDAO();
-    public abstract ChannelsGroupDAO groupDAO();
+    public abstract ChannelsGroupDAO channelsGroupDAO();
+    public abstract MoviesGroupDAO moviesGroupDAO();
+    public abstract SeriesGroupDAO seriesGroupDAO();
 }

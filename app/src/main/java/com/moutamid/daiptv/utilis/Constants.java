@@ -7,6 +7,8 @@ import android.net.NetworkCapabilities;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.moutamid.daiptv.R;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +24,26 @@ public class Constants {
     public static final String PASS_USER = "PASS_USER";
     public static final String MY_LIST = "MY_LIST";
     public static final String ChannelList = "ChannelList";
+    public static final String TYPE_CHANNEL = "channel";
+    public static final String TYPE_MOVIE = "movie";
+    public static final String TYPE_SERIES = "series";
+//    public static final String imageLink = "https://image.tmdb.org/t/p/w500";
+    public static final String imageLink = "https://image.tmdb.org/t/p/original";
+    public static final String movieSearch = "http://www.omdbapi.com/?t=";
+    public static final String searchPerson = "https://api.themoviedb.org/3/search/person?query=";
+
+    public static String getImageLink(String path){
+        return imageLink + path;
+    }
+    public static String getMovieData(Context context, String name){
+        name = name.replace(" " , "+");
+        return movieSearch + name + "&apikey=" + context.getString(R.string.omdbKey);
+    }
+    public static String getSearchPerson(Context context, String name){
+        name = name.replace(" " , "%20");
+        String api_key = "&api_key=" + context.getString(R.string.API_Key);
+        return searchPerson + name + api_key + "&include_adult=true&language=en-US&page=1";
+    }
 
     public static boolean checkInternet(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

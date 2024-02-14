@@ -8,22 +8,29 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.utilis.CircularLayoutManager;
+import com.moutamid.daiptv.utilis.Constants;
+import com.moutamid.daiptv.viewmodels.ChannelViewModel;
 
 import java.util.ArrayList;
 
 public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> {
 
     Context context;
+    ChannelViewModel itemViewModel;
     ArrayList<ParentItemModel> list;
+    LifecycleOwner viewLifecycleOwner;
 
-    public ParentAdapter(Context context, ArrayList<ParentItemModel> list) {
+    public ParentAdapter(Context context, ArrayList<ParentItemModel> list, ChannelViewModel itemViewModel, LifecycleOwner viewLifecycleOwner) {
         this.context = context;
         this.list = list;
+        this.itemViewModel = itemViewModel;
+        this.viewLifecycleOwner = viewLifecycleOwner;
     }
 
     @NonNull
@@ -39,12 +46,11 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
 
         holder.childRC.setLayoutManager(new CircularLayoutManager(context));
         holder.childRC.setHasFixedSize(false);
-        holder.childRC.setAdapter(new ChildAdapter(context, model.items));
-        int i = 0;
-        for (int j = 0;j<=model.items.size() ; j++){
-            i += model.items.size();
-        }
-        holder.childRC.scrollToPosition(i);
+        ChildAdapter adapter = new ChildAdapter(context);
+        holder.childRC.setAdapter(adapter);
+
+        itemViewModel.getItemsByGroup(model.name, Constants.TYPE_MOVIE).observe(viewLifecycleOwner, adapter::submitList);
+
         holder.right.setOnClickListener(v -> {
             holder.childRC.smoothScrollBy(400, 0);
         });

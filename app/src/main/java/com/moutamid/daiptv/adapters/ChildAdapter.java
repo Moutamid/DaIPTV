@@ -10,24 +10,42 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.SplashActivity;
+import com.moutamid.daiptv.models.ChannelsModel;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.ChildVH> {
+public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.ChildVH> {
 
     Context context;
-    ArrayList<Integer> list;
 
-    public ChildAdapter(Context context, ArrayList<Integer> list) {
+    private static final DiffUtil.ItemCallback<ChannelsModel> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<ChannelsModel>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull ChannelsModel oldItem, @NonNull ChannelsModel newItem) {
+                    return oldItem.getID() == newItem.getID();
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull ChannelsModel oldItem, @NonNull ChannelsModel newItem) {
+                    return Objects.equals(oldItem, newItem);
+                }
+            };
+
+    protected ChildAdapter(Context context) {
+        super(DIFF_CALLBACK);
         this.context = context;
-        this.list = list;
     }
+
 
     @NonNull
     @Override
@@ -37,8 +55,8 @@ public class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.ChildVH> {
 
     @Override
     public void onBindViewHolder(@NonNull ChildVH holder, int position) {
-        int circularPosition = position % list.size();
-        holder.image.setImageResource(list.get(circularPosition));
+        ChannelsModel model = getItem(holder.getAbsoluteAdapterPosition());
+        Glide.with(context).load(model.getChannelImg()).placeholder(R.color.grey2).into(holder.image);
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setCancelable(true)
@@ -70,11 +88,6 @@ public class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.ChildVH> {
                     .show();
         });
 
-    }
-
-    @Override
-    public int getItemCount() {
-        return list.isEmpty() ? 0 : Integer.MAX_VALUE;
     }
 
     public class ChildVH extends RecyclerView.ViewHolder{

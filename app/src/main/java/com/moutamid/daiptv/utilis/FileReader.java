@@ -21,8 +21,6 @@ import java.util.List;
 public class FileReader {
     private static final String TAG = "FileReader";
     private final String EXT_INF_SP = "#EXTINF:";
-    private final String KOD_IP_DROP_TYPE = "#KODIPROP:inputstream.adaptive.license_type=";
-    private final String KOD_IP_DROP_KEY = "#KODIPROP:inputstream.adaptive.license_key=";
     private final String TVG_NAME = "tvg-name=";
     private final String TVG_LOGO = "tvg-logo=";
     private final String GROUP_TITLE = "group-title=";
@@ -51,14 +49,6 @@ public class FileReader {
             ChannelsModel channel = new ChannelsModel();
             while ((currentLine = bufferedReader.readLine()) != null) {
                 currentLine = currentLine.replaceAll("\"", "");
-                if (currentLine.startsWith(KOD_IP_DROP_TYPE)) {
-                    channel.setChannelDrmType(currentLine.split(KOD_IP_DROP_TYPE)[1].trim());
-                    continue;
-                }
-                if (currentLine.startsWith(KOD_IP_DROP_KEY)) {
-                    channel.setChannelDrmKey(currentLine.split(KOD_IP_DROP_KEY)[1].trim());
-                    continue;
-                }
                 if (currentLine.startsWith(EXT_INF_SP)) {
                     channel.setChannelName(currentLine.split(TVG_NAME).length > 1 ? currentLine.split(TVG_NAME)[1].split(TVG_LOGO)[0] : currentLine.split(COMMA)[1]);
                     Log.d(TAG, "ChannelName: " + channel.getChannelName());
@@ -70,6 +60,14 @@ public class FileReader {
                 }
                 if (currentLine.startsWith(HTTP) || currentLine.startsWith(HTTPS)) {
                     channel.setChannelUrl(currentLine);
+
+                    String[] a = currentLine.split("8080/", 2);
+                    String[] b = a[1].split("/", 2);
+
+                    b[0] = b[0].equals("movie") || b[0].equals("series") ? b[0] : "channel";
+
+                    channel.setType(b[0]);
+
                     Log.d(TAG, "getChannelUrl: " + channel.getChannelUrl());
                     channelList.add(channel);
                     channel = new ChannelsModel();
