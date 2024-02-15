@@ -15,11 +15,13 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.fxn.stash.Stash;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.SplashActivity;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -72,6 +74,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
         });
 
         holder.itemView.setOnClickListener(v -> {
+            Stash.put(Constants.PASS, model);
             context.startActivity(new Intent(context, DetailActivity.class));
         });
 

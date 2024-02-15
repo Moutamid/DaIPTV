@@ -20,6 +20,7 @@ import java.net.URL;
 
 public class Constants {
     public static final String USER = "USER";
+    public static final String PASS = "PASS";
     public static final String USER_LIST = "USER_LIST";
     public static final String PASS_USER = "PASS_USER";
     public static final String MY_LIST = "MY_LIST";
@@ -27,22 +28,23 @@ public class Constants {
     public static final String TYPE_CHANNEL = "channel";
     public static final String TYPE_MOVIE = "movie";
     public static final String TYPE_SERIES = "series";
-//    public static final String imageLink = "https://image.tmdb.org/t/p/w500";
+    public static final String TYPE_TV = "tv";
     public static final String imageLink = "https://image.tmdb.org/t/p/original";
-    public static final String movieSearch = "http://www.omdbapi.com/?t=";
-    public static final String searchPerson = "https://api.themoviedb.org/3/search/person?query=";
+    public static final String movieSearch = "https://api.themoviedb.org/3/search/"; // https://api.themoviedb.org/3/search/tv?query=
+    public static final String movieDetails = "https://api.themoviedb.org/3/";
 
     public static String getImageLink(String path){
         return imageLink + path;
     }
-    public static String getMovieData(Context context, String name){
-        name = name.replace(" " , "+");
-        return movieSearch + name + "&apikey=" + context.getString(R.string.omdbKey);
-    }
-    public static String getSearchPerson(Context context, String name){
+
+    public static String getMovieData(Context context, String name, String type){
         name = name.replace(" " , "%20");
         String api_key = "&api_key=" + context.getString(R.string.API_Key);
-        return searchPerson + name + api_key + "&include_adult=true&language=en-US&page=1";
+        return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&language=en-US&page=1";
+    }
+    public static String getMovieDetails(Context context, int id, String type){ // Type movie / tv
+        String api_key = "?api_key=" + context.getString(R.string.API_Key);
+        return movieDetails + type + "/" + id + api_key + "&append_to_response=videos,images,credits";
     }
 
     public static boolean checkInternet(Context context) {

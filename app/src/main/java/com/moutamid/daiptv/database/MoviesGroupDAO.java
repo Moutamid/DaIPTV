@@ -17,4 +17,5 @@ public interface MoviesGroupDAO {
 
     @Query("SELECT * FROM moviesGroups ORDER BY ID DESC")
     List<MoviesGroupModel> getAll();
+
 }

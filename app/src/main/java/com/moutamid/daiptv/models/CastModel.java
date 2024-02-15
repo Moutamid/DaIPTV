@@ -1,11 +1,11 @@
 package com.moutamid.daiptv.models;
 
 public class CastModel {
-    public String name, title, totalEpisode;
+    public String name, character, profile_path;
 
-    public CastModel(String name, String title, String totalEpisode) {
+    public CastModel(String name, String character, String profile_path) {
         this.name = name;
-        this.title = title;
-        this.totalEpisode = totalEpisode;
+        this.character = character;
+        this.profile_path = profile_path;
     }
 }

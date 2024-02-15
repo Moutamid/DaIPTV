@@ -10,6 +10,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.MoviesGroupModel;
 
 import java.util.List;
 
@@ -23,5 +24,8 @@ public interface ChannelsDAO {
 
     @Query("SELECT * FROM channels WHERE channelGroup = :channelGroup AND type= :type ORDER BY ID DESC")
     DataSource.Factory<Integer, ChannelsModel> getAllByGroup(String channelGroup, String type);
+
+    @Query("SELECT * FROM channels WHERE channelGroup = :channelGroup ORDER BY RANDOM() LIMIT 1")
+    ChannelsModel getRand(String channelGroup);
 
 }
