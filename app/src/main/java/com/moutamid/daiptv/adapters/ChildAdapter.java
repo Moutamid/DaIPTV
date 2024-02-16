@@ -20,6 +20,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.SplashActivity;
+import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.utilis.Constants;
 
@@ -78,6 +79,10 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
             context.startActivity(new Intent(context, DetailActivity.class));
         });
 
+        holder.play.setOnClickListener(v -> {
+           context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", model.getChannelName()));
+        });
+
         holder.add.setOnClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setCancelable(true)
@@ -96,9 +101,11 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
     public class ChildVH extends RecyclerView.ViewHolder{
         ImageView image;
         MaterialCardView add;
+        MaterialCardView play;
         public ChildVH(@NonNull View itemView) {
             super(itemView);
             add = itemView.findViewById(R.id.add);
+            play = itemView.findViewById(R.id.play);
             image = itemView.findViewById(R.id.image);
         }
     }

@@ -22,6 +22,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
@@ -117,6 +118,12 @@ public class HomeFragment extends Fragment {
         binding.recycler.setAdapter(adapter);
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Stash.put(Constants.SELECTED_PAGE, "Home");
     }
 
     private void fetchID() {

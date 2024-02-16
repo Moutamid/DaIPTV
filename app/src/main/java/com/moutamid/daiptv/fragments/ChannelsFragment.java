@@ -39,6 +39,12 @@ public class ChannelsFragment extends Fragment {
     public ChannelsFragment() {
         // Required empty public constructor
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Stash.put(Constants.SELECTED_PAGE, "Channels");
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentChannelsBinding.inflate(getLayoutInflater(), container, false);

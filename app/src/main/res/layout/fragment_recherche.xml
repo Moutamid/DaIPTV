@@ -13,6 +13,7 @@
         android:layout_height="60dp" />
 
     <EditText
+        android:id="@+id/searchET"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
@@ -24,6 +25,73 @@
         android:hint="Search channel, movie, series"
         android:drawablePadding="12dp" />
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="12dp"
+        android:fillViewport="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="12dp"
+                android:layout_marginHorizontal="12dp"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:text="Chaînes" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/chainesRC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="12dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/child_item" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="12dp"
+                android:layout_marginHorizontal="12dp"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:text="Films" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/filmsRC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="12dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/child_item" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="12dp"
+                android:layout_marginHorizontal="12dp"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:text="Séries" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/seriesRC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="12dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/child_item" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

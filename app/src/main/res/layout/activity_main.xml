@@ -249,6 +249,7 @@
                     android:layout_height="wrap_content"
                     app:closeIcon="@drawable/round_clear_24"
                     app:searchHintIcon="@null"
+                    android:visibility="gone"
                     app:searchIcon="@drawable/magnifying_glass_solid" />
 
                 <com.google.android.material.card.MaterialCardView
