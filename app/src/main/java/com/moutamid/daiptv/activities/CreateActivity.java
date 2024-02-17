@@ -1,35 +1,52 @@
 package com.moutamid.daiptv.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.StrictMode;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.fxn.stash.Stash;
+import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.database.AppDatabase;
+import com.moutamid.daiptv.databinding.ActivityCreateBinding;
 import com.moutamid.daiptv.models.ChannelsGroupModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MoviesGroupModel;
 import com.moutamid.daiptv.models.SeriesGroupModel;
-import com.moutamid.daiptv.utilis.Constants;
-import com.moutamid.daiptv.MainActivity;
-import com.moutamid.daiptv.databinding.ActivityCreateBinding;
 import com.moutamid.daiptv.models.UserModel;
-import com.moutamid.daiptv.utilis.FileReader;
+import com.moutamid.daiptv.utilis.Constants;
+import com.moutamid.daiptv.utilis.VolleySingleton;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CreateActivity extends AppCompatActivity {
     ActivityCreateBinding binding;
@@ -44,6 +61,9 @@ public class CreateActivity extends AppCompatActivity {
     private AppDatabase database;
     private ArrayList<ChannelsModel> channelList;
     private Activity activity;
+    UserModel userModel;
+    private RequestQueue requestQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +74,53 @@ public class CreateActivity extends AppCompatActivity {
 
         database = AppDatabase.getInstance(this);
 
-        new ReadFileAsyncTask("m3u_data.txt").execute();
+        requestQueue = VolleySingleton.getInstance(this).getRequestQueue();
+
+        userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        startDownloading();
+
+        //   new ReadFileAsyncTask("m3u_data.txt").execute();
+    }
+
+    private void startDownloading() {
+        String url = userModel.url;
+        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + "downloaded_file.m3u";
+        Log.d(TAG, "startDownloading: " + filePath);
+
+        FileRequest fileRequest = new FileRequest(Request.Method.GET, url,
+                response -> {
+                    Log.d(TAG, "startDownloading: complete");
+                    // File downloaded successfully
+                    // You can perform further operations here
+                    runOnUiThread(() -> {
+                        binding.message.setText("Getting Channels...");
+                        binding.progress.setText("0%");
+                    });
+                    new ReadFileAsyncTask(filePath).execute();
+                },
+                error -> {
+                    Log.e(TAG, "startDownloading: error " + error.getMessage());
+                    error.printStackTrace();
+                });
+
+        requestQueue.add(fileRequest);
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 2){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startDownloading();
+            } else {
+                Toast.makeText(this, "Permission is required to get the Data", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private class ReadFileAsyncTask extends AsyncTask<Void, Integer, List<ChannelsModel>> {
@@ -85,8 +151,9 @@ public class CreateActivity extends AppCompatActivity {
             BufferedReader bufferedReader = null;
             int i = 0;
             try {
-                inputStreamReader = activity.getAssets().open(fileName);
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStreamReader));
+                File file = new File(fileName);
+                FileInputStream fis = new FileInputStream(file);
+                bufferedReader = new BufferedReader(new InputStreamReader(fis));
 
                 String currentLine;
                 ChannelsModel channel = new ChannelsModel();
@@ -112,7 +179,7 @@ public class CreateActivity extends AppCompatActivity {
 
                         String[] a = currentLine.split("8080/", 2);
                         String[] b = new String[2];
-                        if (a.length > 1){
+                        if (a.length > 1) {
                             b = a[1].split("/", 2);
                         } else {
                             b[0] = Constants.TYPE_CHANNEL;
@@ -130,7 +197,7 @@ public class CreateActivity extends AppCompatActivity {
                         MoviesGroupModel moviesGroupModel = new MoviesGroupModel(channel.getChannelGroup());
                         SeriesGroupModel seriesGroupModel = new SeriesGroupModel(channel.getChannelGroup());
 
-                        if (b[0].equals(Constants.TYPE_MOVIE)){
+                        if (b[0].equals(Constants.TYPE_MOVIE)) {
                             runOnUiThread(() -> {
                                 if (message != null && message.get() != null) {
                                     // Update your TextView with the progress
@@ -138,7 +205,7 @@ public class CreateActivity extends AppCompatActivity {
                                 }
                             });
                             database.moviesGroupDAO().insert(moviesGroupModel);
-                        } else if (b[0].equals(Constants.TYPE_SERIES)){
+                        } else if (b[0].equals(Constants.TYPE_SERIES)) {
                             runOnUiThread(() -> {
                                 if (message != null && message.get() != null) {
                                     // Update your TextView with the progress
@@ -162,7 +229,7 @@ public class CreateActivity extends AppCompatActivity {
                 Log.d(TAG, "Finally");
             } catch (IOException e) {
                 Toast.makeText(activity, "File Read Error", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "readFile: "+ e.getLocalizedMessage());
+                Log.d(TAG, "readFile: " + e.getLocalizedMessage());
             } finally {
                 Log.d(TAG, "Finally");
                 try {
@@ -190,6 +257,68 @@ public class CreateActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    public class FileRequest extends Request<NetworkResponse> {
+        private final Response.Listener<NetworkResponse> mListener;
+        private final Handler mHandler;
+        private long mStartTime;
+
+        public FileRequest(int method, String url, Response.Listener<NetworkResponse> listener, Response.ErrorListener errorListener) {
+            super(method, url, errorListener);
+            mListener = listener;
+            mHandler = new Handler(Looper.getMainLooper());
+            mStartTime = SystemClock.elapsedRealtime();
+            setRetryPolicy(new DefaultRetryPolicy(0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            setShouldRetryServerErrors(false);
+        }
+
+        @Override
+        protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {
+            return Response.success(response, HttpHeaderParser.parseCacheHeaders(response));
+        }
+
+        @Override
+        public byte[] getBody() {
+            return null;
+        }
+
+        @Override
+        public String getBodyContentType() {
+            return "application/octet-stream";
+        }
+
+        @Override
+        public Priority getPriority() {
+            return Priority.IMMEDIATE;
+        }
+
+        @Override
+        public void deliverError(VolleyError error) {
+            super.deliverError(error);
+        }
+
+        @Override
+        protected Map<String, String> getParams() {
+            return null;
+        }
+
+        @Override
+        public Map<String, String> getHeaders() throws AuthFailureError {
+            return super.getHeaders();
+        }
+
+        @Override
+        protected void deliverResponse(NetworkResponse response) {
+            mListener.onResponse(response);
+            Log.d(TAG, "deliverResponse: response");
+            mHandler.post(() -> {
+                long elapsedTime = SystemClock.elapsedRealtime() - mStartTime;
+                int progress = (int) (elapsedTime / 1000);
+                runOnUiThread(() -> binding.progress.setText(progress + "%"));
+            });
+        }
+
     }
 
 

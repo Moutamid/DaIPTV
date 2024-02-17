@@ -1,10 +1,14 @@
 package com.moutamid.daiptv.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Patterns;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.fxn.stash.Stash;
 import com.moutamid.daiptv.utilis.Constants;
@@ -23,6 +27,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         Constants.checkApp(this);
 
+        Constants.getPermissions(this);
+
         binding.signin.setOnClickListener(v -> {
             if (valid()) {
                 UserModel userModel = new UserModel(
@@ -38,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
     private boolean valid() {

@@ -1,13 +1,20 @@
 package com.moutamid.daiptv.utilis;
 
+import static androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale;
+
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.moutamid.daiptv.R;
+import com.moutamid.daiptv.activities.LoginActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +40,28 @@ public class Constants {
     public static final String imageLink = "https://image.tmdb.org/t/p/original";
     public static final String movieSearch = "https://api.themoviedb.org/3/search/"; // https://api.themoviedb.org/3/search/tv?query=
     public static final String movieDetails = "https://api.themoviedb.org/3/";
+    public static final String[] permissions = new String[] {
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    };
+
+    public static void getPermissions(Activity context) {
+        if (check(context)) {
+            context.shouldShowRequestPermissionRationale(android.Manifest.permission.READ_MEDIA_VIDEO);
+            context.shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            context.shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(context, permissions, 2);
+        }
+    }
+
+    public static boolean check(Context context) {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
+    }
 
     public static String getImageLink(String path){
         return imageLink + path;
