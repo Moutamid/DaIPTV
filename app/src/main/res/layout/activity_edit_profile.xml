@@ -117,6 +117,7 @@
             app:boxCornerRadiusTopStart="8dp"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
+            android:enabled="false"
             app:hintTextColor="@color/red"
             app:passwordToggleTint="@color/grey2">
 
