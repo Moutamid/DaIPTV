@@ -17,12 +17,38 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ImageView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:src="@drawable/img"
-            android:scaleType="center"
-            android:id="@+id/image" />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:src="@drawable/img"
+                android:scaleType="center"
+                android:id="@+id/image" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="7dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                app:cardBackgroundColor="@color/dark_trans"
+                app:cardCornerRadius="100dp"
+                app:strokeWidth="1dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/round_playlist_add_24" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/title"

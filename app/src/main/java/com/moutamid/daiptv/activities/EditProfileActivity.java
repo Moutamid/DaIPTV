@@ -31,11 +31,12 @@ public class EditProfileActivity extends AppCompatActivity {
         binding.signin.setOnClickListener(v -> {
             if (valid()) {
                 UserModel userModel = new UserModel(
+                        this.userModel.id,
                         binding.username.getEditText().getText().toString(),
                         binding.password.getEditText().getText().toString(),
                         binding.url.getEditText().getText().toString()
                 );
-                Stash.put(Constants.PASS_USER, userModel);
+                Stash.put(Constants.USER, userModel);
                 startActivity(new Intent(this, CreateActivity.class));
                 finish();
             }

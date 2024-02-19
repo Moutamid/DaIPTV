@@ -134,16 +134,7 @@ public class MainActivity extends AppCompatActivity {
         MaterialButton help = customLayout.findViewById(R.id.help);
         MaterialButton manage = customLayout.findViewById(R.id.manage);
 
-        help.setOnClickListener(v -> popupWindow.dismiss());
-        list.setOnClickListener(v -> popupWindow.dismiss());
-        edit.setOnClickListener(v -> popupWindow.dismiss());
-
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                binding.ancher.animate().rotation(90f).setDuration(400).start();
-            }
-        });
+        popupWindow.setOnDismissListener(() -> binding.ancher.animate().rotation(90f).setDuration(400).start());
 
         edit.setOnClickListener(v -> {
             popupWindow.dismiss();

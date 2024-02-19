@@ -16,6 +16,7 @@ import com.moutamid.daiptv.databinding.ActivityLoginBinding;
 import com.moutamid.daiptv.models.UserModel;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
@@ -32,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         binding.signin.setOnClickListener(v -> {
             if (valid()) {
                 UserModel userModel = new UserModel(
+                        UUID.randomUUID().toString(),
                         binding.username.getEditText().getText().toString(),
                         binding.password.getEditText().getText().toString(),
                         binding.url.getEditText().getText().toString()

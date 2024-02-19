@@ -22,6 +22,7 @@ import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.SplashActivity;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.ArrayList;
@@ -67,6 +68,9 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
                     .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
                     .setPositiveButton("Add", (dialog, which) -> {
                         dialog.dismiss();
+                        UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+                        ArrayList<ChannelsModel> list  = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                        list.add(model);
                     }).setNegativeButton("Close", (dialog, which) -> {
                         dialog.dismiss();
                     })
@@ -90,6 +94,9 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
                     .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
                     .setPositiveButton("Add", (dialog, which) -> {
                         dialog.dismiss();
+                        UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+                        ArrayList<ChannelsModel> list  = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                        list.add(model);
                     }).setNegativeButton("Close", (dialog, which) -> {
                         dialog.dismiss();
                     })

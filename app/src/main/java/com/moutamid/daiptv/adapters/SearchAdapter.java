@@ -12,11 +12,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.fxn.stash.Stash;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.UserModel;
+import com.moutamid.daiptv.utilis.Constants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> {
@@ -53,6 +57,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
                             .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
                             .setPositiveButton("Add", (dialog, which) -> {
                                 dialog.dismiss();
+                                UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+                                ArrayList<ChannelsModel> list  = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                                list.add(model);
                             }).setNegativeButton("Close", (dialog, which) -> {
                                 dialog.dismiss();
                             })
