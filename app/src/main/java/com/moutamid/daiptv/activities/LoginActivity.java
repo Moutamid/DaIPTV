@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.fxn.stash.Stash;
+import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.databinding.ActivityLoginBinding;
 import com.moutamid.daiptv.models.UserModel;
@@ -30,6 +31,21 @@ public class LoginActivity extends AppCompatActivity {
 
         Constants.getPermissions(this);
 
+        boolean addProfile;
+
+        if (getIntent() != null){
+            addProfile = getIntent().getBooleanExtra("addProfile", false);
+        } else {
+            addProfile = false;
+        }
+
+        if (addProfile){
+            ArrayList<UserModel> userList = Stash.getArrayList(Constants.USER_LIST, UserModel.class);
+            UserModel model = userList.get(0);
+            binding.url.getEditText().setText(model.url);
+            binding.url.setEnabled(false);
+        }
+
         binding.signin.setOnClickListener(v -> {
             if (valid()) {
                 UserModel userModel = new UserModel(
@@ -42,8 +58,13 @@ public class LoginActivity extends AppCompatActivity {
                 userList.add(userModel);
                 Stash.put(Constants.USER, userModel);
                 Stash.put(Constants.USER_LIST, userList);
-                startActivity(new Intent(this, CreateActivity.class));
-                finish();
+                if (addProfile) {
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                } else {
+                    startActivity(new Intent(this, CreateActivity.class));
+                    finish();
+                }
             }
         });
     }

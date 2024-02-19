@@ -25,7 +25,17 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.downloader.Error;
+import com.downloader.OnCancelListener;
+import com.downloader.OnDownloadListener;
+import com.downloader.OnPauseListener;
+import com.downloader.OnProgressListener;
+import com.downloader.OnStartOrResumeListener;
+import com.downloader.PRDownloader;
+import com.downloader.PRDownloaderConfig;
+import com.downloader.Progress;
 import com.fxn.stash.Stash;
+import com.google.android.gms.security.ProviderInstaller;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.ActivityCreateBinding;
@@ -39,7 +49,6 @@ import com.moutamid.daiptv.utilis.VolleySingleton;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -81,9 +90,83 @@ public class CreateActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        startDownloading();
+        PRDownloader.initialize(getApplicationContext());
 
-        //   new ReadFileAsyncTask("m3u_data.txt").execute();
+        updateAndroidSecurityProvider();
+
+        // startPRDownloader();
+
+        // startDownloading();
+
+        new ReadFileAsyncTask("m3u_data.txt").execute();
+    }
+
+    private void startPRDownloader() {
+        PRDownloaderConfig config = PRDownloaderConfig.newBuilder()
+                .setReadTimeout(30_000)
+                .setConnectTimeout(30_000)
+                .build();
+        PRDownloader.initialize(getApplicationContext(), config);
+        String url = userModel.url;
+        String filePath = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+        Log.d(TAG, "startDownloading: " + filePath);
+        PRDownloader.download(url, filePath, "downloaded_file.m3u")
+                .build()
+                .setOnStartOrResumeListener(new OnStartOrResumeListener() {
+                    @Override
+                    public void onStartOrResume() {
+                        Log.d(TAG, "onStartOrResume: Started");
+                    }
+                })
+                .setOnPauseListener(new OnPauseListener() {
+                    @Override
+                    public void onPause() {
+
+                    }
+                })
+                .setOnCancelListener(new OnCancelListener() {
+                    @Override
+                    public void onCancel() {
+
+                    }
+                })
+                .setOnProgressListener(new OnProgressListener() {
+                    @Override
+                    public void onProgress(Progress progress) {
+                        int pro = (int) ((progress.currentBytes / progress.totalBytes) * 100);
+                        binding.progress.setText(pro + "%");
+                    }
+                })
+                .start(new OnDownloadListener() {
+                    @Override
+                    public void onDownloadComplete() {
+                        binding.message.setText("Getting Channels...");
+                        binding.progress.setText("0%");
+                        new ReadFileAsyncTask(filePath + File.separator + "downloaded_file.m3u").execute();
+                    }
+
+                    @Override
+                    public void onError(Error error) {
+                        Log.d(TAG, "onError: serverError " + error.isServerError());
+                        Log.d(TAG, "onError: connectionError " + error.isConnectionError());
+                        if (error.isConnectionError()) {
+                            binding.message.setText(error.getConnectionException().getMessage());
+                        } else if (error.isServerError()) {
+                            binding.message.setText("Error : " + error.getServerErrorMessage());
+                        } else {
+                            binding.message.setText("Error : " + error.getResponseCode());
+                        }
+                        Stash.clear(Constants.USER);
+                    }
+                });
+    }
+
+    private void updateAndroidSecurityProvider() {
+        try {
+            ProviderInstaller.installIfNeeded(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void startDownloading() {
@@ -105,6 +188,7 @@ public class CreateActivity extends AppCompatActivity {
                 error -> {
                     Log.e(TAG, "startDownloading: error " + error.getMessage());
                     error.printStackTrace();
+                    Stash.clear(Constants.USER);
                 });
 
         requestQueue.add(fileRequest);
@@ -114,7 +198,7 @@ public class CreateActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 2){
+        if (requestCode == 2) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startDownloading();
             } else {
@@ -125,7 +209,7 @@ public class CreateActivity extends AppCompatActivity {
 
     private class ReadFileAsyncTask extends AsyncTask<Void, Integer, List<ChannelsModel>> {
         private String fileName;
-        int totalLines = 500000;
+        int totalLines = 22000; // 500000
         private final WeakReference<TextView> progressTextView;
         private final WeakReference<TextView> message;
 
@@ -151,9 +235,10 @@ public class CreateActivity extends AppCompatActivity {
             BufferedReader bufferedReader = null;
             int i = 0;
             try {
-                File file = new File(fileName);
-                FileInputStream fis = new FileInputStream(file);
-                bufferedReader = new BufferedReader(new InputStreamReader(fis));
+                inputStreamReader = activity.getAssets().open(fileName);
+//                File file = new File(fileName);
+//                FileInputStream fis = new FileInputStream(file);
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStreamReader));
 
                 String currentLine;
                 ChannelsModel channel = new ChannelsModel();

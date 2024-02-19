@@ -47,7 +47,7 @@ public class ManageProfileActivity extends AppCompatActivity {
         }
 
         binding.add.setOnClickListener(v -> {
-            startActivity(new Intent(ManageProfileActivity.this, LoginActivity.class));
+            startActivity(new Intent(ManageProfileActivity.this, LoginActivity.class).putExtra("addProfile", true));
             finish();
         });
 

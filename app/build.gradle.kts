@@ -33,6 +33,10 @@ android {
 dependencies {
     implementation("com.fxn769:stash:1.3.2")
     implementation("com.android.volley:volley:1.2.1")
+
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    implementation("com.mindorks.android:prdownloader:0.6.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
