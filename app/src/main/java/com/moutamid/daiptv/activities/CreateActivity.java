@@ -49,6 +49,7 @@ import com.moutamid.daiptv.utilis.VolleySingleton;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -94,22 +95,23 @@ public class CreateActivity extends AppCompatActivity {
 
         updateAndroidSecurityProvider();
 
-        // startPRDownloader();
+        startPRDownloader();
 
         // startDownloading();
 
-        new ReadFileAsyncTask("m3u_data.txt").execute();
+        // new ReadFileAsyncTask("m3u_data.txt").execute();
     }
 
     private void startPRDownloader() {
         PRDownloaderConfig config = PRDownloaderConfig.newBuilder()
-                .setReadTimeout(30_000)
-                .setConnectTimeout(30_000)
+                .setReadTimeout(30000)
+                .setConnectTimeout(30000)
                 .build();
         PRDownloader.initialize(getApplicationContext(), config);
         String url = userModel.url;
         String filePath = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
         Log.d(TAG, "startDownloading: " + filePath);
+        Log.d(TAG, "url: " + url);
         PRDownloader.download(url, filePath, "downloaded_file.m3u")
                 .build()
                 .setOnStartOrResumeListener(new OnStartOrResumeListener() {
@@ -118,24 +120,17 @@ public class CreateActivity extends AppCompatActivity {
                         Log.d(TAG, "onStartOrResume: Started");
                     }
                 })
-                .setOnPauseListener(new OnPauseListener() {
-                    @Override
-                    public void onPause() {
+                .setOnPauseListener(() -> {
 
-                    }
                 })
-                .setOnCancelListener(new OnCancelListener() {
-                    @Override
-                    public void onCancel() {
+                .setOnCancelListener(() -> {
 
-                    }
                 })
-                .setOnProgressListener(new OnProgressListener() {
-                    @Override
-                    public void onProgress(Progress progress) {
-                        int pro = (int) ((progress.currentBytes / progress.totalBytes) * 100);
-                        binding.progress.setText(pro + "%");
-                    }
+                .setOnProgressListener(progress -> {
+                    Log.d(TAG, "onProgress: current " + progress.totalBytes);
+                    Log.d(TAG, "onProgress: total " + progress.totalBytes);
+                    int pro = (int) ((progress.currentBytes / progress.totalBytes) * 100);
+                    binding.progress.setText(pro + "%");
                 })
                 .start(new OnDownloadListener() {
                     @Override
@@ -209,7 +204,7 @@ public class CreateActivity extends AppCompatActivity {
 
     private class ReadFileAsyncTask extends AsyncTask<Void, Integer, List<ChannelsModel>> {
         private String fileName;
-        int totalLines = 22000; // 500000
+        int totalLines = 600000; // 500000
         private final WeakReference<TextView> progressTextView;
         private final WeakReference<TextView> message;
 
@@ -235,10 +230,10 @@ public class CreateActivity extends AppCompatActivity {
             BufferedReader bufferedReader = null;
             int i = 0;
             try {
-                inputStreamReader = activity.getAssets().open(fileName);
-//                File file = new File(fileName);
-//                FileInputStream fis = new FileInputStream(file);
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStreamReader));
+//                inputStreamReader = activity.getAssets().open(fileName);
+                File file = new File(fileName);
+                FileInputStream fis = new FileInputStream(file);
+                bufferedReader = new BufferedReader(new InputStreamReader(fis));
 
                 String currentLine;
                 ChannelsModel channel = new ChannelsModel();
@@ -354,7 +349,7 @@ public class CreateActivity extends AppCompatActivity {
             mListener = listener;
             mHandler = new Handler(Looper.getMainLooper());
             mStartTime = SystemClock.elapsedRealtime();
-            setRetryPolicy(new DefaultRetryPolicy(0, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            setRetryPolicy(new DefaultRetryPolicy(10000, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             setShouldRetryServerErrors(false);
         }
 

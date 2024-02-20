@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.fxn.stash.Stash;
+import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.button.MaterialButton;
 import com.moutamid.daiptv.activities.EditProfileActivity;
 import com.moutamid.daiptv.activities.ManageProfileActivity;
@@ -45,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Constants.checkApp(this);
+
+        updateAndroidSecurityProvider();
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         binding.searchbar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -163,4 +170,14 @@ public class MainActivity extends AppCompatActivity {
         });
         popupWindow.showAsDropDown(view);
     }
+
+    private void updateAndroidSecurityProvider() {
+        try {
+            ProviderInstaller.installIfNeeded(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
