@@ -53,6 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textPersonName"
+                    android:text="sHnEqTKwSbGnKRzq"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -80,6 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textPassword"
+                    android:text="gNXzbCNSykk693zt"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -108,6 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textPersonName"
+                    android:text="http://vbn123.com:8080/get.php"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>

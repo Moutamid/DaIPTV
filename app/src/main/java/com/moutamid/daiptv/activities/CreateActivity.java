@@ -109,8 +109,12 @@ public class CreateActivity extends AppCompatActivity {
                 .build();
         PRDownloader.initialize(getApplicationContext(), config);
         String url = userModel.url;
-        String filePath = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DAIPTV/";
         Log.d(TAG, "startDownloading: " + filePath);
+        File file = new File(filePath);
+        if (!file.exists()) {
+            file.mkdirs();  // Create the file if it doesn't exist
+        }
         Log.d(TAG, "url: " + url);
         PRDownloader.download(url, filePath, "downloaded_file.m3u")
                 .build()
@@ -118,6 +122,7 @@ public class CreateActivity extends AppCompatActivity {
                     @Override
                     public void onStartOrResume() {
                         Log.d(TAG, "onStartOrResume: Started");
+                        binding.message.setText("Downloading File...");
                     }
                 })
                 .setOnPauseListener(() -> {
@@ -145,9 +150,9 @@ public class CreateActivity extends AppCompatActivity {
                         Log.d(TAG, "onError: serverError " + error.isServerError());
                         Log.d(TAG, "onError: connectionError " + error.isConnectionError());
                         if (error.isConnectionError()) {
-                            binding.message.setText(error.getConnectionException().getMessage());
+                            binding.message.setText("Connection Error : " + error.getConnectionException().getMessage());
                         } else if (error.isServerError()) {
-                            binding.message.setText("Error : " + error.getServerErrorMessage());
+                            binding.message.setText("Server Error : " + error.getServerErrorMessage());
                         } else {
                             binding.message.setText("Error : " + error.getResponseCode());
                         }

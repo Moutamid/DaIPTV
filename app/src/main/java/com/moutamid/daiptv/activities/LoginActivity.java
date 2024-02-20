@@ -48,11 +48,14 @@ public class LoginActivity extends AppCompatActivity {
 
         binding.signin.setOnClickListener(v -> {
             if (valid()) {
+                // http://vbn123.com:8080/get.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt&type=m3u_plus&output=mpegts
+                // http://vbn123.com:8080/get.php
+                String url = binding.url.getEditText().getText().toString() + "?username=" + binding.username.getEditText().getText().toString() + "&password=" + binding.password.getEditText().getText().toString() + "&type=m3u_plus&output=mpegts";
                 UserModel userModel = new UserModel(
                         UUID.randomUUID().toString(),
                         binding.username.getEditText().getText().toString(),
                         binding.password.getEditText().getText().toString(),
-                        binding.url.getEditText().getText().toString()
+                        url
                 );
                 ArrayList<UserModel> userList = Stash.getArrayList(Constants.USER_LIST, UserModel.class);
                 userList.add(userModel);
