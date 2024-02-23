@@ -1,6 +1,8 @@
 package com.moutamid.daiptv.adapters;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +11,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moutamid.daiptv.R;
+import com.moutamid.daiptv.lisetenrs.ItemSelected;
+import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.utilis.CircularLayoutManager;
 import com.moutamid.daiptv.utilis.Constants;
@@ -20,17 +26,21 @@ import com.moutamid.daiptv.viewmodels.ChannelViewModel;
 import java.util.ArrayList;
 
 public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> {
-
+    private static final String TAG = "ParentAdapter";
     Context context;
     ChannelViewModel itemViewModel;
     ArrayList<ParentItemModel> list;
     LifecycleOwner viewLifecycleOwner;
+    String type;
+    ItemSelected itemSelected;
 
-    public ParentAdapter(Context context, ArrayList<ParentItemModel> list, ChannelViewModel itemViewModel, LifecycleOwner viewLifecycleOwner) {
+    public ParentAdapter(Context context, ArrayList<ParentItemModel> list, String type, ChannelViewModel itemViewModel, LifecycleOwner viewLifecycleOwner, ItemSelected itemSelected) {
         this.context = context;
         this.list = list;
+        this.type = type;
         this.itemViewModel = itemViewModel;
         this.viewLifecycleOwner = viewLifecycleOwner;
+        this.itemSelected = itemSelected;
     }
 
     @NonNull
@@ -46,17 +56,10 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
 
         holder.childRC.setLayoutManager(new CircularLayoutManager(context));
         holder.childRC.setHasFixedSize(false);
-        ChildAdapter adapter = new ChildAdapter(context);
+        ChildAdapter adapter = new ChildAdapter(context, itemSelected);
         holder.childRC.setAdapter(adapter);
 
-        itemViewModel.getItemsByGroup(model.name, Constants.TYPE_MOVIE).observe(viewLifecycleOwner, adapter::submitList);
-
-        holder.right.setOnClickListener(v -> {
-            holder.childRC.smoothScrollBy(400, 0);
-        });
-        holder.left.setOnClickListener(v -> {
-            holder.childRC.smoothScrollBy(-400, 0);
-        });
+        itemViewModel.getItemsByGroup(model.name, type).observe(viewLifecycleOwner, adapter::submitList);
 
     }
 
@@ -68,13 +71,10 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
     public class ParentVH extends RecyclerView.ViewHolder{
         TextView name;
         RecyclerView childRC;
-        LinearLayout right, left;
         public ParentVH(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
             childRC = itemView.findViewById(R.id.childRC);
-            right = itemView.findViewById(R.id.right);
-            left = itemView.findViewById(R.id.left);
         }
     }
 

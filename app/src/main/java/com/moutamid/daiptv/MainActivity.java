@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.fxn.stash.Stash;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.activities.EditProfileActivity;
 import com.moutamid.daiptv.activities.ManageProfileActivity;
 import com.moutamid.daiptv.activities.MyListActivity;
@@ -40,7 +41,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     UserModel userModel;
-
+    public MaterialCardView toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,23 +54,10 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        binding.searchbar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                binding.searchbar.clearFocus();
-                binding.searchbar.onActionViewCollapsed();
-                search(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
         binding.profile.setOnClickListener(this::showMenu);
         binding.ancher.setOnClickListener(this::showMenu);
+
+        toolbar = binding.toolbar;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
 
@@ -116,11 +104,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
-    private void search(String query) {
-
-    }
-
     @Override
     protected void onResume() {
         super.onResume();

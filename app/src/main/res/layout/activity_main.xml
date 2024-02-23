@@ -88,7 +88,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
-                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginHorizontal="20dp"
                     app:cardBackgroundColor="@color/transparent"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
@@ -124,7 +124,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
-                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginHorizontal="20dp"
                     app:cardBackgroundColor="@color/transparent"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
@@ -160,7 +160,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
-                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginHorizontal="20dp"
                     app:cardBackgroundColor="@color/transparent"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
@@ -242,15 +242,6 @@
                 android:layout_marginBottom="15dp"
                 android:gravity="center_vertical|end"
                 android:orientation="horizontal">
-
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/searchbar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:closeIcon="@drawable/round_clear_24"
-                    app:searchHintIcon="@null"
-                    android:visibility="gone"
-                    app:searchIcon="@drawable/magnifying_glass_solid" />
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/profile"

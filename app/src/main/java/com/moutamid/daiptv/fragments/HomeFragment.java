@@ -6,6 +6,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,12 +25,14 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.fxn.stash.Stash;
+import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.adapters.ParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentHomeBinding;
+import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.CastModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MovieModel;
@@ -103,6 +107,20 @@ public class HomeFragment extends Fragment {
             randomChannel.setChannelGroup(type[random.nextInt(type.length)]);
         }
 
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        if (mainActivity != null) {
+            binding.root.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    if (scrollY > oldScrollY) {
+                        mainActivity.toolbar.setVisibility(View.GONE);
+                    } else if (scrollY < oldScrollY) {
+                        mainActivity.toolbar.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
+
         requestQueue = VolleySingleton.getInstance(requireContext()).getRequestQueue();
 
         new Handler().postDelayed(this::fetchID, 800);
@@ -114,7 +132,13 @@ public class HomeFragment extends Fragment {
 
         binding.recycler.setHasFixedSize(false);
         binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new ParentAdapter(requireContext(), parent, itemViewModel, getViewLifecycleOwner());
+        adapter = new ParentAdapter(requireContext(), parent, Constants.TYPE_MOVIE, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
+            @Override
+            public void selected(ChannelsModel model) {
+                randomChannel = model;
+                fetchID();
+            }
+        });
         binding.recycler.setAdapter(adapter);
 
         return binding.getRoot();
@@ -228,14 +252,5 @@ public class HomeFragment extends Fragment {
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
         Glide.with(this).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
-
-        binding.trailer.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(movieModel.trailer));
-            startActivity(intent);
-        });
-
-        binding.play.setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), VideoPlayerActivity.class).putExtra("url", randomChannel.getChannelUrl()).putExtra("name", movieModel.original_title));
-        });
     }
 }

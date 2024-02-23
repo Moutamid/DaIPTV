@@ -6,9 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
@@ -16,11 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.fxn.stash.Stash;
-import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
-import com.moutamid.daiptv.activities.SplashActivity;
-import com.moutamid.daiptv.activities.VideoPlayerActivity;
+import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -31,7 +29,8 @@ import java.util.Objects;
 public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.ChildVH> {
 
     Context context;
-
+    private static final String TAG = "ChildAdapter";
+    ItemSelected itemSelected;
     private static final DiffUtil.ItemCallback<ChannelsModel> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<ChannelsModel>() {
                 @Override
@@ -45,9 +44,10 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
                 }
             };
 
-    protected ChildAdapter(Context context) {
+    protected ChildAdapter(Context context, ItemSelected itemSelected) {
         super(DIFF_CALLBACK);
         this.context = context;
+        this.itemSelected = itemSelected;
     }
 
 
@@ -55,6 +55,12 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
     @Override
     public ChildVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ChildVH(LayoutInflater.from(context).inflate(R.layout.child_item, parent, false));
+    }
+
+    @Nullable
+    @Override
+    protected ChannelsModel getItem(int position) {
+        return super.getItem(position);
     }
 
     @Override
@@ -83,36 +89,21 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
             context.startActivity(new Intent(context, DetailActivity.class));
         });
 
-        holder.play.setOnClickListener(v -> {
-           context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", model.getChannelName()));
-        });
-
-        holder.add.setOnClickListener(v -> {
-            new AlertDialog.Builder(context)
-                    .setCancelable(true)
-                    .setTitle("Add to Favorites")
-                    .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
-                    .setPositiveButton("Add", (dialog, which) -> {
-                        dialog.dismiss();
-                        UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
-                        ArrayList<ChannelsModel> list  = Stash.getArrayList(userModel.id, ChannelsModel.class);
-                        list.add(model);
-                    }).setNegativeButton("Close", (dialog, which) -> {
-                        dialog.dismiss();
-                    })
-                    .show();
+        holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    itemSelected.selected(model);
+                }
+            }
         });
 
     }
 
     public class ChildVH extends RecyclerView.ViewHolder{
         ImageView image;
-        MaterialCardView add;
-        MaterialCardView play;
         public ChildVH(@NonNull View itemView) {
             super(itemView);
-            add = itemView.findViewById(R.id.add);
-            play = itemView.findViewById(R.id.play);
             image = itemView.findViewById(R.id.image);
         }
     }

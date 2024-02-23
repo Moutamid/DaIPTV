@@ -95,11 +95,11 @@ public class CreateActivity extends AppCompatActivity {
 
         updateAndroidSecurityProvider();
 
-        startPRDownloader();
+        // startPRDownloader();
 
         // startDownloading();
 
-        // new ReadFileAsyncTask("m3u_data.txt").execute();
+        new ReadFileAsyncTask("tv_channels_sHnEqTKwSbGnKRzq_plus.m3u").execute();
     }
 
     private void startPRDownloader() {
@@ -235,10 +235,10 @@ public class CreateActivity extends AppCompatActivity {
             BufferedReader bufferedReader = null;
             int i = 0;
             try {
-//                inputStreamReader = activity.getAssets().open(fileName);
-                File file = new File(fileName);
-                FileInputStream fis = new FileInputStream(file);
-                bufferedReader = new BufferedReader(new InputStreamReader(fis));
+                inputStreamReader = activity.getAssets().open(fileName);
+//                File file = new File(fileName);
+//                FileInputStream fis = new FileInputStream(file);
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStreamReader));
 
                 String currentLine;
                 ChannelsModel channel = new ChannelsModel();
