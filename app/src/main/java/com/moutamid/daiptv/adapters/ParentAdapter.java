@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.paging.PagedList;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moutamid.daiptv.R;
@@ -54,7 +55,7 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         ParentItemModel model = list.get(holder.getAdapterPosition());
         holder.name.setText(model.name);
 
-        holder.childRC.setLayoutManager(new CircularLayoutManager(context));
+        holder.childRC.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.childRC.setHasFixedSize(false);
         ChildAdapter adapter = new ChildAdapter(context, itemSelected);
         holder.childRC.setAdapter(adapter);

@@ -19,6 +19,7 @@ import com.fxn.stash.Stash;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
+import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.database.ChannelsDAO;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.UserModel;
@@ -67,6 +68,7 @@ public class ChanelsAdapter extends PagedListAdapter<ChannelsModel, ChanelsAdapt
             holder.epg.setText(model.getChannelGroup());
 
             holder.itemView.setOnClickListener(v -> {
+                AppDatabase.getInstance(context).recentDAO().insert(model);
                 context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", model.getChannelName()));
             });
 

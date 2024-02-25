@@ -16,6 +16,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.fxn.stash.Stash;
+import com.mannan.translateapi.Language;
+import com.mannan.translateapi.TranslateAPI;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.adapters.CastsAdapter;
 import com.moutamid.daiptv.databinding.ActivityDetailBinding;
@@ -200,6 +202,26 @@ public class DetailActivity extends AppCompatActivity {
 
         CastsAdapter adapter = new CastsAdapter(this, cast);
         binding.castRC.setAdapter(adapter);
+
+        TranslateAPI translateAPI = new TranslateAPI(
+                Language.AUTO_DETECT,   //Source Language
+                Language.FRENCH,         //Target Language
+                movieModel.overview);           //Query Text
+
+        translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+            @Override
+            public void onSuccess(String translatedText) {
+                Log.d(TAG, "onSuccess: "+translatedText);
+                binding.desc.setText(translatedText);
+            }
+
+            @Override
+            public void onFailure(String ErrorText) {
+                Log.d(TAG, "onFailure: "+ErrorText);
+            }
+        });
+
+
     }
 
     private void initializeDialog() {

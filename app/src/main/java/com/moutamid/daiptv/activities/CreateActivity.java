@@ -95,12 +95,14 @@ public class CreateActivity extends AppCompatActivity {
 
         updateAndroidSecurityProvider();
 
-        // startPRDownloader();
+         // startPRDownloader();
 
         // startDownloading();
 
         new ReadFileAsyncTask("tv_channels_sHnEqTKwSbGnKRzq_plus.m3u").execute();
     }
+
+
 
     private void startPRDownloader() {
         PRDownloaderConfig config = PRDownloaderConfig.newBuilder()
@@ -109,7 +111,7 @@ public class CreateActivity extends AppCompatActivity {
                 .build();
         PRDownloader.initialize(getApplicationContext(), config);
         String url = userModel.url;
-        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DAIPTV/";
+        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/DA IPTV/";
         Log.d(TAG, "startDownloading: " + filePath);
         File file = new File(filePath);
         if (!file.exists()) {
@@ -169,38 +171,12 @@ public class CreateActivity extends AppCompatActivity {
         }
     }
 
-    private void startDownloading() {
-        String url = userModel.url;
-        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + "downloaded_file.m3u";
-        Log.d(TAG, "startDownloading: " + filePath);
-
-        FileRequest fileRequest = new FileRequest(Request.Method.GET, url,
-                response -> {
-                    Log.d(TAG, "startDownloading: complete");
-                    // File downloaded successfully
-                    // You can perform further operations here
-                    runOnUiThread(() -> {
-                        binding.message.setText("Getting Channels...");
-                        binding.progress.setText("0%");
-                    });
-                    new ReadFileAsyncTask(filePath).execute();
-                },
-                error -> {
-                    Log.e(TAG, "startDownloading: error " + error.getMessage());
-                    error.printStackTrace();
-                    Stash.clear(Constants.USER);
-                });
-
-        requestQueue.add(fileRequest);
-
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 2) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startDownloading();
+                startPRDownloader();
             } else {
                 Toast.makeText(this, "Permission is required to get the Data", Toast.LENGTH_SHORT).show();
             }

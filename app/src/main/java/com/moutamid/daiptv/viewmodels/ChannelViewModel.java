@@ -38,4 +38,14 @@ public class ChannelViewModel extends AndroidViewModel {
                         .build())
                 .build();
     }
+
+
+    public LiveData<PagedList<ChannelsModel>> getRecentChannels() {
+        return new LivePagedListBuilder<>(repository.getRecentItems(),
+                new PagedList.Config.Builder()
+                        .setPageSize(PAGE_SIZE)
+                        .setEnablePlaceholders(true)
+                        .build())
+                .build();
+    }
 }

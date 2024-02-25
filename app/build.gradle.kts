@@ -33,6 +33,7 @@ android {
 dependencies {
     implementation("com.fxn769:stash:1.3.2")
     implementation("com.android.volley:volley:1.2.1")
+    implementation("com.github.iammannan:TranslateAPI:1.1")
 
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 

@@ -73,11 +73,15 @@ public class ChannelsFragment extends Fragment {
         itemViewModel.getAll(Constants.TYPE_CHANNEL).observe(getViewLifecycleOwner(), adapter::submitList);
     }
 
+    private void showRecentChannels() {
+        itemViewModel.getRecentChannels().observe(getViewLifecycleOwner(), adapter::submitList);
+    }
+
     private MaterialButton selectedButton = null;
     private void addButton() {
         List<ChannelsGroupModel> list = database.channelsGroupDAO().getAll();
-
-        addAllButton();
+        list.add(0, new ChannelsGroupModel("Recent Channels"));
+        list.add(1, new ChannelsGroupModel("All"));
 
         for (ChannelsGroupModel model : list) {
             MaterialButton button = new MaterialButton(requireContext());
@@ -90,7 +94,12 @@ public class ChannelsFragment extends Fragment {
             button.setStrokeColorResource(R.color.transparent);
             button.setStrokeWidth(2);
 
-            if (selectedButton == null || button.getText().toString().equals(selectedGroup)) {
+//            if (model.getChannelGroup().equals("All")){
+//                button.setStrokeColorResource(R.color.red);
+//                selectedButton = button;
+//            }
+
+            if (selectedButton == null && button.getText().toString().equals("All")) {
                 button.setStrokeColorResource(R.color.red);
                 selectedButton = button;
             }
@@ -98,7 +107,14 @@ public class ChannelsFragment extends Fragment {
             button.setOnClickListener(v -> {
                 isAll = false;
                 selectedGroup = button.getText().toString();
-                switchGroup(selectedGroup);
+
+                if (selectedGroup.equals("All")){
+                    showAllItems();
+                } else if (selectedGroup.equals("Recent Channels")) {
+                    showRecentChannels();
+                } else {
+                    switchGroup(selectedGroup);
+                }
                 if (selectedButton != null) {
                     selectedButton.setStrokeColorResource(R.color.transparent); // Remove stroke from previously selected button
                 }
@@ -107,30 +123,5 @@ public class ChannelsFragment extends Fragment {
 
             });
         }
-    }
-
-    private void addAllButton() {
-        MaterialButton button = new MaterialButton(requireContext());
-        button.setText(R.string.all);
-        button.setTextColor(getResources().getColor(R.color.white));
-        button.setBackgroundColor(getResources().getColor(R.color.transparent));
-        button.setCornerRadius(12);
-        button.setGravity(Gravity.START | Gravity.CENTER);
-        binding.sidePanel.addView(button);
-        button.setStrokeColorResource(R.color.red);
-        button.setStrokeWidth(2);
-
-        selectedButton = button;
-
-        button.setOnClickListener(v -> {
-            isAll = true;
-            selectedGroup = "";
-            showAllItems();
-            if (selectedButton != null) {
-                selectedButton.setStrokeColorResource(R.color.transparent); // Remove stroke from previously selected button
-            }
-            button.setStrokeColorResource(R.color.red); // Add stroke to newly selected button
-            selectedButton = button;
-        });
     }
 }

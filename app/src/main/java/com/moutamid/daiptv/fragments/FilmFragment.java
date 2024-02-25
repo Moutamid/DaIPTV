@@ -24,6 +24,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.fxn.stash.Stash;
+import com.mannan.translateapi.Language;
+import com.mannan.translateapi.TranslateAPI;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
@@ -245,6 +247,23 @@ public class FilmFragment extends Fragment {
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
         Glide.with(this).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
+        TranslateAPI translateAPI = new TranslateAPI(
+                Language.AUTO_DETECT,   //Source Language
+                Language.FRENCH,         //Target Language
+                movieModel.overview);           //Query Text
+
+        translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+            @Override
+            public void onSuccess(String translatedText) {
+                Log.d(TAG, "onSuccess: "+translatedText);
+                binding.desc.setText(translatedText);
+            }
+
+            @Override
+            public void onFailure(String ErrorText) {
+                Log.d(TAG, "onFailure: "+ErrorText);
+            }
+        });
 
     }
 
