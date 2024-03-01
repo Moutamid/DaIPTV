@@ -125,7 +125,7 @@ public class HomeFragment extends Fragment {
 
         requestQueue = VolleySingleton.getInstance(requireContext()).getRequestQueue();
 
-        new Handler().postDelayed(this::fetchID, 800);
+        new Handler().postDelayed(this::fetchID, 1000);
 
         for (MoviesGroupModel model : items){
             String group = model.getChannelGroup();
@@ -221,9 +221,7 @@ public class HomeFragment extends Fragment {
                                 break;
                             }
                         }
-                        
                         setUI();
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                         dialog.dismiss();

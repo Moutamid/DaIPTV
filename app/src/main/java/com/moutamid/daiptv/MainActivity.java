@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-/*
+
         binding.Accueil.setOnClickListener(v -> {
             binding.indicatorAccueil.setVisibility(View.VISIBLE);
             binding.indicatorChaines.setVisibility(View.GONE);
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             binding.indicatorSeries.setVisibility(View.GONE);
             binding.indicatorRecherche.setVisibility(View.VISIBLE);
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new RechercheFragment()).commit();
-        });*/
+        });
 
     }
     @Override

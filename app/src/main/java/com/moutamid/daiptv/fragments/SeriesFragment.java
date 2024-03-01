@@ -54,6 +54,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SeriesFragment extends Fragment {
     private static final String TAG = "SeriesFragment";
@@ -151,7 +153,17 @@ public class SeriesFragment extends Fragment {
     }
 
     private void fetchID() {
-        String name = randomChannel.getChannelName().replace("|FR| ", "");
+        String output = "";
+        Pattern pattern = Pattern.compile("^(.*?)\\\\sS\\\\d+\\\\sE\\\\d+$");
+        Matcher matcher = pattern.matcher(randomChannel.getChannelName());
+        if (matcher.matches()) {
+            output = matcher.group(1);
+            Log.d(TAG, "onCreate: " + output);
+        } else {
+            Log.d(TAG, "No match found");
+        }
+
+        String name = output.replace("|FR| ", "");
         name = name.replaceAll("\\(\\d{4}\\)", "").trim();
         Log.d(TAG, "fetchID: " + name);
         String url = Constants.getMovieData(requireContext(), name, Constants.TYPE_TV);

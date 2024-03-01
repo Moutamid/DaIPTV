@@ -2,6 +2,7 @@ package com.moutamid.daiptv.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
+import com.moutamid.daiptv.activities.SeriesActivity;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.UserModel;
@@ -75,7 +77,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
                     .setPositiveButton("Add", (dialog, which) -> {
                         dialog.dismiss();
                         UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
-                        ArrayList<ChannelsModel> list  = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                        ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
                         list.add(model);
                     }).setNegativeButton("Close", (dialog, which) -> {
                         dialog.dismiss();
@@ -86,13 +88,17 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
 
         holder.itemView.setOnClickListener(v -> {
             Stash.put(Constants.PASS, model);
-            context.startActivity(new Intent(context, DetailActivity.class));
+            if (model.type.equals(Constants.TYPE_SERIES))
+                context.startActivity(new Intent(context, SeriesActivity.class));
+            else
+                context.startActivity(new Intent(context, DetailActivity.class));
         });
 
         holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
+                Log.d(TAG, "onFocusChange: " + model.getChannelName());
+                if (hasFocus) {
                     itemSelected.selected(model);
                 }
             }
@@ -100,8 +106,9 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
 
     }
 
-    public class ChildVH extends RecyclerView.ViewHolder{
+    public class ChildVH extends RecyclerView.ViewHolder {
         ImageView image;
+
         public ChildVH(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image);
