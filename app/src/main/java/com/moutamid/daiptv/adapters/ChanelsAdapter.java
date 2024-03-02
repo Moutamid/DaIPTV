@@ -22,10 +22,12 @@ import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.database.ChannelsDAO;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.EPGModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,8 +66,21 @@ public class ChanelsAdapter extends PagedListAdapter<ChannelsModel, ChanelsAdapt
         ChannelsModel model = getItem(position);
         if (model != null) {
             Glide.with(context).load(model.getChannelImg()).placeholder(R.color.transparent).into(holder.image);
+            ArrayList<EPGModel> epgList = Stash.getArrayList(Constants.EPG, EPGModel.class);
+            for (EPGModel e : epgList){
+                if (e.channel.equals(model.getChannelID())){
+                    Date startDate = Constants.parseDate(e.start);
+                    Date endDate = Constants.parseDate(e.stop);
+
+                    // Check if the current date is in between
+                    if (Constants.isCurrentDateInBetween(startDate, endDate)) {
+                        holder.epg.setText(e.title);
+                        break;
+                    }
+                }
+            }
+
             holder.title.setText(model.getChannelName());
-            holder.epg.setText(model.getChannelGroup());
 
             holder.itemView.setOnClickListener(v -> {
                 AppDatabase.getInstance(context).recentDAO().insert(model);

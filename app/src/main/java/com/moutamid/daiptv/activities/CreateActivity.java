@@ -63,6 +63,7 @@ public class CreateActivity extends AppCompatActivity {
     private static final String TAG = "FileReader";
     private final String EXT_INF_SP = "#EXTINF:";
     private final String TVG_NAME = "tvg-name=";
+    private final String TVG_ID = "tvg-id=";
     private final String TVG_LOGO = "tvg-logo=";
     private final String GROUP_TITLE = "group-title=";
     private final String COMMA = ",";
@@ -95,11 +96,11 @@ public class CreateActivity extends AppCompatActivity {
 
         updateAndroidSecurityProvider();
 
-        // startPRDownloader();
+         startPRDownloader();
 
         // startDownloading();
 
-       new ReadFileAsyncTask("tv_channels_sHnEqTKwSbGnKRzq_plus.m3u").execute();
+      // new ReadFileAsyncTask("tv_channels_sHnEqTKwSbGnKRzq_plus.m3u").execute();
     }
 
 
@@ -212,10 +213,10 @@ public class CreateActivity extends AppCompatActivity {
             BufferedReader bufferedReader = null;
             int i = 0;
             try {
-                inputStreamReader = activity.getAssets().open(fileName);
-//                File file = new File(fileName);
-//                fis = new FileInputStream(file);
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStreamReader));
+//                inputStreamReader = activity.getAssets().open(fileName);
+                File file = new File(fileName);
+                fis = new FileInputStream(file);
+                bufferedReader = new BufferedReader(new InputStreamReader(fis));
 
                 String currentLine;
                 ChannelsModel channel = new ChannelsModel();
@@ -227,12 +228,14 @@ public class CreateActivity extends AppCompatActivity {
                     currentLine = currentLine.replaceAll("\"", "");
 
                     if (currentLine.startsWith(EXT_INF_SP)) {
+                        channel.setChannelID(currentLine.split(TVG_ID).length > 1 ? currentLine.split(TVG_ID)[1].split(TVG_NAME)[0] : currentLine.split(COMMA)[1]);
+                        Log.d(TAG, "ChannelID: " + channel.getChannelID());
                         channel.setChannelName(currentLine.split(TVG_NAME).length > 1 ? currentLine.split(TVG_NAME)[1].split(TVG_LOGO)[0] : currentLine.split(COMMA)[1]);
-                        Log.d(TAG, "ChannelName: " + channel.getChannelName());
+                      //  Log.d(TAG, "ChannelName: " + channel.getChannelName());
                         channel.setChannelGroup(currentLine.split(GROUP_TITLE)[1].split(COMMA)[0]);
-                        Log.d(TAG, "getChannelGroup: " + channel.getChannelGroup());
+                     //   Log.d(TAG, "getChannelGroup: " + channel.getChannelGroup());
                         channel.setChannelImg(currentLine.split(TVG_LOGO).length > 1 ? currentLine.split(TVG_LOGO)[1].split(GROUP_TITLE)[0] : "");
-                        Log.d(TAG, "getChannelImg: " + channel.getChannelImg());
+                   //     Log.d(TAG, "getChannelImg: " + channel.getChannelImg());
                         continue;
                     }
 
@@ -251,7 +254,7 @@ public class CreateActivity extends AppCompatActivity {
 
                         channel.setType(b[0]);
 
-                        Log.d(TAG, "getChannelUrl: " + channel.getChannelUrl());
+                     //   Log.d(TAG, "getChannelUrl: " + channel.getChannelUrl());
                         channelList.add(channel);
                         database.channelsDAO().insert(channel);
 

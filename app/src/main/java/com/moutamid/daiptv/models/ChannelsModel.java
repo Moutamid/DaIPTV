@@ -10,6 +10,9 @@ public class ChannelsModel {
     @PrimaryKey(autoGenerate = true)
     int ID = 0;
 
+    @ColumnInfo(name = "channelID")
+    public String channelID;
+
     @ColumnInfo(name = "channelName")
     public String channelName;
 
@@ -31,6 +34,14 @@ public class ChannelsModel {
 
     public void setID(int ID) {
         this.ID = ID;
+    }
+
+    public String getChannelID() {
+        return channelID;
+    }
+
+    public void setChannelID(String channelID) {
+        this.channelID = channelID;
     }
 
     public String getChannelName() {

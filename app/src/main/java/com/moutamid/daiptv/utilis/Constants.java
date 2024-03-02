@@ -19,16 +19,29 @@ import com.moutamid.daiptv.activities.LoginActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class Constants {
     public static final String USER = "USER";
     public static final String PASS = "PASS";
+    public static final String EPG = "EPG";
     public static final String SELECTED_PAGE = "SELECTED_PAGE";
     public static final String USER_LIST = "USER_LIST";
     public static final String PASS_USER = "PASS_USER";
@@ -41,7 +54,7 @@ public class Constants {
     public static final String imageLink = "https://image.tmdb.org/t/p/original";
     public static final String movieSearch = "https://api.themoviedb.org/3/search/"; // https://api.themoviedb.org/3/search/tv?query=
     public static final String movieDetails = "https://api.themoviedb.org/3/";
-    public static final String[] permissions = new String[] {
+    public static final String[] permissions = new String[]{
             Manifest.permission.READ_MEDIA_IMAGES,
             Manifest.permission.READ_MEDIA_AUDIO,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -67,16 +80,17 @@ public class Constants {
                 ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
     }
 
-    public static String getImageLink(String path){
+    public static String getImageLink(String path) {
         return imageLink + path;
     }
 
-    public static String getMovieData(String name, String type){
-        name = name.replace(" " , "%20");
+    public static String getMovieData(String name, String type) {
+        name = name.replace(" ", "%20");
         String api_key = "&api_key=26bedf3e3be75a2810a53f4a445e7b1f";
         return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&language=en-US&page=1";
     }
-    public static String getMovieDetails(int id, String type){ // Type movie / tv
+
+    public static String getMovieDetails(int id, String type) { // Type movie / tv
         String api_key = "?api_key=26bedf3e3be75a2810a53f4a445e7b1f";
         return movieDetails + type + "/" + id + api_key + "&append_to_response=videos,images,credits";
     }
@@ -90,7 +104,25 @@ public class Constants {
         return false;
     }
 
-    public static void checkApp(Activity activity) {
+    public static Date parseDate(String dateString) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss Z");
+            return dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null; // Handle parsing errors appropriately in your application
+        }
+    }
+
+    public static boolean isCurrentDateInBetween(Date startDate, Date endDate) {
+        // Get the current date/time
+        Date currentDate = new Date();
+
+        // Check if the current date is within the specified range
+        return currentDate.after(startDate) && currentDate.before(endDate);
+    }
+
+        public static void checkApp(Activity activity) {
         String appName = "daiptv";
 
         new Thread(() -> {
@@ -179,20 +211,24 @@ public class Constants {
             String htmlData = stringBuffer.toString();
 
             try {
-                JSONObject myAppObject = new JSONObject(htmlData);
+                JSONObject myAppObject = new JSONObject(htmlData).getJSONObject(features);
                 boolean value = myAppObject.getBoolean("value");
+                boolean showMessage = myAppObject.getBoolean("showMessage");
                 String msg = myAppObject.getString("msg");
                 if (value) {
-                    activity.runOnUiThread(() -> new AlertDialog.Builder(activity)
-                            .setMessage(msg)
-                            .setCancelable(false)
-                            .show());
+                    if (showMessage)
+                        activity.runOnUiThread(() -> new AlertDialog.Builder(activity)
+                                .setMessage(msg)
+                                .setCancelable(false)
+                                .show());
+                    else
+                        throw new RuntimeException();
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
         }).start();
+
     }
 }
