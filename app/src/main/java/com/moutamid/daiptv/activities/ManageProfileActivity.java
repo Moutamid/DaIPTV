@@ -12,6 +12,7 @@ import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.databinding.ActivityManageProfileBinding;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
+import com.moutamid.daiptv.utilis.Features;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,7 @@ public class ManageProfileActivity extends AppCompatActivity {
         }
 
         binding.add.setOnClickListener(v -> {
+            Constants.checkFeature(ManageProfileActivity.this, Features.ADD_PROFILE);
             startActivity(new Intent(ManageProfileActivity.this, LoginActivity.class).putExtra("addProfile", true));
             finish();
         });

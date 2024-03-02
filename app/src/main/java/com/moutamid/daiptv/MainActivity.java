@@ -16,6 +16,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.fxn.stash.Stash;
+import com.google.android.gms.common.Feature;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -32,6 +33,7 @@ import com.moutamid.daiptv.fragments.SeriesFragment;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
+import com.moutamid.daiptv.utilis.Features;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus){
+                    Constants.checkFeature(MainActivity.this, Features.HOME);
                     binding.indicatorAccueil.setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
                 } else {
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus){
+                    Constants.checkFeature(MainActivity.this, Features.CHANNELS);
                     binding.indicatorChaines.setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChannelsFragment()).commit();
                 } else {
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus){
+                    Constants.checkFeature(MainActivity.this, Features.FILMS);
                     binding.indicatorFilms.setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FilmFragment()).commit();
                 } else {
@@ -101,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus){
+                    Constants.checkFeature(MainActivity.this, Features.SERIES);
                     binding.indicatorSeries.setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new SeriesFragment()).commit();
                 } else {
@@ -113,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus){
+                    Constants.checkFeature(MainActivity.this, Features.RECHERCHE);
                     binding.indicatorRecherche.setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new RechercheFragment()).commit();
                 } else {
@@ -122,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.Accueil.setOnClickListener(v -> {
+            Constants.checkFeature(MainActivity.this, Features.HOME);
             binding.indicatorAccueil.setVisibility(View.VISIBLE);
             binding.indicatorChaines.setVisibility(View.GONE);
             binding.indicatorFilms.setVisibility(View.GONE);
@@ -130,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
         });
         binding.Chaines.setOnClickListener(v -> {
+            Constants.checkFeature(MainActivity.this, Features.CHANNELS);
             binding.indicatorAccueil.setVisibility(View.GONE);
             binding.indicatorChaines.setVisibility(View.VISIBLE);
             binding.indicatorFilms.setVisibility(View.GONE);
@@ -138,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChannelsFragment()).commit();
         });
         binding.Films.setOnClickListener(v -> {
+            Constants.checkFeature(MainActivity.this, Features.FILMS);
             binding.indicatorAccueil.setVisibility(View.GONE);
             binding.indicatorChaines.setVisibility(View.GONE);
             binding.indicatorFilms.setVisibility(View.VISIBLE);
@@ -146,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FilmFragment()).commit();
         });
         binding.series.setOnClickListener(v -> {
+            Constants.checkFeature(MainActivity.this, Features.SERIES);
             binding.indicatorAccueil.setVisibility(View.GONE);
             binding.indicatorChaines.setVisibility(View.GONE);
             binding.indicatorFilms.setVisibility(View.GONE);
@@ -154,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new SeriesFragment()).commit();
         });
         binding.Recherche.setOnClickListener(v -> {
+            Constants.checkFeature(MainActivity.this, Features.RECHERCHE);
             binding.indicatorAccueil.setVisibility(View.GONE);
             binding.indicatorChaines.setVisibility(View.GONE);
             binding.indicatorFilms.setVisibility(View.GONE);

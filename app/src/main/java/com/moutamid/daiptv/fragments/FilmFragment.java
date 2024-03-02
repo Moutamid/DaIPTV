@@ -154,7 +154,7 @@ public class FilmFragment extends Fragment {
         String name = randomChannel.getChannelName().replace("|FR| ", "");
         name = name.replaceAll("\\(\\d{4}\\)", "").trim();
         Log.d(TAG, "fetchID: " + name);
-        String url = Constants.getMovieData(requireContext(), name, Constants.TYPE_MOVIE);
+        String url = Constants.getMovieData(name, Constants.TYPE_MOVIE);
 
         Log.d(TAG, "fetchID: URL  " + url);
 
@@ -179,9 +179,9 @@ public class FilmFragment extends Fragment {
     private void getDetails(int id) {
         String url;
         if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieDetails(requireContext(), id, Constants.TYPE_TV);
+            url = Constants.getMovieDetails(id, Constants.TYPE_TV);
         } else {
-            url = Constants.getMovieDetails(requireContext(), id, Constants.TYPE_MOVIE);
+            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
         }
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);

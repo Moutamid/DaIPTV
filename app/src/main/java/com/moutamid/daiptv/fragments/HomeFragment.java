@@ -125,8 +125,6 @@ public class HomeFragment extends Fragment {
 
         requestQueue = VolleySingleton.getInstance(requireContext()).getRequestQueue();
 
-        new Handler().postDelayed(this::fetchID, 1000);
-
         for (MoviesGroupModel model : items){
             String group = model.getChannelGroup();
             parent.add(new ParentItemModel(group));
@@ -150,6 +148,7 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Stash.put(Constants.SELECTED_PAGE, "Home");
+        new Handler().postDelayed(this::fetchID, 1000);
     }
 
     private void fetchID() {
@@ -158,9 +157,9 @@ public class HomeFragment extends Fragment {
         Log.d(TAG, "fetchID: " + name);
         String url;
         if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieData(requireContext(), name, Constants.TYPE_TV);
+            url = Constants.getMovieData(name, Constants.TYPE_TV);
         } else {
-            url = Constants.getMovieData(requireContext(), name, Constants.TYPE_MOVIE);
+            url = Constants.getMovieData(name, Constants.TYPE_MOVIE);
         }
 
         Log.d(TAG, "fetchID: URL  " + url);
@@ -186,9 +185,9 @@ public class HomeFragment extends Fragment {
     private void getDetails(int id) {
         String url;
         if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieDetails(requireContext(), id, Constants.TYPE_TV);
+            url = Constants.getMovieDetails(id, Constants.TYPE_TV);
         } else {
-            url = Constants.getMovieDetails(requireContext(), id, Constants.TYPE_MOVIE);
+            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
         }
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);
@@ -208,7 +207,10 @@ public class HomeFragment extends Fragment {
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
                         Random r = new Random();
-                        int index = r.nextInt(images.length());
+                        int index = 0;
+                        if (images.length() > 1){
+                            index = r.nextInt(images.length());
+                        }
 
                         movieModel.banner = images.getJSONObject(index).getString("file_path");
 

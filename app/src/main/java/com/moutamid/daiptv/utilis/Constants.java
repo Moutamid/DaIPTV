@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.LoginActivity;
 
@@ -70,13 +71,13 @@ public class Constants {
         return imageLink + path;
     }
 
-    public static String getMovieData(Context context, String name, String type){
+    public static String getMovieData(String name, String type){
         name = name.replace(" " , "%20");
-        String api_key = "&api_key=" + context.getString(R.string.API_Key);
+        String api_key = "&api_key=26bedf3e3be75a2810a53f4a445e7b1f";
         return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&language=en-US&page=1";
     }
-    public static String getMovieDetails(Context context, int id, String type){ // Type movie / tv
-        String api_key = "?api_key=" + context.getString(R.string.API_Key);
+    public static String getMovieDetails(int id, String type){ // Type movie / tv
+        String api_key = "?api_key=26bedf3e3be75a2810a53f4a445e7b1f";
         return movieDetails + type + "/" + id + api_key + "&append_to_response=videos,images,credits";
     }
 
@@ -144,4 +145,54 @@ public class Constants {
         }).start();
     }
 
+    public static void checkFeature(Activity activity, String features) {
+        new Thread(() -> {
+            URL google = null;
+            try {
+                google = new URL("https://raw.githubusercontent.com/Moutamid/Moutamid/main/apps.txt");
+            } catch (final MalformedURLException e) {
+                e.printStackTrace();
+            }
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(google != null ? google.openStream() : null));
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+            String input = null;
+            StringBuffer stringBuffer = new StringBuffer();
+            while (true) {
+                try {
+                    if ((input = in != null ? in.readLine() : null) == null) break;
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+                stringBuffer.append(input);
+            }
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+            String htmlData = stringBuffer.toString();
+
+            try {
+                JSONObject myAppObject = new JSONObject(htmlData);
+                boolean value = myAppObject.getBoolean("value");
+                String msg = myAppObject.getString("msg");
+                if (value) {
+                    activity.runOnUiThread(() -> new AlertDialog.Builder(activity)
+                            .setMessage(msg)
+                            .setCancelable(false)
+                            .show());
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }).start();
+    }
 }

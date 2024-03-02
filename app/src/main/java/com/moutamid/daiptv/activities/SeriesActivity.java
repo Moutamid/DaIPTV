@@ -33,9 +33,9 @@ public class SeriesActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: " + model.getChannelName());
 
-        Pattern pattern = Pattern.compile("^(.*?)\\\\sS\\\\d+\\\\sE\\\\d+$");
+        Pattern pattern = Pattern.compile("^\\\\|\\\\w+\\\\| (.*?) S\\\\d+ E\\\\d+$");
         Matcher matcher = pattern.matcher(model.getChannelName());
-        if (matcher.matches()) {
+        if (matcher.find()) {
             output = matcher.group(1);
             Log.d(TAG, "onCreate: " + output);
         } else {

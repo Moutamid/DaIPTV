@@ -75,9 +75,9 @@ public class DetailActivity extends AppCompatActivity {
         String url;
        // name = "Interstellar"; // for testing
         if (model.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieData(this, name, Constants.TYPE_TV);
+            url = Constants.getMovieData(name, Constants.TYPE_TV);
         } else {
-            url = Constants.getMovieData(this, name, Constants.TYPE_MOVIE);
+            url = Constants.getMovieData(name, Constants.TYPE_MOVIE);
         }
 
         Log.d(TAG, "fetchID: URL  " + url);
@@ -108,9 +108,9 @@ public class DetailActivity extends AppCompatActivity {
     private void getDetails(int id) {
         String url;
         if (model.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieDetails(this, id, Constants.TYPE_TV);
+            url = Constants.getMovieDetails(id, Constants.TYPE_TV);
         } else {
-            url = Constants.getMovieDetails(this, id, Constants.TYPE_MOVIE);
+            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
         }
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);

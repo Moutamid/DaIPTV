@@ -16,8 +16,11 @@ import com.android.iplayer.widget.controls.ControlGestureView;
 import com.android.iplayer.widget.controls.ControlLoadingView;
 import com.android.iplayer.widget.controls.ControlStatusView;
 import com.android.iplayer.widget.controls.ControlToolBarView;
+import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.databinding.ActivityVideoPlayerBinding;
+import com.moutamid.daiptv.utilis.Constants;
+import com.moutamid.daiptv.utilis.Features;
 
 public class VideoPlayerActivity extends AppCompatActivity {
     ActivityVideoPlayerBinding binding;
@@ -32,6 +35,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
         String name = getIntent().getStringExtra("name");
 
         Log.d("VideoURLPlayer", ""+url);
+
+        Constants.checkFeature(VideoPlayerActivity.this, Features.VIDEO_PLAYER);
 
         binding.videoPlayer.setAutoChangeOrientation(true);
 

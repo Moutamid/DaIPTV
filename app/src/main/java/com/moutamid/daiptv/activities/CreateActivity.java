@@ -95,11 +95,11 @@ public class CreateActivity extends AppCompatActivity {
 
         updateAndroidSecurityProvider();
 
-         // startPRDownloader();
+        // startPRDownloader();
 
         // startDownloading();
 
-        new ReadFileAsyncTask("tv_channels_sHnEqTKwSbGnKRzq_plus.m3u").execute();
+       new ReadFileAsyncTask("tv_channels_sHnEqTKwSbGnKRzq_plus.m3u").execute();
     }
 
 
@@ -208,12 +208,13 @@ public class CreateActivity extends AppCompatActivity {
         protected ArrayList<ChannelsModel> doInBackground(Void... params) {
 
             InputStream inputStreamReader = null;
+            FileInputStream fis = null;
             BufferedReader bufferedReader = null;
             int i = 0;
             try {
                 inputStreamReader = activity.getAssets().open(fileName);
 //                File file = new File(fileName);
-//                FileInputStream fis = new FileInputStream(file);
+//                fis = new FileInputStream(file);
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStreamReader));
 
                 String currentLine;
@@ -296,6 +297,9 @@ public class CreateActivity extends AppCompatActivity {
                 try {
                     if (bufferedReader != null) {
                         bufferedReader.close();
+                    }
+                    if (fis != null) {
+                        fis.close();
                     }
                     if (inputStreamReader != null) {
                         inputStreamReader.close();

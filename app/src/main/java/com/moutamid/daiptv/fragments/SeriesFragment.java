@@ -153,10 +153,13 @@ public class SeriesFragment extends Fragment {
     }
 
     private void fetchID() {
-        String output = "";
-        Pattern pattern = Pattern.compile("^(.*?)\\\\sS\\\\d+\\\\sE\\\\d+$");
+        String output = randomChannel.getChannelName();
+        Pattern pattern = Pattern.compile("^\\\\|\\\\w+\\\\| (.*?) S\\\\d+ E\\\\d+$");
         Matcher matcher = pattern.matcher(randomChannel.getChannelName());
-        if (matcher.matches()) {
+        Log.d(TAG, "fetchID: " + output);
+        Log.d(TAG, "pattern: " + pattern.pattern());
+
+        if (matcher.find() || matcher.matches()) {
             output = matcher.group(1);
             Log.d(TAG, "onCreate: " + output);
         } else {
@@ -166,7 +169,7 @@ public class SeriesFragment extends Fragment {
         String name = output.replace("|FR| ", "");
         name = name.replaceAll("\\(\\d{4}\\)", "").trim();
         Log.d(TAG, "fetchID: " + name);
-        String url = Constants.getMovieData(requireContext(), name, Constants.TYPE_TV);
+        String url = Constants.getMovieData(name, Constants.TYPE_TV);
 
         Log.d(TAG, "fetchID: URL  " + url);
 
@@ -191,9 +194,9 @@ public class SeriesFragment extends Fragment {
     private void getDetails(int id) {
         String url;
         if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieDetails(requireContext(), id, Constants.TYPE_TV);
+            url = Constants.getMovieDetails(id, Constants.TYPE_TV);
         } else {
-            url = Constants.getMovieDetails(requireContext(), id, Constants.TYPE_MOVIE);
+            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
         }
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);
