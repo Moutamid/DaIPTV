@@ -4,18 +4,28 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.EpisodesModel;
+import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.ArrayList;
 
 public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.EpisodeVH> {
     Context context;
-    ArrayList<ChannelsModel> list;
+    ArrayList<EpisodesModel> list;
+
+    public EpisodesAdapter(Context context, ArrayList<EpisodesModel> list) {
+        this.context = context;
+        this.list = list;
+    }
 
     @NonNull
     @Override
@@ -25,7 +35,11 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Episod
 
     @Override
     public void onBindViewHolder(@NonNull EpisodeVH holder, int position) {
-        ChannelsModel model = list.get(holder.getAbsoluteAdapterPosition());
+        EpisodesModel model = list.get(holder.getAbsoluteAdapterPosition());
+        Glide.with(context).load(Constants.getImageLink(model.image)).placeholder(R.color.black).into(holder.coverImage);
+        holder.seasonNo.setText(model.se);
+        holder.name.setText(model.name);
+        holder.desc.setText(model.desc);
     }
 
     @Override
@@ -34,8 +48,16 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Episod
     }
 
     public class EpisodeVH extends RecyclerView.ViewHolder{
+        ImageView coverImage;
+        TextView seasonNo;
+        TextView name;
+        TextView desc;
         public EpisodeVH(@NonNull View itemView) {
             super(itemView);
+            coverImage = itemView.findViewById(R.id.coverImage);
+            seasonNo = itemView.findViewById(R.id.seasonNo);
+            name = itemView.findViewById(R.id.name);
+            desc = itemView.findViewById(R.id.desc);
         }
     }
 

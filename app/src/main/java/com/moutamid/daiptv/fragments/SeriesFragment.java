@@ -202,7 +202,10 @@ public class SeriesFragment extends Fragment {
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
                         Random r = new Random();
-                        int index = r.nextInt(images.length());
+                        int index = 0;
+                        if (images.length() > 1){
+                            index = r.nextInt(images.length());
+                        }
 
                         movieModel.banner = images.getJSONObject(index).getString("file_path");
 

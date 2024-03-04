@@ -1,10 +1,11 @@
 package com.moutamid.daiptv.models;
 
 public class SeasonsItem {
-    public String seasonNumber, totalEpisode;
+    public String season;
+    public int episodeCount;
 
-    public SeasonsItem(String seasonNumber, String totalEpisode) {
-        this.seasonNumber = seasonNumber;
-        this.totalEpisode = totalEpisode;
+    public SeasonsItem(String season, int episodeCount) {
+        this.season = season;
+        this.episodeCount = episodeCount;
     }
 }

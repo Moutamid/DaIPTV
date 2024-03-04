@@ -56,6 +56,7 @@ public class Constants {
     public static final String imageLink = "https://image.tmdb.org/t/p/original";
     public static final String movieSearch = "https://api.themoviedb.org/3/search/"; // https://api.themoviedb.org/3/search/tv?query=
     public static final String movieDetails = "https://api.themoviedb.org/3/";
+    public static final String episodeDetails = "https://api.themoviedb.org/3/tv/";
     public static final String[] permissions = new String[]{
             Manifest.permission.READ_MEDIA_IMAGES,
             Manifest.permission.READ_MEDIA_AUDIO,
@@ -97,6 +98,12 @@ public class Constants {
         return movieDetails + type + "/" + id + api_key + "&append_to_response=videos,images,credits";
     }
 
+    public static String getEpisodeDetails(int id, int count) {
+        // "https://api.themoviedb.org/3/tv/"+ id +"/season/"+ count +"?language=en-US"
+        String api_key = "?api_key=26bedf3e3be75a2810a53f4a445e7b1f";
+        return episodeDetails + id + "/season/" + count + api_key + "&language=en-US";
+    }
+
     public static boolean checkInternet(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
@@ -124,7 +131,7 @@ public class Constants {
         return currentDate.after(startDate) && currentDate.before(endDate);
     }
 
-        public static void checkApp(Activity activity) {
+    public static void checkApp(Activity activity) {
         String appName = "daiptv";
 
         new Thread(() -> {
@@ -236,6 +243,8 @@ public class Constants {
 
     public static String regexName(String name) {
         name = name.replace("|FR| ", "");
+        name = name.replace("|EN| ", "");
+        name = name.replace("|BE| ", "");
         name = name.replaceAll("\\(\\d{4}\\)", "");
         Pattern pattern = Pattern.compile("\\b\\d{4}\\b");
         Matcher matcher = pattern.matcher(name);
