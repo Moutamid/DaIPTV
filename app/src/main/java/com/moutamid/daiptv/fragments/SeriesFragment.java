@@ -153,21 +153,7 @@ public class SeriesFragment extends Fragment {
     }
 
     private void fetchID() {
-        String output = randomChannel.getChannelName();
-        Pattern pattern = Pattern.compile("^\\\\|\\\\w+\\\\| (.*?) S\\\\d+ E\\\\d+$");
-        Matcher matcher = pattern.matcher(randomChannel.getChannelName());
-        Log.d(TAG, "fetchID: " + output);
-        Log.d(TAG, "pattern: " + pattern.pattern());
-
-        if (matcher.find() || matcher.matches()) {
-            output = matcher.group(1);
-            Log.d(TAG, "onCreate: " + output);
-        } else {
-            Log.d(TAG, "No match found");
-        }
-
-        String name = output.replace("|FR| ", "");
-        name = name.replaceAll("\\(\\d{4}\\)", "").trim();
+        String name = Constants.regexName(randomChannel.getChannelName());
         Log.d(TAG, "fetchID: " + name);
         String url = Constants.getMovieData(name, Constants.TYPE_TV);
 

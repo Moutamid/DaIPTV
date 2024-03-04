@@ -152,8 +152,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchID() {
-        String name = randomChannel.getChannelName().replace("|FR| ", "");
-        name = name.replaceAll("\\(\\d{4}\\)", "").trim();
+        String name = Constants.regexName(randomChannel.getChannelName());
         Log.d(TAG, "fetchID: " + name);
         String url;
         if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {

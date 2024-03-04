@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     Log.d("TAGGER", "onResponse/45: data loaded");
-                    Log.d("TAGGER", "onResponse/45: data: : " + response);
+                  //  Log.d("TAGGER", "onResponse/45: data: : " + response);
                     Log.d("TAGGER", "onResponse/45: length: : " + response.length());
 
                     try {

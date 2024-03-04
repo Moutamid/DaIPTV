@@ -53,6 +53,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FilmFragment extends Fragment {
     private static final String TAG = "FilmFragment";
@@ -151,8 +153,7 @@ public class FilmFragment extends Fragment {
     }
 
     private void fetchID() {
-        String name = randomChannel.getChannelName().replace("|FR| ", "");
-        name = name.replaceAll("\\(\\d{4}\\)", "").trim();
+        String name = Constants.regexName(randomChannel.getChannelName());
         Log.d(TAG, "fetchID: " + name);
         String url = Constants.getMovieData(name, Constants.TYPE_MOVIE);
 

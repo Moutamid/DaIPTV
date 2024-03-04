@@ -28,6 +28,7 @@ public class ChannelsModel {
     @ColumnInfo(name = "type")
     public String type;
 
+
     public int getID() {
         return ID;
     }

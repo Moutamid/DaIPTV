@@ -34,6 +34,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -181,7 +183,7 @@ public class Constants {
         new Thread(() -> {
             URL google = null;
             try {
-                google = new URL("https://raw.githubusercontent.com/Moutamid/Moutamid/main/apps.txt");
+                google = new URL("https://raw.githubusercontent.com/Moutamid/Moutamid/main/daiptvlogs");
             } catch (final MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -230,5 +232,23 @@ public class Constants {
 
         }).start();
 
+    }
+
+    public static String regexName(String name) {
+        name = name.replace("|FR| ", "");
+        name = name.replaceAll("\\(\\d{4}\\)", "");
+        Pattern pattern = Pattern.compile("\\b\\d{4}\\b");
+        Matcher matcher = pattern.matcher(name);
+        name = matcher.replaceAll("");
+        Pattern patternPattern = Pattern.compile("\\bS\\d{2} E\\d{2}\\b");
+        Matcher patternMatcher = patternPattern.matcher(name);
+        name = patternMatcher.replaceAll("");
+        name = name.replace(" (VOST) ", " ");
+        name = name.replace(" FHD ", " ");
+        name = name.replace(" HD ", " ");
+        name = name.replace(" SD ", " ");
+        name = name.replace(" MULTI ", " ");
+        name = name.replace(" HEVC ", " ");
+        return name.trim();
     }
 }
