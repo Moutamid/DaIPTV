@@ -31,6 +31,9 @@ public interface ChannelsDAO {
     @Query("SELECT * FROM channels WHERE LOWER(channelName) LIKE LOWER(:query) AND channelGroup = :channelGroup LIMIT 1")
     ChannelsModel getSearchChannel(String query, String channelGroup);
 
+    @Query("SELECT * FROM channels WHERE LOWER(TRIM(channelName)) = LOWER(TRIM(:query))")
+    ChannelsModel getSearchChannel(String query);
+
     @Query("SELECT * FROM channels WHERE LOWER(channelName) LIKE '%' || LOWER(:name) || '%' ORDER BY ID DESC")
     List<ChannelsModel> getSeasons(String name);
 

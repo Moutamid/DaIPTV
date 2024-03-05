@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moutamid.daiptv.R;
+import com.moutamid.daiptv.lisetenrs.SeasonClicked;
 import com.moutamid.daiptv.models.SeasonsItem;
 
 import java.util.ArrayList;
@@ -17,10 +18,12 @@ import java.util.ArrayList;
 public class SeasonsAdapter extends RecyclerView.Adapter<SeasonsAdapter.SeasonsVH> {
     Context context;
     ArrayList<SeasonsItem> list;
+    SeasonClicked seasonClicked;
 
-    public SeasonsAdapter(Context context, ArrayList<SeasonsItem> list) {
+    public SeasonsAdapter(Context context, ArrayList<SeasonsItem> list, SeasonClicked seasonClicked) {
         this.context = context;
         this.list = list;
+        this.seasonClicked = seasonClicked;
     }
 
     @NonNull
@@ -34,6 +37,9 @@ public class SeasonsAdapter extends RecyclerView.Adapter<SeasonsAdapter.SeasonsV
         SeasonsItem seasonsItem = list.get(holder.getAbsoluteAdapterPosition());
         holder.seasonNo.setText(seasonsItem.season);
         holder.episodeNo.setText(seasonsItem.episodeCount + " Episodes");
+
+        holder.itemView.setOnClickListener(v -> seasonClicked.clicked(holder.getAbsoluteAdapterPosition()));
+
     }
 
     @Override

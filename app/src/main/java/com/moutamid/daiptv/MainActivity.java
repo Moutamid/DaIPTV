@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
 
-        get();
+       // get();
 
         binding.Accueil.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -218,11 +218,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public interface ApiService {
-        @GET("/xmltv.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt&type=m3u_plus&output=mpegts")
-        Call<XMLModel> getData();
-    }
-
     private void get() {
         Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
         new Thread(() -> {
@@ -291,153 +286,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             queue.add(stringRequest);
-        }).start();
-    }
-
-    private void epg() {
-        RequestQueue requestQueue = VolleySingleton.getInstance(this).getRequestQueue();
-
-        StringRequest request = new StringRequest(Request.Method.GET, "http://infinity-ott.com:8080/xmltv.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt&type=m3u_plus&output=mpegts", response -> {
-            if (!response.isEmpty()) {
-                Log.d(TAG, "epg: loaded");
-            }
-        }, error -> {
-            Log.d(TAG, "epg: " + error.networkResponse.statusCode);
-        });
-        requestQueue.add(request);
-    }
-
-    private void getEPG() {
-        new Thread(() -> {
-            try {
-                String url = "http://infinity-ott.com:8080";
-                Log.d(TAG, "getEPG: ");
-//                URL url = new URL(url");
-//                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//                connection.setRequestMethod("GET");
-//
-//                // Read the XML response
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//                StringBuilder responseBuilder = new StringBuilder();
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    responseBuilder.append(line);
-//                }
-//                reader.close();
-                /////////////////////////////////////////
-//                OkHttpClient client = new OkHttpClient().newBuilder()
-//                        .build();
-//                MediaType mediaType = MediaType.parse("text/plain");
-//                RequestBody body = RequestBody.create(mediaType, "");
-//                Request request = new Request.Builder()
-//                        .url("http://infinity-ott.com:8080/xmltv.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt&type=m3u_plus&output=mpegts")
-//                        .method("GET", body)
-//                        .build();
-//                Response response = client.newCall(request).execute();
-
-                ApiService apiService = VolleySingleton.getClient().create(ApiService.class);
-                apiService.getData().enqueue(new Callback<XMLModel>() {
-                    @Override
-                    public void onResponse(Call<XMLModel> call, Response<XMLModel> response) {
-                        if (response.isSuccessful()) {
-                            XMLModel tvModel = response.body();
-                            if (tvModel != null) {
-                                // Access the data
-                                String generatorInfoName = tvModel.getGeneratorInfoName();
-                                String generatorInfoUrl = tvModel.getGeneratorInfoUrl();
-
-                                List<ProgrammeModel> programmeList = tvModel.getProgrammeList();
-                                for (ProgrammeModel programme : programmeList) {
-                                    String start = programme.getStart();
-                                    String stop = programme.getStop();
-                                    String channel = programme.getChannel();
-                                    String title = programme.getTitle();
-                                    String description = programme.getDescription();
-
-                                    // Use the data as needed
-                                    Log.d(TAG, "Title: " + title);
-                                    Log.d(TAG, "Description: " + description);
-                                }
-                            }
-                        } else {
-                            // Handle unsuccessful response
-                            try {
-                                Log.e(TAG, response.errorBody().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<XMLModel> call, Throwable t) {
-                        Log.d(TAG, "onFailure: " + t.getMessage());
-                    }
-                });
-
-
-/*                URL urlObject = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) urlObject.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Accept", "application/xml"); // Specify XML acceptance
-
-                InputStream content = connection.getInputStream();
-
-                // Read the response content
-                StringBuilder stringBuilder = new StringBuilder();
-                int c;
-                while ((c = content.read()) != -1) {
-                    stringBuilder.append((char) c);
-                }
-                content.close();*/
-
-                // Parse the XML content
-               /* String xmlContent = response.toString();
-
-                Log.d(TAG, "XML : " + xmlContent);
-
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                Document document = builder.parse(new InputSource(new StringReader(xmlContent)));
-
-                // Get the root element
-                Element root = document.getDocumentElement();
-
-                // Get a NodeList of programme elements
-                NodeList programmeList = root.getElementsByTagName("programme");
-                Log.d(TAG, "programmeList: " + programmeList.getLength());
-                // Loop through the NodeList and retrieve values
-                for (int i = 0; i < programmeList.getLength(); i++) {
-                    Node programmeNode = programmeList.item(i);
-                    if (programmeNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element programmeElement = (Element) programmeNode;
-
-                        // Get attributes
-                        String start = programmeElement.getAttribute("start");
-                        String stop = programmeElement.getAttribute("stop");
-                        String channel = programmeElement.getAttribute("channel");
-
-                        // Get child elements
-                        String title = programmeElement.getElementsByTagName("title").item(0).getTextContent();
-                        String desc = programmeElement.getElementsByTagName("desc").item(0).getTextContent();
-
-                        // Print information
-
-                        Log.d(TAG, "getEPG: Programme " + (i + 1));
-
-                        System.out.println("Start: " + start);
-                        System.out.println("Stop: " + stop);
-                        System.out.println("Channel: " + channel);
-                        System.out.println("Title: " + title);
-                        System.out.println("Description: " + desc);
-                        System.out.println();
-                    }
-                }*/
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d(TAG, "Error Message: " + e.getMessage());
-                Log.d(TAG, "Error Stack : " + Arrays.toString(e.getStackTrace()));
-            }
         }).start();
     }
 

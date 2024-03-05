@@ -260,4 +260,11 @@ public class Constants {
         name = name.replace(" HEVC ", " ");
         return name.trim();
     }
+
+    public static String queryName(String channelName) {
+        Pattern patternPattern = Pattern.compile("\\bS\\d{2} E\\d{2}\\b");
+        Matcher patternMatcher = patternPattern.matcher(channelName);
+        channelName = patternMatcher.replaceAll("");
+        return channelName.trim();
+    }
 }

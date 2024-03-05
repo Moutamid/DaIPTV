@@ -1,6 +1,7 @@
 package com.moutamid.daiptv.activities;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,8 @@ public class SeriesActivity extends AppCompatActivity {
     AppDatabase database;
     Dialog dialog;
     RequestQueue requestQueue;
+    int id;
+    String searchQuery;
 
     private void initializeDialog() {
         dialog = new Dialog(this);
@@ -103,18 +107,21 @@ public class SeriesActivity extends AppCompatActivity {
                     try {
                         JSONArray array = response.getJSONArray("results");
                         JSONObject object = array.getJSONObject(0);
-                        int id = object.getInt("id");
+                        id = object.getInt("id");
                         getDetails(id, 1);
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Log.d(TAG, "Error: " + e.getMessage());
                         dialog.dismiss();
                     }
                 }, error -> {
             error.printStackTrace();
+            Log.d(TAG, "Error: " + error.getMessage());
             dialog.dismiss();
         });
         requestQueue.add(objectRequest);
     }
+
     private void getDetails(int id, int count) {
         String url = Constants.getEpisodeDetails(id, count);
         ArrayList<EpisodesModel> episodesModelArrayList = new ArrayList<>();
@@ -132,12 +139,24 @@ public class SeriesActivity extends AppCompatActivity {
                             String name = object.getString("name");
                             String overview = object.getString("overview");
                             String still_path = object.getString("still_path");
-                            String se = "S" + season_number + " E" + episode_number;
+                            String se = String.format("S%02d E%02d", season_number, episode_number);
                             EpisodesModel episodesModel = new EpisodesModel(se, name, overview, still_path);
                             episodesModelArrayList.add(episodesModel);
                         }
                         Log.d(TAG, "getDetails: " + episodesModelArrayList.size());
-                        EpisodesAdapter episodesAdapter = new EpisodesAdapter(SeriesActivity.this, episodesModelArrayList);
+                        EpisodesAdapter episodesAdapter = new EpisodesAdapter(SeriesActivity.this, episodesModelArrayList, episodeModel -> {
+                            Log.d(TAG, "Episode Clicked: ");
+                            searchQuery = Constants.queryName(model.getChannelName());
+                            searchQuery += " " + episodeModel.se;
+                            Log.d(TAG, "searchQuery: " + searchQuery);
+                            ChannelsModel channelsModel = database.channelsDAO().getSearchChannel(searchQuery);
+                            try {
+                                Log.d(TAG, "name: " + channelsModel.channelName);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            startActivity(new Intent(SeriesActivity.this, VideoPlayerActivity.class).putExtra("url", channelsModel.getChannelUrl()).putExtra("name", channelsModel.getChannelName()));
+                        });
                         binding.episodeRC.setAdapter(episodesAdapter);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -170,7 +189,11 @@ public class SeriesActivity extends AppCompatActivity {
             seasonSummaries.add(summary);
         }
 
-        SeasonsAdapter seasonsAdapter = new SeasonsAdapter(this, seasonSummaries);
+        seasonSummaries.sort(Comparator.comparing(seasonsItem -> seasonsItem.season));
+
+        SeasonsAdapter seasonsAdapter = new SeasonsAdapter(this, seasonSummaries, pos -> {
+            getDetails(id, pos + 1);
+        });
         binding.seasonsRC.setAdapter(seasonsAdapter);
         getSeasonEpisodes();
     }

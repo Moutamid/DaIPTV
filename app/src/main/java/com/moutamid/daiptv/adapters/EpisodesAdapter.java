@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.moutamid.daiptv.R;
+import com.moutamid.daiptv.lisetenrs.EpisodeClicked;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.EpisodesModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -21,10 +22,12 @@ import java.util.ArrayList;
 public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.EpisodeVH> {
     Context context;
     ArrayList<EpisodesModel> list;
+    EpisodeClicked episodeClicked;
 
-    public EpisodesAdapter(Context context, ArrayList<EpisodesModel> list) {
+    public EpisodesAdapter(Context context, ArrayList<EpisodesModel> list, EpisodeClicked episodeClicked) {
         this.context = context;
         this.list = list;
+        this.episodeClicked = episodeClicked;
     }
 
     @NonNull
@@ -40,6 +43,11 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Episod
         holder.seasonNo.setText(model.se);
         holder.name.setText(model.name);
         holder.desc.setText(model.desc);
+
+        holder.itemView.setOnClickListener(v -> {
+            episodeClicked.clicked(model);
+        });
+
     }
 
     @Override
