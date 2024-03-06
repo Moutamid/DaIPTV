@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
 
-       // get();
+        get();
 
         binding.Accueil.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
