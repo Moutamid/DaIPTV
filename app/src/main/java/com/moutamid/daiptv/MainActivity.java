@@ -1,9 +1,5 @@
 package com.moutamid.daiptv;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,10 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,29 +20,23 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fxn.stash.Stash;
-import com.google.android.gms.common.Feature;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.activities.EditProfileActivity;
 import com.moutamid.daiptv.activities.ManageProfileActivity;
 import com.moutamid.daiptv.activities.MyListActivity;
-import com.moutamid.daiptv.adapters.ParentAdapter;
+import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.ActivityMainBinding;
 import com.moutamid.daiptv.fragments.ChannelsFragment;
 import com.moutamid.daiptv.fragments.FilmFragment;
 import com.moutamid.daiptv.fragments.HomeFragment;
 import com.moutamid.daiptv.fragments.RechercheFragment;
 import com.moutamid.daiptv.fragments.SeriesFragment;
-import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.EPGModel;
-import com.moutamid.daiptv.models.ParentItemModel;
-import com.moutamid.daiptv.models.ProgrammeModel;
 import com.moutamid.daiptv.models.UserModel;
-import com.moutamid.daiptv.models.XMLModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.Features;
-import com.moutamid.daiptv.utilis.VolleySingleton;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -53,36 +44,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.http.GET;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     UserModel userModel;
     public MaterialCardView toolbar;
+    AppDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,14 +69,17 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        database = AppDatabase.getInstance(this);
+
         binding.profile.setOnClickListener(this::showMenu);
         binding.ancher.setOnClickListener(this::showMenu);
 
         toolbar = binding.toolbar;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
-
-        get();
+        List<EPGModel> list = database.epgDAO().getEPG();
+        if (list.size() == 0)
+            get();
 
         binding.Accueil.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -227,12 +203,12 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     Log.d("TAGGER", "onResponse/45: data loaded");
-                  //  Log.d("TAGGER", "onResponse/45: data: : " + response);
+                    //  Log.d("TAGGER", "onResponse/45: data: : " + response);
                     Log.d("TAGGER", "onResponse/45: length: : " + response.length());
 
                     try {
                         String xmlContent = response.toString();
-                        Log.d(TAG, "XML : " + xmlContent);
+//                        Log.d(TAG, "XML : " + xmlContent);
                         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                         DocumentBuilder builder = factory.newDocumentBuilder();
                         Document document = builder.parse(new InputSource(new StringReader(xmlContent)));
@@ -242,8 +218,6 @@ public class MainActivity extends AppCompatActivity {
                         // Get a NodeList of programme elements
                         NodeList programmeList = root.getElementsByTagName("programme");
                         Log.d(TAG, "programmeList: " + programmeList.getLength());
-                        // Loop through the NodeList and retrieve values
-                        ArrayList<EPGModel> epgList = Stash.getArrayList(Constants.EPG, EPGModel.class);
                         for (int i = 0; i < programmeList.getLength(); i++) {
                             Node programmeNode = programmeList.item(i);
                             if (programmeNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -259,9 +233,7 @@ public class MainActivity extends AppCompatActivity {
                                 String desc = programmeElement.getElementsByTagName("desc").item(0).getTextContent();
 
                                 EPGModel epgModel = new EPGModel(start, stop, channel, title);
-                                epgList.add(epgModel);
-                                Stash.put(Constants.EPG, epgList);
-                                // Print information
+                                database.epgDAO().insert(epgModel);
 
                                 Log.d(TAG, "getEPG: Programme " + (i + 1));
 
@@ -276,8 +248,6 @@ public class MainActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-
                 }
             }, new com.android.volley.Response.ErrorListener() {
                 @Override

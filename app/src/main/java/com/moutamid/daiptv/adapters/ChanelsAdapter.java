@@ -2,6 +2,7 @@ package com.moutamid.daiptv.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import com.moutamid.daiptv.models.EPGModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -66,17 +68,18 @@ public class ChanelsAdapter extends PagedListAdapter<ChannelsModel, ChanelsAdapt
         ChannelsModel model = getItem(position);
         if (model != null) {
             Glide.with(context).load(model.getChannelImg()).placeholder(R.color.transparent).into(holder.image);
-            ArrayList<EPGModel> epgList = Stash.getArrayList(Constants.EPG, EPGModel.class);
+            List<EPGModel> epgList = AppDatabase.getInstance(context).epgDAO().getTitle(model.getChannelID().trim());
+            Log.d(TAG, "onBindViewHolder: " + epgList.size());
             for (EPGModel e : epgList){
-                if (e.channel.equals(model.getChannelID())){
-                    Date startDate = Constants.parseDate(e.start);
-                    Date endDate = Constants.parseDate(e.stop);
-
-                    // Check if the current date is in between
-                    if (Constants.isCurrentDateInBetween(startDate, endDate)) {
-                        holder.epg.setText(e.title);
-                        break;
-                    }
+                Date startDate = Constants.parseDate(e.getStart());
+                Date endDate = Constants.parseDate(e.getStop());
+                Log.d(TAG, "Current: " + new SimpleDateFormat("dd/MM/yyyy HH:mm ss").format(new Date()));
+                Log.d(TAG, "startDate: " + new SimpleDateFormat("dd/MM/yyyy HH:mm ss").format(startDate));
+                Log.d(TAG, "endDate: " + new SimpleDateFormat("dd/MM/yyyy HH:mm ss").format(endDate));
+                Log.d(TAG, "onBindViewHolder: " + Constants.isCurrentDateInBetween(startDate, endDate));
+                if (Constants.isCurrentDateInBetween(startDate, endDate)) {
+                    holder.epg.setText(e.getTitle());
+                    break;
                 }
             }
 

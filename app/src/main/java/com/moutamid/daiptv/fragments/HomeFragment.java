@@ -252,7 +252,7 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
-        Glide.with(this).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
+        Glide.with(requireContext()).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
 
         TranslateAPI translateAPI = new TranslateAPI(
                 Language.AUTO_DETECT,   //Source Language
