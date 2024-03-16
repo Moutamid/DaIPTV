@@ -84,44 +84,46 @@ public class ChannelsFragment extends Fragment {
         list.add(1, new ChannelsGroupModel("All"));
 
         for (ChannelsGroupModel model : list) {
-            MaterialButton button = new MaterialButton(requireContext());
-            button.setText(model.getChannelGroup());
-            button.setTextColor(getResources().getColor(R.color.white));
-            button.setBackgroundColor(getResources().getColor(R.color.transparent));
-            button.setCornerRadius(12);
-            button.setGravity(Gravity.START | Gravity.CENTER);
-            binding.sidePanel.addView(button);
-            button.setStrokeColorResource(R.color.transparent);
-            button.setStrokeWidth(2);
+            if (!model.getChannelGroup().isEmpty()){
+                MaterialButton button = new MaterialButton(requireContext());
+                button.setText(model.getChannelGroup());
+                button.setTextColor(getResources().getColor(R.color.white));
+                button.setBackgroundColor(getResources().getColor(R.color.transparent));
+                button.setCornerRadius(12);
+                button.setGravity(Gravity.START | Gravity.CENTER);
+                binding.sidePanel.addView(button);
+                button.setStrokeColorResource(R.color.transparent);
+                button.setStrokeWidth(2);
 
 //            if (model.getChannelGroup().equals("All")){
 //                button.setStrokeColorResource(R.color.red);
 //                selectedButton = button;
 //            }
 
-            if (selectedButton == null && button.getText().toString().equals("All")) {
-                button.setStrokeColorResource(R.color.red);
-                selectedButton = button;
+                if (selectedButton == null && button.getText().toString().equals("All")) {
+                    button.setStrokeColorResource(R.color.red);
+                    selectedButton = button;
+                }
+
+                button.setOnClickListener(v -> {
+                    isAll = false;
+                    selectedGroup = button.getText().toString();
+
+                    if (selectedGroup.equals("All")){
+                        showAllItems();
+                    } else if (selectedGroup.equals("Recent Channels")) {
+                        showRecentChannels();
+                    } else {
+                        switchGroup(selectedGroup);
+                    }
+                    if (selectedButton != null) {
+                        selectedButton.setStrokeColorResource(R.color.transparent); // Remove stroke from previously selected button
+                    }
+                    button.setStrokeColorResource(R.color.red); // Add stroke to newly selected button
+                    selectedButton = button;
+
+                });
             }
-
-            button.setOnClickListener(v -> {
-                isAll = false;
-                selectedGroup = button.getText().toString();
-
-                if (selectedGroup.equals("All")){
-                    showAllItems();
-                } else if (selectedGroup.equals("Recent Channels")) {
-                    showRecentChannels();
-                } else {
-                    switchGroup(selectedGroup);
-                }
-                if (selectedButton != null) {
-                    selectedButton.setStrokeColorResource(R.color.transparent); // Remove stroke from previously selected button
-                }
-                button.setStrokeColorResource(R.color.red); // Add stroke to newly selected button
-                selectedButton = button;
-
-            });
         }
     }
 }

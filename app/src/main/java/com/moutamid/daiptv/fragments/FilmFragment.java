@@ -220,7 +220,30 @@ public class FilmFragment extends Fragment {
                         }
 
                         setUI();
+                        getlogo(id);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        dialog.dismiss();
+                    }
+                }, error -> {
+            error.printStackTrace();
+            dialog.dismiss();
+        });
+        requestQueue.add(objectRequest);
+    }
 
+    private void getlogo(int id) {
+        String url = Constants.getMovieLogo(id, Constants.TYPE_MOVIE);
+
+        Log.d(TAG, "fetchID: ID  " + id);
+        Log.d(TAG, "fetchID: URL  " + url);
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray logos = response.getJSONArray("logos");
+                        JSONObject object = logos.getJSONObject(0);
+                        String path = object.getString("file_path");
+                        Glide.with(this).load(Constants.getImageLink(path)).into(binding.logo);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         dialog.dismiss();

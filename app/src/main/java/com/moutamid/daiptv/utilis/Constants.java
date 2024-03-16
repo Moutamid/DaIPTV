@@ -87,6 +87,12 @@ public class Constants {
         return imageLink + path;
     }
 
+    public static String getMovieLogo(int id, String type) {
+        String api_key = "?api_key=26bedf3e3be75a2810a53f4a445e7b1f";
+        return movieDetails + type + "/" + id + "/images" + api_key + "&include_adult=false&language=en-US&page=1";
+    }
+
+
     public static String getMovieData(String name, String type) {
         name = name.replace(" ", "%20");
         String api_key = "&api_key=26bedf3e3be75a2810a53f4a445e7b1f";

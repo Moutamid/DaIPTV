@@ -9,6 +9,8 @@
     app:cardBackgroundColor="@color/white"
     android:clickable="true"
     android:focusable="true"
+    app:strokeWidth="3dp"
+    app:strokeColor="@color/stroke"
     android:focusableInTouchMode="true"
     app:cardElevation="0dp">
 
@@ -66,7 +68,7 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="@color/black"
-            android:text="EPG"
+            android:text="No information found"
             android:paddingHorizontal="12dp"
             android:paddingBottom="12dp" />
 

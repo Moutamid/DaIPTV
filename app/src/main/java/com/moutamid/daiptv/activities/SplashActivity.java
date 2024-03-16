@@ -21,29 +21,39 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         new Handler().postDelayed(() -> {
-            if (Constants.checkInternet(SplashActivity.this)){
-                UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
-                if (userModel!=null){
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                    finish();
-                } else {
-                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                    finish();
-                }
+
+            UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+            if (userModel!=null){
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
             } else {
-                new AlertDialog.Builder(SplashActivity.this)
-                        .setCancelable(false)
-                        .setTitle("No Internet")
-                        .setMessage("Check your internet connection")
-                        .setPositiveButton("Retry", (dialog, which) -> {
-                            dialog.dismiss();
-                            recreate();
-                        }).setNegativeButton("Close", (dialog, which) -> {
-                            dialog.dismiss();
-                            finish();
-                        })
-                        .show();
+                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                finish();
             }
+
+//            if (Constants.checkInternet(SplashActivity.this)){
+//                UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+//                if (userModel!=null){
+//                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+//                    finish();
+//                } else {
+//                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+//                    finish();
+//                }
+//            } else {
+//                new AlertDialog.Builder(SplashActivity.this)
+//                        .setCancelable(false)
+//                        .setTitle("No Internet")
+//                        .setMessage("Check your internet connection")
+//                        .setPositiveButton("Retry", (dialog, which) -> {
+//                            dialog.dismiss();
+//                            recreate();
+//                        }).setNegativeButton("Close", (dialog, which) -> {
+//                            dialog.dismiss();
+//                            finish();
+//                        })
+//                        .show();
+//            }
         }, 2000);
 
     }

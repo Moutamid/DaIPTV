@@ -1,9 +1,7 @@
 package com.moutamid.daiptv.fragments;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -29,13 +26,10 @@ import com.mannan.translateapi.Language;
 import com.mannan.translateapi.TranslateAPI;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
-import com.moutamid.daiptv.activities.DetailActivity;
-import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.adapters.ParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentHomeBinding;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
-import com.moutamid.daiptv.models.CastModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.MoviesGroupModel;
@@ -51,7 +45,6 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -223,6 +216,30 @@ public class HomeFragment extends Fragment {
                             }
                         }
                         setUI();
+                        getlogo(id);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        dialog.dismiss();
+                    }
+                }, error -> {
+            error.printStackTrace();
+            dialog.dismiss();
+        });
+        requestQueue.add(objectRequest);
+    }
+
+    private void getlogo(int id) {
+        String url = Constants.getMovieLogo(id, Constants.TYPE_MOVIE);
+
+        Log.d(TAG, "fetchID: ID  " + id);
+        Log.d(TAG, "fetchID: URL  " + url);
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray logos = response.getJSONArray("logos");
+                        JSONObject object = logos.getJSONObject(0);
+                        String path = object.getString("file_path");
+                        Glide.with(this).load(Constants.getImageLink(path)).into(binding.logo);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         dialog.dismiss();
@@ -252,7 +269,7 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
-        Glide.with(requireContext()).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
+        Glide.with(this).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
 
         TranslateAPI translateAPI = new TranslateAPI(
                 Language.AUTO_DETECT,   //Source Language
