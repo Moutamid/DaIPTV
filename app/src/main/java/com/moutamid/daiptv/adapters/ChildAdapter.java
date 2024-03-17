@@ -21,6 +21,7 @@ import com.bumptech.glide.load.model.LazyHeaders;
 import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
+import com.moutamid.daiptv.activities.DetailSeriesActivity;
 import com.moutamid.daiptv.activities.SeriesActivity;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
@@ -95,7 +96,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
         holder.itemView.setOnClickListener(v -> {
             Stash.put(Constants.PASS, model);
             if (model.type.equals(Constants.TYPE_SERIES))
-                context.startActivity(new Intent(context, SeriesActivity.class));
+                context.startActivity(new Intent(context, DetailSeriesActivity.class));
             else
                 context.startActivity(new Intent(context, DetailActivity.class));
         });
