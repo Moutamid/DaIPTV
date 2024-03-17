@@ -25,9 +25,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activities.DetailSeriesActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SeriesActivity"
             android:exported="false"
-            android:screenOrientation="landscape"  />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".activities.VideoPlayerActivity"
             android:exported="false"

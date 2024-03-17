@@ -103,8 +103,6 @@ public class CreateActivity extends AppCompatActivity {
       // new ReadFileAsyncTask("tv_channels_sHnEqTKwSbGnKRzq_plus.m3u").execute();
     }
 
-
-
     private void startPRDownloader() {
         PRDownloaderConfig config = PRDownloaderConfig.newBuilder()
                 .setReadTimeout(30000)

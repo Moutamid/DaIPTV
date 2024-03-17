@@ -1,5 +1,6 @@
 package com.moutamid.daiptv.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.fxn.stash.Stash;
@@ -37,6 +39,19 @@ public class RechercheFragment extends Fragment {
         Stash.put(Constants.SELECTED_PAGE, "Recherche");
     }
 
+    private Context mContext;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.mContext = null;
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -46,15 +61,17 @@ public class RechercheFragment extends Fragment {
         film = new ArrayList<>();
         series = new ArrayList<>();
 
-        database = AppDatabase.getInstance(requireContext());
+        database = AppDatabase.getInstance(mContext);
 
-        channelAdapter = new SearchAdapter(requireContext(), channels);
-        filmAdapter = new SearchAdapter(requireContext(), film);
-        seriesAdapter = new SearchAdapter(requireContext(), series);
+        channelAdapter = new SearchAdapter(mContext, channels);
+        filmAdapter = new SearchAdapter(mContext, film);
+        seriesAdapter = new SearchAdapter(mContext, series);
 
         binding.chainesRC.setAdapter(channelAdapter);
         binding.filmsRC.setAdapter(filmAdapter);
         binding.seriesRC.setAdapter(seriesAdapter);
+
+        binding.searchET.requestFocus();
 
         binding.searchET.addTextChangedListener(new TextWatcher() {
             @Override
@@ -85,9 +102,9 @@ public class RechercheFragment extends Fragment {
                         Log.d(TAG, "onTextChanged: film : " + film.size());
                         Log.d(TAG, "onTextChanged: series : " + series.size());
 
-                        channelAdapter = new SearchAdapter(requireContext(), channels);
-                        filmAdapter = new SearchAdapter(requireContext(), film);
-                        seriesAdapter = new SearchAdapter(requireContext(), series);
+                        channelAdapter = new SearchAdapter(mContext, channels);
+                        filmAdapter = new SearchAdapter(mContext, film);
+                        seriesAdapter = new SearchAdapter(mContext, series);
 
                         requireActivity().runOnUiThread(() -> {
                             binding.chainesRC.setAdapter(channelAdapter);

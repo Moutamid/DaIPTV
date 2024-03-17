@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -67,8 +68,6 @@ public class SeriesActivity extends AppCompatActivity {
 
         database = AppDatabase.getInstance(this);
 
-        model = (ChannelsModel) Stash.getObject(Constants.PASS, ChannelsModel.class);
-
         requestQueue = VolleySingleton.getInstance(this).getRequestQueue();
 
         binding.seasonsRC.setLayoutManager(new LinearLayoutManager(this));
@@ -83,11 +82,18 @@ public class SeriesActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         initializeDialog();
-        output = Constants.regexName(model.getChannelName());
-        Log.d(TAG, "onResume: " + model.getChannelName());
-        Log.d(TAG, "onResume: " + output);
-        if (!output.isEmpty()) {
-            getList();
+        model = (ChannelsModel) Stash.getObject(Constants.PASS, ChannelsModel.class);
+
+        if (model!=null) {
+            output = Constants.regexName(model.getChannelName());
+            Log.d(TAG, "onResume: " + model.getChannelName());
+            Log.d(TAG, "onResume: " + output);
+            if (!output.isEmpty()) {
+                getList();
+            }
+        } else {
+            Toast.makeText(this, "Channel not found", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 

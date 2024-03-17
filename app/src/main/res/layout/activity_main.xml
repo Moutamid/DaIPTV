@@ -55,7 +55,6 @@
                     app:cardCornerRadius="12dp"
                     android:focusableInTouchMode="true"
                     android:focusable="true"
-                    android:focusedByDefault="true"
                     android:foreground="@color/transparent"
                     app:cardBackgroundColor="@color/transparent"
                     app:cardElevation="0dp"
@@ -266,7 +265,8 @@
                     app:cardBackgroundColor="@color/transparent"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="0dp"
-                    app:strokeWidth="0dp">
+                    app:strokeColor="@color/stroke"
+                    app:strokeWidth="2dp">
 
                     <ImageView
                         android:layout_width="32dp"

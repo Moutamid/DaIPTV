@@ -1,6 +1,7 @@
 package com.moutamid.daiptv.fragments;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Handler;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,11 +86,27 @@ public class SeriesFragment extends Fragment {
         Stash.put(Constants.SELECTED_PAGE, "Series");
     }
 
+    private Context mContext;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.mContext = null;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentSeriesBinding.inflate(getLayoutInflater(), container, false);
-        database = AppDatabase.getInstance(requireContext());
+        database = AppDatabase.getInstance(mContext);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
 
@@ -100,8 +118,8 @@ public class SeriesFragment extends Fragment {
         }
 
         binding.recycler.setHasFixedSize(false);
-        binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new ParentAdapter(requireContext(), parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
+        binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
+        adapter = new ParentAdapter(mContext, parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
             @Override
             public void selected(ChannelsModel model) {
                 randomChannel = model;
@@ -136,7 +154,7 @@ public class SeriesFragment extends Fragment {
             randomChannel.setChannelGroup(Constants.TYPE_SERIES);
         }
 
-        requestQueue = VolleySingleton.getInstance(requireContext()).getRequestQueue();
+        requestQueue = VolleySingleton.getInstance(mContext).getRequestQueue();
 
         new Handler().postDelayed(this::fetchID, 1500);
 
@@ -144,7 +162,7 @@ public class SeriesFragment extends Fragment {
     }
 
     private void initializeDialog() {
-        dialog = new Dialog(requireContext());
+        dialog = new Dialog(mContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.progress_layout);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -191,8 +209,16 @@ public class SeriesFragment extends Fragment {
                     try {
                         movieModel = new MovieModel();
 
-                        movieModel.original_title = response.getString("original_title");
-                        movieModel.release_date = response.getString("release_date");
+                        try {
+                            movieModel.original_title = response.getString("original_title");
+                        } catch (Exception e){
+                            movieModel.original_title = response.getString("original_name");
+                        }
+                        try {
+                            movieModel.release_date = response.getString("release_date");
+                        } catch (Exception e){
+                            movieModel.release_date = response.getString("first_air_date");
+                        }
                         movieModel.overview = response.getString("overview");
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
@@ -205,6 +231,15 @@ public class SeriesFragment extends Fragment {
                         int index = 0;
                         if (images.length() > 1){
                             index = r.nextInt(images.length());
+                        }
+
+                        int logoIndex;
+                        JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
+                        if (logos.length() > 1) {
+                            logoIndex = r.nextInt(logos.length());
+                            String path = logos.getJSONObject(logoIndex).getString("file_path");
+                            Log.d(TAG, "getlogo: " + path);
+                            Glide.with(this).load(Constants.getImageLink(path)).into(binding.logo);
                         }
 
                         movieModel.banner = images.getJSONObject(index).getString("file_path");
@@ -220,30 +255,6 @@ public class SeriesFragment extends Fragment {
                         }
 
                         setUI();
-                        getlogo(id);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        dialog.dismiss();
-                    }
-                }, error -> {
-            error.printStackTrace();
-            dialog.dismiss();
-        });
-        requestQueue.add(objectRequest);
-    }
-
-    private void getlogo(int id) {
-        String url = Constants.getMovieLogo(id, Constants.TYPE_MOVIE);
-
-        Log.d(TAG, "fetchID: ID  " + id);
-        Log.d(TAG, "fetchID: URL  " + url);
-        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONArray logos = response.getJSONArray("logos");
-                        JSONObject object = logos.getJSONObject(0);
-                        String path = object.getString("file_path");
-                        Glide.with(this).load(Constants.getImageLink(path)).into(binding.logo);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         dialog.dismiss();
@@ -273,7 +284,7 @@ public class SeriesFragment extends Fragment {
             e.printStackTrace();
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
-        Glide.with(requireContext()).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
+        Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
         TranslateAPI translateAPI = new TranslateAPI(
                 Language.AUTO_DETECT,   //Source Language
                 Language.FRENCH,         //Target Language

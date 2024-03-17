@@ -57,6 +57,8 @@ public class Constants {
     public static final String movieSearch = "https://api.themoviedb.org/3/search/"; // https://api.themoviedb.org/3/search/tv?query=
     public static final String movieDetails = "https://api.themoviedb.org/3/";
     public static final String episodeDetails = "https://api.themoviedb.org/3/tv/";
+    public static final String topTV = "https://api.themoviedb.org/3/tv/top_rated?api_key=26bedf3e3be75a2810a53f4a445e7b1f&language=en-US&page=1";
+    public static final String topFILM = "https://api.themoviedb.org/3/movie/top_rated?api_key=26bedf3e3be75a2810a53f4a445e7b1f&language=en-US&page=1";
     public static final String[] permissions = new String[]{
             Manifest.permission.READ_MEDIA_IMAGES,
             Manifest.permission.READ_MEDIA_AUDIO,

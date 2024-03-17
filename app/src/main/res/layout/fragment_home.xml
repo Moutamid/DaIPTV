@@ -74,6 +74,9 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/white2"
                             android:textSize="18sp"
+                            android:scrollHorizontally="true"
+                            android:ellipsize="end"
+                            android:maxLines="5"
                             tools:text="@string/lorem" />
 
                     </LinearLayout>

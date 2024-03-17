@@ -91,6 +91,8 @@
                             android:layout_height="wrap_content"
                             tools:text="@string/lorem50"
                             android:textColor="@color/white2"
+                            android:ellipsize="end"
+                            android:maxLines="5"
                             android:textSize="18sp" />
 
                     </LinearLayout>

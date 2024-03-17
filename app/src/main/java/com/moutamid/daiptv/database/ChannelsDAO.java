@@ -28,7 +28,7 @@ public interface ChannelsDAO {
     @Query("SELECT * FROM channels WHERE channelGroup = :channelGroup ORDER BY RANDOM() LIMIT 1")
     ChannelsModel getRand(String channelGroup);
 
-    @Query("SELECT * FROM channels WHERE LOWER(channelName) LIKE LOWER(:query) AND channelGroup = :channelGroup LIMIT 1")
+    @Query("SELECT * FROM channels WHERE LOWER(channelName) LIKE '%' || LOWER(:query) || '%' AND channelGroup = :channelGroup LIMIT 1")
     ChannelsModel getSearchChannel(String query, String channelGroup);
 
     @Query("SELECT * FROM channels WHERE LOWER(TRIM(channelName)) = LOWER(TRIM(:query))")

@@ -1,5 +1,6 @@
 package com.moutamid.daiptv.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -49,11 +50,11 @@ public class ChannelsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentChannelsBinding.inflate(getLayoutInflater(), container, false);
 
-        database = AppDatabase.getInstance(requireContext());
+        database = AppDatabase.getInstance(mContext);
 
         addButton();
 
-        adapter = new ChanelsAdapter(requireContext());
+        adapter = new ChanelsAdapter(mContext);
         binding.channelsRC.setAdapter(adapter);
 
         itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
@@ -77,6 +78,19 @@ public class ChannelsFragment extends Fragment {
         itemViewModel.getRecentChannels().observe(getViewLifecycleOwner(), adapter::submitList);
     }
 
+    private Context mContext;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.mContext = null;
+    }
+
     private MaterialButton selectedButton = null;
     private void addButton() {
         List<ChannelsGroupModel> list = database.channelsGroupDAO().getAll();
@@ -85,7 +99,7 @@ public class ChannelsFragment extends Fragment {
 
         for (ChannelsGroupModel model : list) {
             if (!model.getChannelGroup().isEmpty()){
-                MaterialButton button = new MaterialButton(requireContext());
+                MaterialButton button = new MaterialButton(mContext);
                 button.setText(model.getChannelGroup());
                 button.setTextColor(getResources().getColor(R.color.white));
                 button.setBackgroundColor(getResources().getColor(R.color.transparent));

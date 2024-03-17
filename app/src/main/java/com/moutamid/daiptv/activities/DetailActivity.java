@@ -64,8 +64,12 @@ public class DetailActivity extends AppCompatActivity {
 
         requestQueue = VolleySingleton.getInstance(DetailActivity.this).getRequestQueue();
 
-        fetchID();
-
+        if (model != null){
+            fetchID();
+        } else {
+            Toast.makeText(this, "Channel not found", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void fetchID() {
