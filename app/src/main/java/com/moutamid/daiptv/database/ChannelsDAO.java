@@ -19,10 +19,10 @@ public interface ChannelsDAO {
     @Insert(onConflict = REPLACE)
     void insert(ChannelsModel channelsModel);
 
-    @Query("SELECT * FROM channels WHERE type =:type ORDER BY ID DESC")
+    @Query("SELECT * FROM channels WHERE type =:type ORDER BY channelName ASC")
     DataSource.Factory<Integer, ChannelsModel> getAllItems(String type);
 
-    @Query("SELECT * FROM channels WHERE channelGroup = :channelGroup AND type= :type ORDER BY ID DESC")
+    @Query("SELECT * FROM channels WHERE channelGroup = :channelGroup AND type= :type ORDER BY channelName ASC")
     DataSource.Factory<Integer, ChannelsModel> getAllByGroup(String channelGroup, String type);
 
     @Query("SELECT * FROM channels WHERE channelGroup = :channelGroup ORDER BY RANDOM() LIMIT 1")
@@ -34,7 +34,7 @@ public interface ChannelsDAO {
     @Query("SELECT * FROM channels WHERE LOWER(TRIM(channelName)) = LOWER(TRIM(:query))")
     ChannelsModel getSearchChannel(String query);
 
-    @Query("SELECT * FROM channels WHERE LOWER(channelName) LIKE '%' || LOWER(:name) || '%' ORDER BY ID DESC")
+    @Query("SELECT * FROM channels WHERE LOWER(channelName) LIKE '%' || LOWER(:name) || '%' ORDER BY channelName ASC")
     List<ChannelsModel> getSeasons(String name);
 
 }

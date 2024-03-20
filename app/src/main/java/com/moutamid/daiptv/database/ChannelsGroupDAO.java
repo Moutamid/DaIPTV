@@ -16,6 +16,6 @@ public interface ChannelsGroupDAO {
     @Insert(onConflict = REPLACE)
     void insert(ChannelsGroupModel groupModel);
 
-    @Query("SELECT * FROM channelsGroups ORDER BY ID DESC")
+    @Query("SELECT * FROM channelsGroups ORDER BY channelGroup ASC")
     List<ChannelsGroupModel> getAll();
 }

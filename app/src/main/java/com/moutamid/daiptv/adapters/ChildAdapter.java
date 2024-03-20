@@ -86,6 +86,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
                         UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
                         ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
                         list.add(model);
+                        Stash.put(userModel.id, list);
                     }).setNegativeButton("Close", (dialog, which) -> {
                         dialog.dismiss();
                     })
@@ -95,6 +96,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
 
         holder.itemView.setOnClickListener(v -> {
             Stash.put(Constants.PASS, model);
+            Log.d(TAG, "onBindViewHolder: " + model.getChannelName());
             if (model.type.equals(Constants.TYPE_SERIES))
                 context.startActivity(new Intent(context, DetailSeriesActivity.class));
             else

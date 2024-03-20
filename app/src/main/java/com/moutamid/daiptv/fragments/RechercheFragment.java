@@ -2,6 +2,7 @@ package com.moutamid.daiptv.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -71,7 +72,9 @@ public class RechercheFragment extends Fragment {
         binding.filmsRC.setAdapter(filmAdapter);
         binding.seriesRC.setAdapter(seriesAdapter);
 
-        binding.searchET.requestFocus();
+        new Handler().postDelayed(() -> {
+            binding.searchET.requestFocus();
+        }, 1500);
 
         binding.searchET.addTextChangedListener(new TextWatcher() {
             @Override

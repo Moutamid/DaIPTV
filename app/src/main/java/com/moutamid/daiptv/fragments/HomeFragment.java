@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,7 +23,6 @@ import com.bumptech.glide.Glide;
 import com.fxn.stash.Stash;
 import com.mannan.translateapi.Language;
 import com.mannan.translateapi.TranslateAPI;
-import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.adapters.HomeParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
@@ -32,6 +31,7 @@ import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.TopItems;
+import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.VolleySingleton;
 
@@ -58,9 +58,12 @@ public class HomeFragment extends Fragment {
     private RequestQueue requestQueue;
     String[] type = {Constants.TYPE_MOVIE, Constants.TYPE_SERIES};
     String[] movieNames = {
+            "The Shawshank Redemption",
+            "The Godfather",
+            "12 Angry Men",
+            "The Dark Knight",
             "Inception",
-            "interstellar",
-            "Nomadland"
+            "The Green Mile",
     };
     HomeParentAdapter adapter;
 
@@ -97,27 +100,30 @@ public class HomeFragment extends Fragment {
         if (randomChannel == null) {
             randomChannel = new ChannelsModel();
             randomChannel.setChannelName(movieNames[random.nextInt(movieNames.length)]);
-            randomChannel.setChannelGroup(type[random.nextInt(type.length)]);
+            randomChannel.setChannelGroup(Constants.TYPE_MOVIE);
+            new Handler().postDelayed(this::fetchID, 1000);
         }
 
-        binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
+        binding.recycler.setLayoutManager(new GridLayoutManager(mContext, 1));
         binding.recycler.setHasFixedSize(false);
         adapter = new HomeParentAdapter(mContext, list, selected);
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(binding.recycler);
         binding.recycler.setAdapter(adapter);
 
-        MainActivity mainActivity = (MainActivity) requireActivity();
-        if (mainActivity != null) {
-            binding.root.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    if (scrollY > oldScrollY) {
-                        mainActivity.toolbar.setVisibility(View.GONE);
-                    } else if (scrollY < oldScrollY) {
-                        mainActivity.toolbar.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
+//        MainActivity mainActivity = (MainActivity) requireActivity();
+//        if (mainActivity != null) {
+//            binding.root.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+//                @Override
+//                public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                    if (scrollY > oldScrollY) {
+//                        mainActivity.toolbar.setVisibility(View.GONE);
+//                    } else if (scrollY < oldScrollY) {
+//                        mainActivity.toolbar.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//            });
+//        }
 
         requestQueue = VolleySingleton.getInstance(mContext).getRequestQueue();
 
@@ -129,22 +135,23 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Stash.put(Constants.SELECTED_PAGE, "Home");
-        new Handler().postDelayed(this::fetchID, 1000);
         list.clear();
         getTopFilms();
     }
+
     private Context mContext;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.mContext = context;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        this.mContext = null;
-    }
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        this.mContext = null;
+//    }
 
     private void getTopFilms() {
         String url = Constants.topFILM;
@@ -158,7 +165,7 @@ public class HomeFragment extends Fragment {
                             MovieModel model = new MovieModel();
                             try {
                                 model.original_title = object.getString("original_title");
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 model.original_title = object.getString("original_name");
                             }
                             model.banner = object.getString("poster_path");
@@ -193,7 +200,7 @@ public class HomeFragment extends Fragment {
                             MovieModel model = new MovieModel();
                             try {
                                 model.original_title = object.getString("original_title");
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 model.original_title = object.getString("original_name");
                             }
                             model.banner = object.getString("poster_path");
@@ -201,6 +208,19 @@ public class HomeFragment extends Fragment {
                             series.add(model);
                         }
                         list.add(new TopItems("Top Series", series));
+                        UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+                        ArrayList<ChannelsModel> fvrt = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                        if (fvrt.size() > 0) {
+                            ArrayList<MovieModel> fvrtList = new ArrayList<>();
+                            for (ChannelsModel channelsModel : fvrt) {
+                                MovieModel model = new MovieModel();
+                                model.type = channelsModel.getType();
+                                model.banner = channelsModel.getChannelImg();
+                                model.original_title = channelsModel.getChannelName();
+                                fvrtList.add(model);
+                            }
+                            list.add(new TopItems("Favourites", fvrtList));
+                        }
                         adapter = new HomeParentAdapter(mContext, list, selected);
                         binding.recycler.setAdapter(adapter);
                     } catch (JSONException e) {
@@ -238,7 +258,7 @@ public class HomeFragment extends Fragment {
                 response -> {
                     try {
                         JSONArray array = response.getJSONArray("results");
-                        if (array.length() > 1){
+                        if (array.length() > 1) {
                             JSONObject object = array.getJSONObject(0);
                             int id = object.getInt("id");
                             getDetails(id);
@@ -296,9 +316,17 @@ public class HomeFragment extends Fragment {
                             logoIndex = r.nextInt(logos.length());
                             String path = logos.getJSONObject(logoIndex).getString("file_path");
                             Log.d(TAG, "getlogo: " + path);
-                            Glide.with(mContext).load(Constants.getImageLink(path)).placeholder(R.color.transparent).into(binding.logo);
+                            try {
+                                Glide.with(mContext).load(Constants.getImageLink(path)).placeholder(R.color.transparent).into(binding.logo);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         } else {
-                            Glide.with(mContext).load(R.color.transparent).placeholder(R.color.transparent).into(binding.logo);
+                            try {
+                                Glide.with(mContext).load(R.color.transparent).placeholder(R.color.transparent).into(binding.logo);
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
                         }
 
                         movieModel.banner = images.getJSONObject(index).getString("file_path");

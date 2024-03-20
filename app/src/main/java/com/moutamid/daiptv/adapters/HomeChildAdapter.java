@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -57,9 +58,13 @@ public class HomeChildAdapter extends RecyclerView.Adapter<HomeChildAdapter.Movi
                         dialog.dismiss();
                         UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
                         ChannelsModel model1 = AppDatabase.getInstance(context).channelsDAO().getSearchChannel(model.original_title, model.type);
-                        ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
-                        list.add(model1);
-                        Stash.put(userModel.id, list);
+                        if (model1 != null){
+                            ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                            list.add(model1);
+                            Stash.put(userModel.id, list);
+                        } else {
+                            Toast.makeText(context, "Cant added to the list at the moment", Toast.LENGTH_SHORT).show();
+                        }
                     }).setNegativeButton("Close", (dialog, which) -> {
                         dialog.dismiss();
                     })

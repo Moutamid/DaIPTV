@@ -46,11 +46,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
             try {
                 Glide.with(context).load(model.getChannelImg()).placeholder(R.color.grey2).into(holder.image);
 
-                holder.play.setOnClickListener(v -> {
+                holder.itemView.setOnClickListener(v -> {
                     context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", model.getChannelName()));
                 });
 
-                holder.add.setOnClickListener(v -> {
+                holder.itemView.setOnLongClickListener(v -> {
                     new AlertDialog.Builder(context)
                             .setCancelable(true)
                             .setTitle("Add to Favorites")
@@ -64,6 +64,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
                                 dialog.dismiss();
                             })
                             .show();
+                    return false;
                 });
             } catch (Exception e){
                 e.printStackTrace();

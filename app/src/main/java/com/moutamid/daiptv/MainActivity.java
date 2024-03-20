@@ -85,9 +85,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    Constants.checkFeature(MainActivity.this, Features.HOME);
-                    binding.indicatorAccueil.setVisibility(View.VISIBLE);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
+                    if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Home")){
+                        Constants.checkFeature(MainActivity.this, Features.HOME);
+                        binding.indicatorAccueil.setVisibility(View.VISIBLE);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
+                    }
                 } else {
                     binding.indicatorAccueil.setVisibility(View.GONE);
                 }

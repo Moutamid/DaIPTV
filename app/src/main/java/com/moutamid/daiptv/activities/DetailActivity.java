@@ -73,8 +73,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void fetchID() {
-        String name = model.getChannelName().replace("|FR| ", "");
-        name = name.replaceAll("\\(\\d{4}\\)", "").trim();
+        String name = Constants.regexName(model.getChannelName());
         Log.d(TAG, "fetchID: " + name);
         String url;
        // name = "Interstellar"; // for testing
@@ -110,12 +109,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void getDetails(int id) {
-        String url;
-        if (model.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieDetails(id, Constants.TYPE_TV);
-        } else {
-            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
-        }
+        String url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -123,8 +117,16 @@ public class DetailActivity extends AppCompatActivity {
                     try {
                         movieModel = new MovieModel();
 
-                        movieModel.original_title = response.getString("original_title");
-                        movieModel.release_date = response.getString("release_date");
+                        try {
+                            movieModel.original_title = response.getString("original_title");
+                        } catch (Exception e){
+                            movieModel.original_title = response.getString("original_name");
+                        }
+                        try {
+                            movieModel.release_date = response.getString("release_date");
+                        } catch (Exception e){
+                            movieModel.release_date = response.getString("first_air_date");
+                        }
                         movieModel.overview = response.getString("overview");
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
@@ -134,7 +136,10 @@ public class DetailActivity extends AppCompatActivity {
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
                         Random r = new Random();
-                        int index = r.nextInt(images.length());
+                        int index = 0;
+                        if (images.length() > 1){
+                            index = r.nextInt(images.length());
+                        }
 
                         movieModel.banner = images.getJSONObject(index).getString("file_path");
 

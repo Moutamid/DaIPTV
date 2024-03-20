@@ -210,7 +210,7 @@
                     app:cardBackgroundColor="@color/transparent"
                     app:cardCornerRadius="100dp"
                     app:strokeColor="@color/white"
-                    app:strokeWidth="1dp">
+                    app:strokeWidth="2dp">
 
                     <ImageView
                         android:layout_width="70dp"

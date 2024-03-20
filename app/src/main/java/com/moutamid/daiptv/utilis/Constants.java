@@ -251,8 +251,11 @@ public class Constants {
 
     public static String regexName(String name) {
         name = name.replace("|FR| ", "");
+        name = name.replace("FR| ", "");
         name = name.replace("|EN| ", "");
+        name = name.replace("EN| ", "");
         name = name.replace("|BE| ", "");
+        name = name.replace("BE| ", "");
         name = name.replaceAll("\\(\\d{4}\\)", "");
         Pattern pattern = Pattern.compile("\\b\\d{4}\\b");
         Matcher matcher = pattern.matcher(name);

@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="5dp"
     android:layout_marginTop="8dp"
+    android:layout_marginBottom="12dp"
     android:clickable="true"
     android:focusable="true"
     app:strokeWidth="3dp"
@@ -19,8 +20,8 @@
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="120dp"
-            android:layout_height="200dp"
+            android:layout_width="100dp"
+            android:layout_height="180dp"
             android:scaleType="centerCrop"
             android:src="@drawable/imag1" />
 

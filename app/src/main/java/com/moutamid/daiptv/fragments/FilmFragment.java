@@ -12,6 +12,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 
 import android.os.Handler;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.mannan.translateapi.TranslateAPI;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
+import com.moutamid.daiptv.adapters.HomeParentAdapter;
 import com.moutamid.daiptv.adapters.ParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentFilmBinding;
@@ -38,6 +40,7 @@ import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.MoviesGroupModel;
 import com.moutamid.daiptv.models.ParentItemModel;
+import com.moutamid.daiptv.models.TopItems;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.VolleySingleton;
 import com.moutamid.daiptv.viewmodels.ChannelViewModel;
@@ -61,18 +64,17 @@ public class FilmFragment extends Fragment {
     private static final String TAG = "FilmFragment";
     FragmentFilmBinding binding;
     AppDatabase database;
-    List<MoviesGroupModel> items = new ArrayList<>();
-    ArrayList<ParentItemModel> parent = new ArrayList<>();
-    ChannelViewModel itemViewModel;
-    ParentAdapter adapter;
     ChannelsModel randomChannel;
     Dialog dialog;
     MovieModel movieModel;
     private RequestQueue requestQueue;
     String[] movieNames = {
+            "The Shawshank Redemption",
+            "The Godfather",
+            "12 Angry Men",
+            "The Dark Knight",
             "Inception",
-            "interstellar",
-            "Nomadland"
+            "The Green Mile",
     };
     public FilmFragment() {
         // Required empty public constructor
@@ -82,8 +84,10 @@ public class FilmFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Stash.put(Constants.SELECTED_PAGE, "Film");
+        getTopFilms();
     }
-
+    ArrayList<MovieModel> films;
+    ArrayList<TopItems> list;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -91,41 +95,23 @@ public class FilmFragment extends Fragment {
 
         database = AppDatabase.getInstance(mContext);
 
-        itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
-
-        items = database.moviesGroupDAO().getAll();
-
-        for (MoviesGroupModel model : items){
-            String group = model.getChannelGroup();
-            parent.add(new ParentItemModel(group));
-        }
-
-        binding.recycler.setHasFixedSize(false);
-        binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
-        adapter = new ParentAdapter(mContext, parent, Constants.TYPE_MOVIE, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
-            @Override
-            public void selected(ChannelsModel model) {
-                randomChannel = model;
-                fetchID();
-            }
-        });
-        binding.recycler.setAdapter(adapter);
-
+        list = new ArrayList<>();
+        films = new ArrayList<>();
         initializeDialog();
 
-        MainActivity mainActivity = (MainActivity) requireActivity();
-        if (mainActivity != null) {
-            binding.root.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    if (scrollY > oldScrollY) {
-                        mainActivity.toolbar.setVisibility(View.GONE);
-                    } else if (scrollY < oldScrollY) {
-                        mainActivity.toolbar.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
+//        MainActivity mainActivity = (MainActivity) requireActivity();
+//        if (mainActivity != null) {
+//            binding.root.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+//                @Override
+//                public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                    if (scrollY > oldScrollY) {
+//                        mainActivity.toolbar.setVisibility(View.GONE);
+//                    } else if (scrollY < oldScrollY) {
+//                        mainActivity.toolbar.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//            });
+//        }
 
 
         Random random = new Random();
@@ -141,7 +127,48 @@ public class FilmFragment extends Fragment {
 
         new Handler().postDelayed(this::fetchID, 1500);
 
+
+        binding.recycler.setHasFixedSize(false);
+        binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
+        adapter = new HomeParentAdapter(mContext, list, selected);
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(binding.recycler);
+        binding.recycler.setAdapter(adapter);
+
         return binding.getRoot();
+    }
+
+    private void getTopFilms() {
+        String url = Constants.topFILM;
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray array = response.getJSONArray("results");
+                        films.clear();
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject object = array.getJSONObject(i);
+                            MovieModel model = new MovieModel();
+                            try {
+                                model.original_title = object.getString("original_title");
+                            } catch (Exception e){
+                                model.original_title = object.getString("original_name");
+                            }
+                            model.banner = object.getString("poster_path");
+                            model.type = Constants.TYPE_MOVIE;
+                            films.add(model);
+                        }
+                        list.add(new TopItems("Top Films", films));
+                        adapter = new HomeParentAdapter(mContext, list, selected);
+                        binding.recycler.setAdapter(adapter);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        dialog.dismiss();
+                    }
+                }, error -> {
+            error.printStackTrace();
+            dialog.dismiss();
+        });
+        requestQueue.add(objectRequest);
     }
 
     private void initializeDialog() {
@@ -190,14 +217,16 @@ public class FilmFragment extends Fragment {
         super.onDetach();
         this.mContext = null;
     }
-
-    private void getDetails(int id) {
-        String url;
-        if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieDetails(id, Constants.TYPE_TV);
-        } else {
-            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
+    HomeParentAdapter adapter;
+    ItemSelected selected = new ItemSelected() {
+        @Override
+        public void selected(ChannelsModel model) {
+            randomChannel = model;
+            fetchID();
         }
+    };
+    private void getDetails(int id) {
+        String url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,

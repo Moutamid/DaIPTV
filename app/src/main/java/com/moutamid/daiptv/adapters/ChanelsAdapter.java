@@ -100,6 +100,7 @@ public class ChanelsAdapter extends PagedListAdapter<ChannelsModel, ChanelsAdapt
                             UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
                             ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
                             list.add(model);
+                            Stash.put(userModel.id, list);
                         }).setNegativeButton("Close", (dialog, which) -> {
                             dialog.dismiss();
                         })

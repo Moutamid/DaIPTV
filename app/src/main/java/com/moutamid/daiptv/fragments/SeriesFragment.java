@@ -12,6 +12,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 
 import android.os.Handler;
 import android.os.StrictMode;
@@ -31,6 +32,7 @@ import com.mannan.translateapi.TranslateAPI;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
+import com.moutamid.daiptv.adapters.HomeParentAdapter;
 import com.moutamid.daiptv.adapters.ParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentSeriesBinding;
@@ -40,6 +42,8 @@ import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.MoviesGroupModel;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.models.SeriesGroupModel;
+import com.moutamid.daiptv.models.TopItems;
+import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.VolleySingleton;
 import com.moutamid.daiptv.viewmodels.ChannelViewModel;
@@ -63,18 +67,19 @@ public class SeriesFragment extends Fragment {
     private static final String TAG = "SeriesFragment";
     FragmentSeriesBinding binding;
     AppDatabase database;
-    List<SeriesGroupModel> items = new ArrayList<>();
-    ArrayList<ParentItemModel> parent = new ArrayList<>();
-    ChannelViewModel itemViewModel;
-    ParentAdapter adapter;
     ChannelsModel randomChannel;
     Dialog dialog;
     MovieModel movieModel;
     private RequestQueue requestQueue;
     String[] movieNames = {
-            "Inception",
-            "interstellar",
-            "Nomadland"
+            "Hazbin Hotel",
+            "Breaking Bad",
+            "Shōgun",
+            "The Owl House",
+            "Bluey",
+            "Anne with an E",
+            "Arcane",
+            "Rick and Morty",
     };
     public SeriesFragment() {
         // Required empty public constructor
@@ -84,6 +89,7 @@ public class SeriesFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Stash.put(Constants.SELECTED_PAGE, "Series");
+        getSeries();
     }
 
     private Context mContext;
@@ -98,6 +104,8 @@ public class SeriesFragment extends Fragment {
         super.onDetach();
         this.mContext = null;
     }
+    ArrayList<MovieModel> series;
+    ArrayList<TopItems> list;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,41 +116,24 @@ public class SeriesFragment extends Fragment {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
-
-        items = database.seriesGroupDAO().getAll();
-
-        for (SeriesGroupModel model : items){
-            String group = model.getChannelGroup();
-            parent.add(new ParentItemModel(group));
-        }
-
-        binding.recycler.setHasFixedSize(false);
-        binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
-        adapter = new ParentAdapter(mContext, parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
-            @Override
-            public void selected(ChannelsModel model) {
-                randomChannel = model;
-                fetchID();
-            }
-        });
-        binding.recycler.setAdapter(adapter);
+        series = new ArrayList<>();
+        list = new ArrayList<>();
 
         initializeDialog();
-
-        MainActivity mainActivity = (MainActivity) requireActivity();
-        if (mainActivity != null) {
-            binding.root.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    if (scrollY > oldScrollY) {
-                        mainActivity.toolbar.setVisibility(View.GONE);
-                    } else if (scrollY < oldScrollY) {
-                        mainActivity.toolbar.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
+//
+//        MainActivity mainActivity = (MainActivity) requireActivity();
+//        if (mainActivity != null) {
+//            binding.root.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+//                @Override
+//                public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                    if (scrollY > oldScrollY) {
+//                        mainActivity.toolbar.setVisibility(View.GONE);
+//                    } else if (scrollY < oldScrollY) {
+//                        mainActivity.toolbar.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//            });
+//        }
 
 
         Random random = new Random();
@@ -158,6 +149,14 @@ public class SeriesFragment extends Fragment {
 
         new Handler().postDelayed(this::fetchID, 1500);
 
+
+        binding.recycler.setHasFixedSize(false);
+        binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
+        adapter = new HomeParentAdapter(mContext, list, selected);
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(binding.recycler);
+        binding.recycler.setAdapter(adapter);
+
         return binding.getRoot();
     }
 
@@ -170,6 +169,60 @@ public class SeriesFragment extends Fragment {
         dialog.show();
     }
 
+    private void getSeries() {
+        Log.d(TAG, "getSeries: ");
+        String url = Constants.topTV;
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray array = response.getJSONArray("results");
+                        series.clear();
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject object = array.getJSONObject(i);
+                            MovieModel model = new MovieModel();
+                            try {
+                                model.original_title = object.getString("original_title");
+                            } catch (Exception e){
+                                model.original_title = object.getString("original_name");
+                            }
+                            model.banner = object.getString("poster_path");
+                            model.type = Constants.TYPE_SERIES;
+                            series.add(model);
+                        }
+                        list.add(new TopItems("Top Series", series));
+                        UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+                        ArrayList<ChannelsModel> fvrt  = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                        if (fvrt.size() > 0){
+                            ArrayList<MovieModel> fvrtList = new ArrayList<>();
+                            for (ChannelsModel channelsModel : fvrt){
+                                MovieModel model = new MovieModel();
+                                model.type  = channelsModel.getType();
+                                model.banner = channelsModel.getChannelImg();
+                                model.original_title = channelsModel.getChannelName();
+                                fvrtList.add(model);
+                            }
+                            list.add(new TopItems("Favourites", fvrtList));
+                        }
+                        adapter = new HomeParentAdapter(mContext, list, selected);
+                        binding.recycler.setAdapter(adapter);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        dialog.dismiss();
+                    }
+                }, error -> {
+            error.printStackTrace();
+            dialog.dismiss();
+        });
+        requestQueue.add(objectRequest);
+    }
+    HomeParentAdapter adapter;
+    ItemSelected selected = new ItemSelected() {
+        @Override
+        public void selected(ChannelsModel model) {
+            randomChannel = model;
+            fetchID();
+        }
+    };
     private void fetchID() {
         String name = Constants.regexName(randomChannel.getChannelName());
         Log.d(TAG, "fetchID: " + name);
@@ -196,12 +249,7 @@ public class SeriesFragment extends Fragment {
     }
 
     private void getDetails(int id) {
-        String url;
-        if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieDetails(id, Constants.TYPE_TV);
-        } else {
-            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
-        }
+        String url = Constants.getMovieDetails(id, Constants.TYPE_TV);
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
