@@ -21,17 +21,19 @@
         android:backgroundTint="@color/black_bg"
         android:padding="12dp"
         android:focusable="true"
+        android:nextFocusUp="@id/Accueil"
         android:focusableInTouchMode="true"
         android:focusedByDefault="true"
         android:drawableStart="@drawable/microphone_solid"
         android:drawableTint="@color/grey2"
-        android:hint="Search channel, movie, series"
+        android:hint="Rechercher une chaîne, un film, une série"
         android:drawablePadding="12dp" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="12dp"
+        android:nextFocusUp="@id/Accueil"
         android:fillViewport="true">
 
         <LinearLayout
@@ -54,6 +56,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginHorizontal="12dp"
+                android:nextFocusUp="@id/searchET"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/child_item" />
 
@@ -63,6 +66,7 @@
                 android:paddingVertical="12dp"
                 android:layout_marginHorizontal="12dp"
                 android:textSize="16sp"
+                android:nextFocusUp="@id/Accueil"
                 android:layout_marginTop="10dp"
                 android:text="Films" />
 

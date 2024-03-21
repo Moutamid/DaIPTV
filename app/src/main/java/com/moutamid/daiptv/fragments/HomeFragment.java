@@ -163,11 +163,7 @@ public class HomeFragment extends Fragment {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject object = array.getJSONObject(i);
                             MovieModel model = new MovieModel();
-                            try {
-                                model.original_title = object.getString("original_title");
-                            } catch (Exception e) {
-                                model.original_title = object.getString("original_name");
-                            }
+                            model.original_title = object.getString("title");
                             model.banner = object.getString("poster_path");
                             model.type = Constants.TYPE_MOVIE;
                             films.add(model);
@@ -198,11 +194,7 @@ public class HomeFragment extends Fragment {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject object = array.getJSONObject(i);
                             MovieModel model = new MovieModel();
-                            try {
-                                model.original_title = object.getString("original_title");
-                            } catch (Exception e) {
-                                model.original_title = object.getString("original_name");
-                            }
+                            model.original_title = object.getString("name");
                             model.banner = object.getString("poster_path");
                             model.type = Constants.TYPE_SERIES;
                             series.add(model);
@@ -258,9 +250,20 @@ public class HomeFragment extends Fragment {
                 response -> {
                     try {
                         JSONArray array = response.getJSONArray("results");
-                        if (array.length() > 1) {
-                            JSONObject object = array.getJSONObject(0);
-                            int id = object.getInt("id");
+                        if (array.length() >= 1) {
+                            int id = 0;
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject object = array.getJSONObject(i);
+                                String original_language = object.getString("original_language");
+                                if (original_language.equals("en")){
+                                    id = object.getInt("id");
+                                    break;
+                                }
+                            }
+                            if (id == 0){
+                                JSONObject object = array.getJSONObject(0);
+                                id = object.getInt("id");
+                            }
                             getDetails(id);
                         }
                     } catch (JSONException e) {
@@ -310,10 +313,28 @@ public class HomeFragment extends Fragment {
                         int index = 0, logoIndex = 0;
                         if (images.length() > 1) {
                             index = r.nextInt(images.length());
+                            movieModel.banner = images.getJSONObject(index).getString("file_path");
                         }
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
                         if (logos.length() > 1) {
-                            logoIndex = r.nextInt(logos.length());
+                            for (int i = 0; i < logos.length(); i++) {
+                                JSONObject object = logos.getJSONObject(i);
+                                String lang = object.getString("iso_639_1");
+                                if (lang.equals("fr")){
+                                    logoIndex = i;
+                                    break;
+                                }
+                            }
+                            if (logoIndex == 0){
+                                for (int i = 0; i < logos.length(); i++) {
+                                    JSONObject object = logos.getJSONObject(i);
+                                    String lang = object.getString("iso_639_1");
+                                    if (lang.equals("en")){
+                                        logoIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
                             String path = logos.getJSONObject(logoIndex).getString("file_path");
                             Log.d(TAG, "getlogo: " + path);
                             try {
@@ -328,8 +349,6 @@ public class HomeFragment extends Fragment {
                                 e.printStackTrace();
                             }
                         }
-
-                        movieModel.banner = images.getJSONObject(index).getString("file_path");
 
                         for (int i = 0; i < videos.length(); i++) {
                             JSONObject object = videos.getJSONObject(i);
@@ -356,11 +375,12 @@ public class HomeFragment extends Fragment {
         dialog.dismiss();
         binding.name.setText(movieModel.original_title);
         binding.desc.setText(movieModel.overview);
-        binding.tmdbRating.setText("TMBD " + movieModel.vote_average);
+        double d = Double.parseDouble(movieModel.vote_average);
+        binding.tmdbRating.setText(String.format("%.1f", d));
         binding.filmType.setText(movieModel.genres);
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM yyyy", Locale.FRANCE);
 
         try {
             Date date = inputFormat.parse(movieModel.release_date);
@@ -372,23 +392,61 @@ public class HomeFragment extends Fragment {
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
         Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
 
-        TranslateAPI translateAPI = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.overview);           //Query Text
+        try {
+            TranslateAPI desc = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.overview);
 
-        translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: " + translatedText);
-                binding.desc.setText(translatedText);
-            }
+            TranslateAPI title = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.original_title);
 
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: " + ErrorText);
-            }
-        });
+            TranslateAPI type = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.genres);           //Query Text
 
+            desc.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.desc.setText(translatedText);
+                }
+
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
+            title.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.name.setText(translatedText);
+                }
+
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
+            type.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.filmType.setText(translatedText);
+                }
+
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
+
+        } catch (ClassCastException e){
+            e.printStackTrace();
+        }
     }
 }

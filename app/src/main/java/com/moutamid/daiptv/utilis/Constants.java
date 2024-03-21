@@ -13,6 +13,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.LoginActivity;
@@ -192,6 +194,12 @@ public class Constants {
             }
 
         }).start();
+    }
+
+    public static DatabaseReference databaseReference() {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("DA_IPTV");
+        db.keepSynced(true);
+        return db;
     }
 
     public static void checkFeature(Activity activity, String features) {

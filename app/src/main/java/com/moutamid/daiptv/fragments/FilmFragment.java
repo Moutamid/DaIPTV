@@ -295,11 +295,12 @@ public class FilmFragment extends Fragment {
         dialog.dismiss();
         binding.name.setText(movieModel.original_title);
         binding.desc.setText(movieModel.overview);
-        binding.tmdbRating.setText("TMBD " + movieModel.vote_average);
+        double d = Double.parseDouble(movieModel.vote_average);
+        binding.tmdbRating.setText(String.format("%.1f", d));
         binding.filmType.setText(movieModel.genres);
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM yyyy", Locale.FRANCE);
 
         try {
             Date date = inputFormat.parse(movieModel.release_date);
@@ -310,21 +311,55 @@ public class FilmFragment extends Fragment {
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
         Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
-        TranslateAPI translateAPI = new TranslateAPI(
+        TranslateAPI desc = new TranslateAPI(
                 Language.AUTO_DETECT,   //Source Language
                 Language.FRENCH,         //Target Language
-                movieModel.overview);           //Query Text
+                movieModel.overview);
 
-        translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+        TranslateAPI title = new TranslateAPI(
+                Language.AUTO_DETECT,   //Source Language
+                Language.FRENCH,         //Target Language
+                movieModel.original_title);
+
+        TranslateAPI type = new TranslateAPI(
+                Language.AUTO_DETECT,   //Source Language
+                Language.FRENCH,         //Target Language
+                movieModel.genres);           //Query Text
+
+        desc.setTranslateListener(new TranslateAPI.TranslateListener() {
             @Override
             public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: "+translatedText);
+                Log.d(TAG, "onSuccess: " + translatedText);
                 binding.desc.setText(translatedText);
             }
 
             @Override
             public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: "+ErrorText);
+                Log.d(TAG, "onFailure: " + ErrorText);
+            }
+        });
+        title.setTranslateListener(new TranslateAPI.TranslateListener() {
+            @Override
+            public void onSuccess(String translatedText) {
+                Log.d(TAG, "onSuccess: " + translatedText);
+                binding.name.setText(translatedText);
+            }
+
+            @Override
+            public void onFailure(String ErrorText) {
+                Log.d(TAG, "onFailure: " + ErrorText);
+            }
+        });
+        type.setTranslateListener(new TranslateAPI.TranslateListener() {
+            @Override
+            public void onSuccess(String translatedText) {
+                Log.d(TAG, "onSuccess: " + translatedText);
+                binding.filmType.setText(translatedText);
+            }
+
+            @Override
+            public void onFailure(String ErrorText) {
+                Log.d(TAG, "onFailure: " + ErrorText);
             }
         });
 

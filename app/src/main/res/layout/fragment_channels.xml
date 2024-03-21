@@ -27,6 +27,7 @@
                 android:layout_height="match_parent"
                 android:padding="10dp"
                 android:id="@+id/sidePanel"
+                android:nextFocusUp="@id/Chaines"
                 android:orientation="vertical">
 
 
@@ -44,6 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
+                android:nextFocusUp="@id/Chaines"
                 android:layout_above="@id/progressBar"
                 tools:listitem="@layout/channels_card"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"

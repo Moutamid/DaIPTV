@@ -42,33 +42,31 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
     @Override
     public void onBindViewHolder(@NonNull SearchVH holder, int position) {
         ChannelsModel model = list.get(holder.getAbsoluteAdapterPosition());
-        if (model != null){
-            try {
-                Glide.with(context).load(model.getChannelImg()).placeholder(R.color.grey2).into(holder.image);
+        try {
+            Glide.with(context).load(model.getChannelImg()).placeholder(R.color.transparent).into(holder.image);
 
-                holder.itemView.setOnClickListener(v -> {
-                    context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", model.getChannelName()));
-                });
+            holder.itemView.setOnClickListener(v -> {
+                context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", model.getChannelName()));
+            });
 
-                holder.itemView.setOnLongClickListener(v -> {
-                    new AlertDialog.Builder(context)
-                            .setCancelable(true)
-                            .setTitle("Add to Favorites")
-                            .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
-                            .setPositiveButton("Add", (dialog, which) -> {
-                                dialog.dismiss();
-                                UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
-                                ArrayList<ChannelsModel> list  = Stash.getArrayList(userModel.id, ChannelsModel.class);
-                                list.add(model);
-                            }).setNegativeButton("Close", (dialog, which) -> {
-                                dialog.dismiss();
-                            })
-                            .show();
-                    return false;
-                });
-            } catch (Exception e){
-                e.printStackTrace();
-            }
+            holder.itemView.setOnLongClickListener(v -> {
+                new AlertDialog.Builder(context)
+                        .setCancelable(true)
+                        .setTitle("Add to Favorites")
+                        .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
+                        .setPositiveButton("Add", (dialog, which) -> {
+                            dialog.dismiss();
+                            UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+                            ArrayList<ChannelsModel> list  = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                            list.add(model);
+                        }).setNegativeButton("Close", (dialog, which) -> {
+                            dialog.dismiss();
+                        })
+                        .show();
+                return false;
+            });
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 

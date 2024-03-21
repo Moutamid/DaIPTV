@@ -75,7 +75,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
                 .addHeader("User-Agent",
                         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
                 .build());
-        Glide.with(context).load(glideUrl).placeholder(R.color.grey2).into(holder.image);
+        Glide.with(context).load(glideUrl).placeholder(R.color.transparent).into(holder.image);
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setCancelable(true)

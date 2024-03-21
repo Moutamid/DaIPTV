@@ -104,6 +104,7 @@ public class ChannelsFragment extends Fragment {
                 button.setTextColor(getResources().getColor(R.color.white));
                 button.setBackgroundColor(getResources().getColor(R.color.transparent));
                 button.setCornerRadius(12);
+                button.setNextFocusUpId(R.id.Chaines);
                 button.setGravity(Gravity.START | Gravity.CENTER);
                 binding.sidePanel.addView(button);
                 button.setStrokeColorResource(R.color.transparent);

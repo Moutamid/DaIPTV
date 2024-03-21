@@ -39,7 +39,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/synopsis"
-                android:layout_width="400dp"
+                android:layout_width="470dp"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/black_bg_trans"
                 app:cardCornerRadius="8dp"
@@ -85,7 +85,7 @@
 
                 <TextView
                     android:id="@+id/date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/text_bg"
@@ -97,18 +97,21 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/tmdb_rating"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/black_bg_trans"
                     android:gravity="center"
                     android:padding="12dp"
+                    android:focusable="false"
+                    android:enabled="false"
+                    android:focusableInTouchMode="false"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/tmdb_logo"
-                    app:iconSize="24dp"
+                    app:iconSize="20dp"
                     app:iconTint="@null"
                     app:strokeColor="@color/grey2"
                     app:strokeWidth="1dp"
@@ -116,7 +119,7 @@
 
                 <TextView
                     android:id="@+id/filmType"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/text_bg"
@@ -137,8 +140,8 @@
             android:layout_below="@id/details"
             android:descendantFocusability="beforeDescendants"
             android:focusable="true"
+            android:nextFocusUp="@id/Accueil"
             android:focusableInTouchMode="true"
-            android:paddingBottom="15dp"
             tools:listitem="@layout/parent_item" />
 
     </RelativeLayout>

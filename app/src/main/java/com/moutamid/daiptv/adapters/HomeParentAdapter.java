@@ -10,10 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.models.TopItems;
+import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.ArrayList;
 
@@ -38,6 +40,14 @@ public class HomeParentAdapter extends RecyclerView.Adapter<HomeParentAdapter.It
     public void onBindViewHolder(@NonNull ItemVH holder, int position) {
         TopItems model = list.get(holder.getAdapterPosition());
         holder.name.setText(model.name);
+
+        if (Stash.getString(Constants.SELECTED_PAGE).equals("Home")){
+            holder.childRC.setNextFocusUpId(R.id.Accueil);
+        }else if (Stash.getString(Constants.SELECTED_PAGE).equals("Film")){
+            holder.childRC.setNextFocusUpId(R.id.Films);
+        } else if (Stash.getString(Constants.SELECTED_PAGE).equals("Series")){
+            holder.childRC.setNextFocusUpId(R.id.series);
+        }
 
         holder.childRC.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.childRC.setHasFixedSize(false);
