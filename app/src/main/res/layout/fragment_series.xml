@@ -39,7 +39,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/synopsis"
-                android:layout_width="400dp"
+                android:layout_width="500dp"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/black_bg_trans"
                 app:cardCornerRadius="8dp"
@@ -57,7 +57,7 @@
                         android:id="@+id/name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Synopsis"
+                        tools:text="Synopsis"
                         android:textColor="@color/white"
                         android:textSize="22sp" />
 
@@ -65,11 +65,11 @@
                         android:id="@+id/desc"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white2"
-                        android:textSize="18sp"
-                        android:scrollHorizontally="true"
                         android:ellipsize="end"
                         android:maxLines="2"
+                        android:scrollHorizontally="true"
+                        android:textColor="@color/white2"
+                        android:textSize="18sp"
                         tools:text="@string/lorem" />
 
                 </LinearLayout>
@@ -87,10 +87,10 @@
                     android:id="@+id/date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/text_bg"
                     android:gravity="center"
                     android:padding="12dp"
-                    android:layout_weight="1"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     tools:text="January 16" />
@@ -100,18 +100,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
+                    android:layout_weight="1"
                     android:backgroundTint="@color/black_bg_trans"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:gravity="center"
                     android:padding="12dp"
-                    android:focusable="false"
-                    android:enabled="false"
-                    android:focusableInTouchMode="false"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/tmdb_logo"
                     app:iconSize="20dp"
-                    android:layout_weight="1"
                     app:iconTint="@null"
                     app:strokeColor="@color/grey2"
                     app:strokeWidth="1dp"
@@ -121,9 +121,9 @@
                     android:id="@+id/filmType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/text_bg"
                     android:gravity="center"
-                    android:layout_weight="1"
                     android:padding="12dp"
                     android:textColor="@color/white"
                     android:textSize="16sp"
@@ -138,10 +138,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/details"
-            android:descendantFocusability="beforeDescendants"
-            android:focusable="true"
             android:nextFocusUp="@id/series"
-            android:focusableInTouchMode="true"
             tools:listitem="@layout/parent_item" />
 
     </RelativeLayout>

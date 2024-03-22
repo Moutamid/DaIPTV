@@ -24,6 +24,7 @@
         android:nextFocusUp="@id/Accueil"
         android:focusableInTouchMode="true"
         android:focusedByDefault="true"
+        android:inputType="textPersonName"
         android:drawableStart="@drawable/microphone_solid"
         android:drawableTint="@color/grey2"
         android:hint="Rechercher une chaîne, un film, une série"

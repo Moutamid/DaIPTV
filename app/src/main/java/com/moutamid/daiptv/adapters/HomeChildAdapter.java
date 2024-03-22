@@ -52,9 +52,9 @@ public class HomeChildAdapter extends RecyclerView.Adapter<HomeChildAdapter.Movi
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setCancelable(true)
-                    .setTitle("Add to Favorites")
-                    .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
-                    .setPositiveButton("Add", (dialog, which) -> {
+                    .setTitle("Ajouter aux Favoris")
+                    .setMessage("Souhaitez-vous ajouter cet article à votre liste de favoris ? Une fois ajouté, vous pourrez facilement y accéder plus tard.")
+                    .setPositiveButton("Ajouter", (dialog, which) -> {
                         dialog.dismiss();
                         UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
                         ChannelsModel model1 = AppDatabase.getInstance(context).channelsDAO().getSearchChannel(model.original_title, model.type);
@@ -63,9 +63,9 @@ public class HomeChildAdapter extends RecyclerView.Adapter<HomeChildAdapter.Movi
                             list.add(model1);
                             Stash.put(userModel.id, list);
                         } else {
-                            Toast.makeText(context, "Cant added to the list at the moment", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Je ne peux pas être ajouté à la liste pour le moment", Toast.LENGTH_SHORT).show();
                         }
-                    }).setNegativeButton("Close", (dialog, which) -> {
+                    }).setNegativeButton("Fermer", (dialog, which) -> {
                         dialog.dismiss();
                     })
                     .show();

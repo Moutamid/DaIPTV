@@ -39,7 +39,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/synopsis"
-                android:layout_width="400dp"
+                android:layout_width="500dp"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/black_bg_trans"
                 app:cardCornerRadius="8dp"
@@ -57,7 +57,7 @@
                         android:id="@+id/name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Synopsis"
+                        tools:text="Synopsis"
                         android:textColor="@color/white"
                         android:textSize="22sp" />
 
@@ -138,10 +138,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/details"
-            android:descendantFocusability="beforeDescendants"
-            android:focusable="true"
             android:nextFocusUp="@id/Films"
-            android:focusableInTouchMode="true"
             tools:listitem="@layout/parent_item" />
 
     </RelativeLayout>

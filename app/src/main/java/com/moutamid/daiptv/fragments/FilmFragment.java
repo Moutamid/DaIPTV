@@ -65,6 +65,8 @@ public class FilmFragment extends Fragment {
     FragmentFilmBinding binding;
     AppDatabase database;
     ChannelsModel randomChannel;
+    ChannelViewModel itemViewModel;
+    ParentAdapter parentAdapter;
     Dialog dialog;
     MovieModel movieModel;
     private RequestQueue requestQueue;
@@ -84,10 +86,13 @@ public class FilmFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Stash.put(Constants.SELECTED_PAGE, "Film");
-        getTopFilms();
+      //  getTopFilms();
     }
     ArrayList<MovieModel> films;
     ArrayList<TopItems> list;
+
+    List<MoviesGroupModel> items = new ArrayList<>();
+    ArrayList<ParentItemModel> parent = new ArrayList<>();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -97,6 +102,21 @@ public class FilmFragment extends Fragment {
 
         list = new ArrayList<>();
         films = new ArrayList<>();
+
+        database = AppDatabase.getInstance(mContext);
+
+        itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
+
+        items = database.moviesGroupDAO().getAll();
+        Log.d(TAG, "onCreateView: " + items.size());
+        for (MoviesGroupModel model : items){
+            String group = model.getChannelGroup();
+            parent.add(new ParentItemModel(group, true));
+        }
+
+        binding.recycler.setHasFixedSize(false);
+        binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
+
         initializeDialog();
 
 //        MainActivity mainActivity = (MainActivity) requireActivity();
@@ -130,10 +150,17 @@ public class FilmFragment extends Fragment {
 
         binding.recycler.setHasFixedSize(false);
         binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
-        adapter = new HomeParentAdapter(mContext, list, selected);
+//        adapter = new HomeParentAdapter(mContext, list, selected);
+        parentAdapter = new ParentAdapter(mContext, parent, Constants.TYPE_MOVIE, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
+            @Override
+            public void selected(ChannelsModel model) {
+                randomChannel = model;
+                fetchID();
+            }
+        });
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(binding.recycler);
-        binding.recycler.setAdapter(adapter);
+        binding.recycler.setAdapter(parentAdapter);
 
         return binding.getRoot();
     }
@@ -305,7 +332,8 @@ public class FilmFragment extends Fragment {
         try {
             Date date = inputFormat.parse(movieModel.release_date);
             String formattedDate = outputFormat.format(date);
-            binding.date.setText(formattedDate);
+            String capitalized = formattedDate.substring(0, 1).toUpperCase() + formattedDate.substring(1);
+            binding.date.setText(capitalized);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -315,11 +343,6 @@ public class FilmFragment extends Fragment {
                 Language.AUTO_DETECT,   //Source Language
                 Language.FRENCH,         //Target Language
                 movieModel.overview);
-
-        TranslateAPI title = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.original_title);
 
         TranslateAPI type = new TranslateAPI(
                 Language.AUTO_DETECT,   //Source Language
@@ -331,18 +354,6 @@ public class FilmFragment extends Fragment {
             public void onSuccess(String translatedText) {
                 Log.d(TAG, "onSuccess: " + translatedText);
                 binding.desc.setText(translatedText);
-            }
-
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: " + ErrorText);
-            }
-        });
-        title.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: " + translatedText);
-                binding.name.setText(translatedText);
             }
 
             @Override

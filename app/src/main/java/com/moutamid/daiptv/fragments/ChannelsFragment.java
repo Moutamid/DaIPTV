@@ -6,10 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +19,11 @@ import com.moutamid.daiptv.adapters.ChanelsAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentChannelsBinding;
 import com.moutamid.daiptv.models.ChannelsGroupModel;
-import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.viewmodels.ChannelViewModel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ChannelsFragment extends Fragment {
@@ -49,7 +46,6 @@ public class ChannelsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentChannelsBinding.inflate(getLayoutInflater(), container, false);
-
         database = AppDatabase.getInstance(mContext);
 
         addButton();
@@ -74,6 +70,15 @@ public class ChannelsFragment extends Fragment {
         itemViewModel.getAll(Constants.TYPE_CHANNEL).observe(getViewLifecycleOwner(), adapter::submitList);
     }
 
+    private void showFavoriteChannels() {
+        itemViewModel.getFavoriteChannels(Constants.TYPE_CHANNEL).observe(getViewLifecycleOwner(), channels -> {
+            if (channels != null) {
+                adapter.submitList(channels);
+            }
+        });
+
+    }
+
     private void showRecentChannels() {
         itemViewModel.getRecentChannels().observe(getViewLifecycleOwner(), adapter::submitList);
     }
@@ -94,10 +99,13 @@ public class ChannelsFragment extends Fragment {
     private MaterialButton selectedButton = null;
     private void addButton() {
         List<ChannelsGroupModel> list = database.channelsGroupDAO().getAll();
-        list.add(0, new ChannelsGroupModel("Recent Channels"));
-        list.add(1, new ChannelsGroupModel("All"));
+        list.add(0, new ChannelsGroupModel("Chaînes récentes"));
+        list.add(1, new ChannelsGroupModel("Favoris"));
+        list.add(2, new ChannelsGroupModel("All"));
 
-        for (ChannelsGroupModel model : list) {
+        List<ChannelsGroupModel> filterList = getFilterList(list);
+
+        for (ChannelsGroupModel model : filterList) {
             if (!model.getChannelGroup().isEmpty()){
                 MaterialButton button = new MaterialButton(mContext);
                 button.setText(model.getChannelGroup());
@@ -128,6 +136,8 @@ public class ChannelsFragment extends Fragment {
                         showAllItems();
                     } else if (selectedGroup.equals("Recent Channels")) {
                         showRecentChannels();
+                    } else if (selectedGroup.equals("Favoris")) {
+                        showFavoriteChannels();
                     } else {
                         switchGroup(selectedGroup);
                     }
@@ -140,5 +150,22 @@ public class ChannelsFragment extends Fragment {
                 });
             }
         }
+    }
+
+    private List<ChannelsGroupModel> getFilterList(List<ChannelsGroupModel> list) {
+        List<ChannelsGroupModel> excluded = new ArrayList<>(list.subList(3, list.size()));
+        List<ChannelsGroupModel> included = new ArrayList<>(list.subList(0, 3));
+        Iterator<ChannelsGroupModel> iterator = excluded.iterator();
+        while (iterator.hasNext()) {
+            ChannelsGroupModel country = iterator.next();
+            if (country.getChannelGroup().startsWith("France") || country.getChannelGroup().startsWith("FRANCE") ||
+                    country.getChannelGroup().startsWith("Fr") || country.getChannelGroup().startsWith("FR") ||
+                    country.getChannelGroup().startsWith("|FR|")) {
+                included.add(country);
+                iterator.remove();
+            }
+        }
+        included.addAll(excluded);
+        return included;
     }
 }

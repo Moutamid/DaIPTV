@@ -79,15 +79,15 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setCancelable(true)
-                    .setTitle("Add to Favorites")
-                    .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
-                    .setPositiveButton("Add", (dialog, which) -> {
+                    .setTitle("Ajouter aux Favoris")
+                    .setMessage("Souhaitez-vous ajouter cet article à votre liste de favoris ? Une fois ajouté, vous pourrez facilement y accéder plus tard.")
+                    .setPositiveButton("Ajouter", (dialog, which) -> {
                         dialog.dismiss();
                         UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
                         ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
                         list.add(model);
                         Stash.put(userModel.id, list);
-                    }).setNegativeButton("Close", (dialog, which) -> {
+                    }).setNegativeButton("Fermer", (dialog, which) -> {
                         dialog.dismiss();
                     })
                     .show();

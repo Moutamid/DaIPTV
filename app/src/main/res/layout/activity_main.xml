@@ -57,7 +57,7 @@
                     android:focusable="true"
                     android:nextFocusRight="@id/Chaines"
                     android:foreground="@color/transparent"
-                    app:cardBackgroundColor="@color/transparent"
+                    app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
 
@@ -98,7 +98,7 @@
                     android:nextFocusRight="@id/Films"
                     android:layout_marginHorizontal="20dp"
                     android:foreground="@color/transparent"
-                    app:cardBackgroundColor="@color/transparent"
+                    app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
 
@@ -139,7 +139,7 @@
                     android:nextFocusRight="@id/series"
                     android:layout_marginHorizontal="20dp"
                     android:foreground="@color/transparent"
-                    app:cardBackgroundColor="@color/transparent"
+                    app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
 
@@ -180,7 +180,7 @@
                     android:nextFocusRight="@id/Recherche"
                     android:layout_marginHorizontal="20dp"
                     android:foreground="@color/transparent"
-                    app:cardBackgroundColor="@color/transparent"
+                    app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
 
@@ -221,7 +221,7 @@
                     android:nextFocusRight="@id/profile"
                     android:layout_marginHorizontal="10dp"
                     android:foreground="@color/transparent"
-                    app:cardBackgroundColor="@color/transparent"
+                    app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
 
