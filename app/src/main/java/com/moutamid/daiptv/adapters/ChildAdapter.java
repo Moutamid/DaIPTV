@@ -71,11 +71,16 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
     @Override
     public void onBindViewHolder(@NonNull ChildVH holder, int position) {
         ChannelsModel model = getItem(holder.getAbsoluteAdapterPosition());
-        GlideUrl glideUrl = new GlideUrl(model.getChannelImg(), new LazyHeaders.Builder()
-                .addHeader("User-Agent",
-                        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
-                .build());
-        Glide.with(context).load(glideUrl).placeholder(R.color.transparent).into(holder.image);
+        try {
+            String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg();
+            GlideUrl glideUrl = new GlideUrl(link, new LazyHeaders.Builder()
+                    .addHeader("User-Agent",
+                            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
+                    .build());
+            Glide.with(context).load(glideUrl).placeholder(R.color.transparent).into(holder.image);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setCancelable(true)

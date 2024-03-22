@@ -1,6 +1,7 @@
 package com.moutamid.daiptv.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -59,6 +60,48 @@ public class ChannelViewModel extends AndroidViewModel {
                         .setEnablePlaceholders(true)
                         .build())
                 .build();
+    }
+
+    private static final String TAG = "ChannelViewModel";
+    public LiveData<PagedList<ChannelsModel>> getTopFilms() {
+        ArrayList<ChannelsModel> fvrt = Stash.getArrayList(Constants.TOP_FILMS, ChannelsModel.class);
+        Log.d(TAG, "getTopFilms: " + fvrt.size());
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setPageSize(PAGE_SIZE)
+                .build();
+
+        PagedList<ChannelsModel> pagedList = new PagedList.Builder<>(new CustomDataSource(fvrt), config)
+                .setNotifyExecutor(Executors.newSingleThreadExecutor())
+                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .build();
+
+        return new LivePagedListBuilder<>(new DataSource.Factory<Integer, ChannelsModel>() {
+            @Override
+            public DataSource<Integer, ChannelsModel> create() {
+                return new CustomDataSource(fvrt);
+            }
+        }, config).build();
+    }
+    public LiveData<PagedList<ChannelsModel>> getTopSeries() {
+        ArrayList<ChannelsModel> fvrt = Stash.getArrayList(Constants.TOP_SERIES, ChannelsModel.class);
+        Log.d(TAG, "getTopFilms: " + fvrt.size());
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setPageSize(PAGE_SIZE)
+                .build();
+
+        PagedList<ChannelsModel> pagedList = new PagedList.Builder<>(new CustomDataSource(fvrt), config)
+                .setNotifyExecutor(Executors.newSingleThreadExecutor())
+                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .build();
+
+        return new LivePagedListBuilder<>(new DataSource.Factory<Integer, ChannelsModel>() {
+            @Override
+            public DataSource<Integer, ChannelsModel> create() {
+                return new CustomDataSource(fvrt);
+            }
+        }, config).build();
     }
 
     public LiveData<PagedList<ChannelsModel>> getFavoriteChannels(String type) {

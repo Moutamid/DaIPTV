@@ -54,6 +54,7 @@ public class HomeFragment extends Fragment {
     Dialog dialog;
     MovieModel movieModel;
     ArrayList<MovieModel> films, series, latest, additions;
+    ArrayList<ChannelsModel> filmsChan, seriesChan;
     ArrayList<TopItems> list;
     private RequestQueue requestQueue;
     String[] type = {Constants.TYPE_MOVIE, Constants.TYPE_SERIES};
@@ -91,6 +92,8 @@ public class HomeFragment extends Fragment {
         series = new ArrayList<>();
         latest = new ArrayList<>();
         additions = new ArrayList<>();
+        filmsChan = new ArrayList<>();
+        seriesChan = new ArrayList<>();
 
         initializeDialog();
 
@@ -136,6 +139,8 @@ public class HomeFragment extends Fragment {
         super.onResume();
         Stash.put(Constants.SELECTED_PAGE, "Home");
         list.clear();
+        Stash.clear(Constants.TOP_FILMS);
+        Stash.clear(Constants.TOP_SERIES);
         getTopFilms();
     }
 
@@ -160,15 +165,26 @@ public class HomeFragment extends Fragment {
                     try {
                         JSONArray array = response.getJSONArray("results");
                         films.clear();
+                        filmsChan.clear();
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject object = array.getJSONObject(i);
+
+                            ChannelsModel channel = new ChannelsModel();
+                            channel.setChannelName(object.getString("title"));
+                            channel.setChannelImg(object.getString("poster_path"));
+                            channel.setType(Constants.TYPE_MOVIE);
+                            channel.setChannelGroup(Constants.TYPE_MOVIE);
+
                             MovieModel model = new MovieModel();
                             model.original_title = object.getString("title");
                             model.banner = object.getString("poster_path");
                             model.type = Constants.TYPE_MOVIE;
+
+                            filmsChan.add(channel);
                             films.add(model);
                         }
                         list.add(new TopItems("Top Films", films));
+                        Stash.put(Constants.TOP_FILMS, filmsChan);
                         adapter = new HomeParentAdapter(mContext, list, selected);
                         binding.recycler.setAdapter(adapter);
                         getSeries();
@@ -191,6 +207,7 @@ public class HomeFragment extends Fragment {
                     try {
                         JSONArray array = response.getJSONArray("results");
                         series.clear();
+                        seriesChan.clear();
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject object = array.getJSONObject(i);
                             MovieModel model = new MovieModel();
@@ -198,8 +215,17 @@ public class HomeFragment extends Fragment {
                             model.banner = object.getString("poster_path");
                             model.type = Constants.TYPE_SERIES;
                             series.add(model);
+
+
+                            ChannelsModel channel = new ChannelsModel();
+                            channel.setChannelName(object.getString("name"));
+                            channel.setChannelImg(object.getString("poster_path"));
+                            channel.setType(Constants.TYPE_SERIES);
+                            channel.setChannelGroup(Constants.TYPE_SERIES);
+                            seriesChan.add(channel);
                         }
                         list.add(new TopItems("Top Series", series));
+                        Stash.put(Constants.TOP_SERIES, seriesChan);
                         UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
                         ArrayList<ChannelsModel> fvrt = Stash.getArrayList(userModel.id, ChannelsModel.class);
                         if (fvrt.size() > 0) {

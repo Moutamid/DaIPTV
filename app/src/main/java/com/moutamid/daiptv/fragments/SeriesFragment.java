@@ -67,6 +67,9 @@ public class SeriesFragment extends Fragment {
     private static final String TAG = "SeriesFragment";
     FragmentSeriesBinding binding;
     AppDatabase database;
+    List<SeriesGroupModel> items = new ArrayList<>();
+    ArrayList<ParentItemModel> parent = new ArrayList<>();
+    ChannelViewModel itemViewModel;
     ChannelsModel randomChannel;
     Dialog dialog;
     MovieModel movieModel;
@@ -89,7 +92,6 @@ public class SeriesFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Stash.put(Constants.SELECTED_PAGE, "Series");
-        getSeries();
     }
 
     private Context mContext;
@@ -150,9 +152,24 @@ public class SeriesFragment extends Fragment {
         new Handler().postDelayed(this::fetchID, 1500);
 
 
+        itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
+
+        items = database.seriesGroupDAO().getAll();
+        parent.add(new ParentItemModel("Top Series", false));
+        for (SeriesGroupModel model : items){
+            String group = model.getChannelGroup();
+            parent.add(new ParentItemModel(group, true));
+        }
+
         binding.recycler.setHasFixedSize(false);
         binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
-        adapter = new HomeParentAdapter(mContext, list, selected);
+        adapter = new ParentAdapter(mContext, parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
+            @Override
+            public void selected(ChannelsModel model) {
+                randomChannel = model;
+                fetchID();
+            }
+        });
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(binding.recycler);
         binding.recycler.setAdapter(adapter);
@@ -169,49 +186,7 @@ public class SeriesFragment extends Fragment {
         dialog.show();
     }
 
-    private void getSeries() {
-        Log.d(TAG, "getSeries: ");
-        String url = Constants.topTV;
-        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONArray array = response.getJSONArray("results");
-                        series.clear();
-                        for (int i = 0; i < array.length(); i++) {
-                            JSONObject object = array.getJSONObject(i);
-                            MovieModel model = new MovieModel();
-                            model.original_title = object.getString("name");
-                            model.banner = object.getString("poster_path");
-                            model.type = Constants.TYPE_SERIES;
-                            series.add(model);
-                        }
-                        list.add(new TopItems("Top Series", series));
-                        UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
-                        ArrayList<ChannelsModel> fvrt  = Stash.getArrayList(userModel.id, ChannelsModel.class);
-                        if (fvrt.size() > 0){
-                            ArrayList<MovieModel> fvrtList = new ArrayList<>();
-                            for (ChannelsModel channelsModel : fvrt){
-                                MovieModel model = new MovieModel();
-                                model.type  = channelsModel.getType();
-                                model.banner = channelsModel.getChannelImg();
-                                model.original_title = channelsModel.getChannelName();
-                                fvrtList.add(model);
-                            }
-                            list.add(new TopItems("Favourites", fvrtList));
-                        }
-                        adapter = new HomeParentAdapter(mContext, list, selected);
-                        binding.recycler.setAdapter(adapter);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        dialog.dismiss();
-                    }
-                }, error -> {
-            error.printStackTrace();
-            dialog.dismiss();
-        });
-        requestQueue.add(objectRequest);
-    }
-    HomeParentAdapter adapter;
+    ParentAdapter adapter;
     ItemSelected selected = new ItemSelected() {
         @Override
         public void selected(ChannelsModel model) {
@@ -331,40 +306,44 @@ public class SeriesFragment extends Fragment {
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
         Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
-        TranslateAPI desc = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.overview);
+        try {
+            TranslateAPI desc = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.overview);
 
-        TranslateAPI type = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.genres);           //Query Text
+            TranslateAPI type = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.genres);           //Query Text
 
-        desc.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: " + translatedText);
-                binding.desc.setText(translatedText);
-            }
+            desc.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.desc.setText(translatedText);
+                }
 
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: " + ErrorText);
-            }
-        });
-        type.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: " + translatedText);
-                binding.filmType.setText(translatedText);
-            }
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
+            type.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.filmType.setText(translatedText);
+                }
 
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: " + ErrorText);
-            }
-        });
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
+        } catch (ClassCastException e){
+            e.printStackTrace();
+        }
 
     }
 

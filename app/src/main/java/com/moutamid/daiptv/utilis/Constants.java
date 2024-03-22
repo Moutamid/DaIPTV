@@ -49,6 +49,8 @@ public class Constants {
     public static final String SELECTED_PAGE = "SELECTED_PAGE";
     public static final String USER_LIST = "USER_LIST";
     public static final String PASS_USER = "PASS_USER";
+    public static final String TOP_FILMS = "TOP_FILMS";
+    public static final String TOP_SERIES = "TOP_SERIES";
     public static final String MY_LIST = "MY_LIST";
     public static final String ChannelList = "ChannelList";
     public static final String TYPE_CHANNEL = "channel";

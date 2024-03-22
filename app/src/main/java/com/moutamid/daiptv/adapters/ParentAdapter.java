@@ -60,7 +60,15 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         ChildAdapter adapter = new ChildAdapter(context, itemSelected);
         holder.childRC.setAdapter(adapter);
 
-        itemViewModel.getItemsByGroup(model.name, type).observe(viewLifecycleOwner, adapter::submitList);
+        if (model.isRoom){
+            itemViewModel.getItemsByGroup(model.name, type).observe(viewLifecycleOwner, adapter::submitList);
+        } else {
+            if (type.equals(Constants.TYPE_MOVIE)) {
+                itemViewModel.getTopFilms().observe(viewLifecycleOwner, adapter::submitList);
+            } else {
+                itemViewModel.getTopSeries().observe(viewLifecycleOwner, adapter::submitList);
+            }
+        }
 
     }
 

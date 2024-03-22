@@ -107,12 +107,7 @@ public class FilmFragment extends Fragment {
 
         itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
 
-        items = database.moviesGroupDAO().getAll();
-        Log.d(TAG, "onCreateView: " + items.size());
-        for (MoviesGroupModel model : items){
-            String group = model.getChannelGroup();
-            parent.add(new ParentItemModel(group, true));
-        }
+
 
         binding.recycler.setHasFixedSize(false);
         binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
@@ -151,6 +146,14 @@ public class FilmFragment extends Fragment {
         binding.recycler.setHasFixedSize(false);
         binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
 //        adapter = new HomeParentAdapter(mContext, list, selected);
+
+        items = database.moviesGroupDAO().getAll();
+        Log.d(TAG, "onCreateView: " + items.size());
+        parent.add(new ParentItemModel("Top Films", false));
+        for (MoviesGroupModel model : items){
+            String group = model.getChannelGroup();
+            parent.add(new ParentItemModel(group, true));
+        }
         parentAdapter = new ParentAdapter(mContext, parent, Constants.TYPE_MOVIE, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
             @Override
             public void selected(ChannelsModel model) {
@@ -163,39 +166,6 @@ public class FilmFragment extends Fragment {
         binding.recycler.setAdapter(parentAdapter);
 
         return binding.getRoot();
-    }
-
-    private void getTopFilms() {
-        String url = Constants.topFILM;
-        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONArray array = response.getJSONArray("results");
-                        films.clear();
-                        for (int i = 0; i < array.length(); i++) {
-                            JSONObject object = array.getJSONObject(i);
-                            MovieModel model = new MovieModel();
-                            try {
-                                model.original_title = object.getString("original_title");
-                            } catch (Exception e){
-                                model.original_title = object.getString("original_name");
-                            }
-                            model.banner = object.getString("poster_path");
-                            model.type = Constants.TYPE_MOVIE;
-                            films.add(model);
-                        }
-                        list.add(new TopItems("Top Films", films));
-                        adapter = new HomeParentAdapter(mContext, list, selected);
-                        binding.recycler.setAdapter(adapter);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        dialog.dismiss();
-                    }
-                }, error -> {
-            error.printStackTrace();
-            dialog.dismiss();
-        });
-        requestQueue.add(objectRequest);
     }
 
     private void initializeDialog() {
@@ -339,40 +309,44 @@ public class FilmFragment extends Fragment {
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
         Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
-        TranslateAPI desc = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.overview);
+        try {
+            TranslateAPI desc = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.overview);
 
-        TranslateAPI type = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.genres);           //Query Text
+            TranslateAPI type = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.genres);           //Query Text
 
-        desc.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: " + translatedText);
-                binding.desc.setText(translatedText);
-            }
+            desc.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.desc.setText(translatedText);
+                }
 
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: " + ErrorText);
-            }
-        });
-        type.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: " + translatedText);
-                binding.filmType.setText(translatedText);
-            }
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
+            type.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.filmType.setText(translatedText);
+                }
 
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: " + ErrorText);
-            }
-        });
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
+        } catch (ClassCastException e){
+            e.printStackTrace();
+        }
 
     }
 
