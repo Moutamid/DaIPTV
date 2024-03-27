@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
             if (valid()) {
                 // http://vbn123.com:8080/get.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt&type=m3u_plus&output=mpegts
                 // http://vbn123.com:8080/get.php
-                String url = binding.url.getEditText().getText().toString() + "?username=" + binding.username.getEditText().getText().toString() + "&password=" + binding.password.getEditText().getText().toString() + "&type=m3u_plus&output=mpegts";
+                String url = binding.url.getEditText().getText().toString() + ":8080/get.php?username=" + binding.username.getEditText().getText().toString() + "&password=" + binding.password.getEditText().getText().toString() + "&type=m3u_plus&output=mpegts";
                 //  String url = "http://vbn123.com:8080/get.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt&type=m3u_plus&output=mpegts";
                 UserModel userModel = new UserModel(
                         UUID.randomUUID().toString(),

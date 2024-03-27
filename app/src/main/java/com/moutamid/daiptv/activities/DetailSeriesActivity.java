@@ -56,6 +56,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
 
         cast = new ArrayList<>();
 
+        binding.play.requestFocus();
         binding.back.setOnClickListener(v -> onBackPressed());
 
         initializeDialog();
@@ -178,16 +179,17 @@ public class DetailSeriesActivity extends AppCompatActivity {
         dialog.dismiss();
         binding.name.setText(movieModel.original_title);
         binding.desc.setText(movieModel.overview);
-        binding.tmdbRating.setText("TMBD " + movieModel.vote_average);
+        binding.tmdbRating.setText(movieModel.vote_average);
         binding.filmType.setText(movieModel.genres);
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM yyyy", Locale.FRANCE);
 
         try {
             Date date = inputFormat.parse(movieModel.release_date);
             String formattedDate = outputFormat.format(date);
-            binding.date.setText(formattedDate);
+            String capitalized = formattedDate.substring(0, 1).toUpperCase() + formattedDate.substring(1);
+            binding.date.setText(capitalized);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -224,6 +226,24 @@ public class DetailSeriesActivity extends AppCompatActivity {
             }
         });
 
+
+        TranslateAPI nameAPI = new TranslateAPI(
+                Language.AUTO_DETECT,   //Source Language
+                Language.FRENCH,         //Target Language
+                movieModel.original_title);           //Query Text
+
+        nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+            @Override
+            public void onSuccess(String translatedText) {
+                Log.d(TAG, "onSuccess: "+translatedText);
+                binding.name.setText(translatedText);
+            }
+
+            @Override
+            public void onFailure(String ErrorText) {
+                Log.d(TAG, "onFailure: "+ErrorText);
+            }
+        });
 
     }
 

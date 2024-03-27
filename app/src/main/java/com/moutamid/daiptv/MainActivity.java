@@ -45,7 +45,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -56,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     UserModel userModel;
     public MaterialCardView toolbar;
     AppDatabase database;
+    HomeFragment homeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         binding.profile.setOnClickListener(this::showMenu);
         binding.ancher.setOnClickListener(this::showMenu);
 
+        homeFragment = new HomeFragment();
+
         toolbar = binding.toolbar;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
@@ -85,15 +87,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Home")){
+                    if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Home")) {
                         Constants.checkFeature(MainActivity.this, Features.HOME);
                         binding.indicatorAccueil.setVisibility(View.VISIBLE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, homeFragment).commit();
                     }
                 } else {
                     binding.indicatorAccueil.setVisibility(View.GONE);
                 }
             }
+        });
+
+        binding.reload.setOnClickListener(v -> {
+//            homeFragment.refreshList();
         });
 
         binding.Chaines.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -139,9 +145,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    Constants.checkFeature(MainActivity.this, Features.RECHERCHE);
-                    binding.indicatorRecherche.setVisibility(View.VISIBLE);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new RechercheFragment()).commit();
+                    if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Recherche")) {
+                        Constants.checkFeature(MainActivity.this, Features.RECHERCHE);
+                        binding.indicatorRecherche.setVisibility(View.VISIBLE);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new RechercheFragment()).commit();
+                    }
                 } else {
                     binding.indicatorRecherche.setVisibility(View.GONE);
                 }

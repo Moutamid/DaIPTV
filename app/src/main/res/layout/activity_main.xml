@@ -289,8 +289,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:rotation="90"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:src="@drawable/round_arrow_right_24"
                     app:tint="@color/white" />
+
+                <ImageButton
+                    android:id="@+id/reload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/sync"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:backgroundTint="@color/focus"
+                    android:layout_marginStart="5dp" />
 
             </LinearLayout>
 

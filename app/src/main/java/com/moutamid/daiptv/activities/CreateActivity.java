@@ -123,7 +123,7 @@ public class CreateActivity extends AppCompatActivity {
                     @Override
                     public void onStartOrResume() {
                         Log.d(TAG, "onStartOrResume: Started");
-                        binding.message.setText("Downloading File...");
+                        binding.message.setText("Téléchargement du fichier...");
                     }
                 })
                 .setOnPauseListener(() -> {
@@ -141,7 +141,7 @@ public class CreateActivity extends AppCompatActivity {
                 .start(new OnDownloadListener() {
                     @Override
                     public void onDownloadComplete() {
-                        binding.message.setText("Getting Channels...");
+                        binding.message.setText("Obtenir des chaînes...");
                         binding.progress.setText("0%");
                         new ReadFileAsyncTask(filePath + File.separator + "downloaded_file.m3u").execute();
                     }
@@ -264,7 +264,7 @@ public class CreateActivity extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 if (message != null && message.get() != null) {
                                     // Update your TextView with the progress
-                                    message.get().setText("Getting Films...");
+                                    message.get().setText("Obtenir des films...");
                                 }
                             });
                             database.moviesGroupDAO().insert(moviesGroupModel);
@@ -272,7 +272,7 @@ public class CreateActivity extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 if (message != null && message.get() != null) {
                                     // Update your TextView with the progress
-                                    message.get().setText("Getting Series...");
+                                    message.get().setText("Obtenir des séries...");
                                 }
                             });
                             database.seriesGroupDAO().insert(seriesGroupModel);
@@ -280,7 +280,7 @@ public class CreateActivity extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 if (message != null && message.get() != null) {
                                     // Update your TextView with the progress
-                                    message.get().setText("Getting Channels...");
+                                    message.get().setText("Obtenir des chaînes...");
                                 }
                             });
                             database.channelsGroupDAO().insert(groupModel);
@@ -291,7 +291,7 @@ public class CreateActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "Finally");
             } catch (IOException e) {
-                Toast.makeText(activity, "File Read Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Erreur de lecture du fichier", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "readFile: " + e.getLocalizedMessage());
             } finally {
                 Log.d(TAG, "Finally");
@@ -316,7 +316,7 @@ public class CreateActivity extends AppCompatActivity {
         protected void onPostExecute(List<ChannelsModel> channelsModels) {
             super.onPostExecute(channelsModels);
             if (channelList.size() == 0) {
-                Toast.makeText(activity, "File Read Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Erreur de lecture du fichier", Toast.LENGTH_SHORT).show();
             } else {
                 activity.startActivity(new Intent(activity, MainActivity.class));
                 activity.finish();

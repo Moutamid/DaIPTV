@@ -110,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textPersonName"
-                    android:text="http://vbn123.com:8080/get.php"
+                    android:text="http://vbn123.com"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -131,7 +131,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="Sign In"
+                    android:text="Se connecter"
                     android:textColor="@color/grey2"
                     android:textSize="26dp" />
 

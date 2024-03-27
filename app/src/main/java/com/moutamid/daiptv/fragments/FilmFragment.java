@@ -107,8 +107,6 @@ public class FilmFragment extends Fragment {
 
         itemViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
 
-
-
         binding.recycler.setHasFixedSize(false);
         binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
 
@@ -166,6 +164,11 @@ public class FilmFragment extends Fragment {
         binding.recycler.setAdapter(parentAdapter);
 
         return binding.getRoot();
+    }
+
+    public void refreshList(){
+        Collections.shuffle(films);
+        adapter.notifyDataSetChanged();
     }
 
     private void initializeDialog() {
@@ -242,6 +245,7 @@ public class FilmFragment extends Fragment {
                             movieModel.release_date = response.getString("first_air_date");
                         }
                         movieModel.overview = response.getString("overview");
+                        movieModel.tagline = response.getString("tagline");
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
 
@@ -290,7 +294,8 @@ public class FilmFragment extends Fragment {
 
     private void setUI() {
         dialog.dismiss();
-        binding.name.setText(movieModel.original_title);
+        String name = movieModel.tagline.isEmpty() ? movieModel.original_title : movieModel.tagline;
+        binding.name.setText(name);
         binding.desc.setText(movieModel.overview);
         double d = Double.parseDouble(movieModel.vote_average);
         binding.tmdbRating.setText(String.format("%.1f", d));
@@ -319,7 +324,23 @@ public class FilmFragment extends Fragment {
                     Language.AUTO_DETECT,   //Source Language
                     Language.FRENCH,         //Target Language
                     movieModel.genres);           //Query Text
+            TranslateAPI tagline = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    name);           //Query Text
 
+            tagline.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.name.setText(translatedText);
+                }
+
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
             desc.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {

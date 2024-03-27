@@ -63,7 +63,7 @@ public class Constants {
     public static final String episodeDetails = "https://api.themoviedb.org/3/tv/";
     public static final String topTV = "https://api.themoviedb.org/3/tv/top_rated?api_key=26bedf3e3be75a2810a53f4a445e7b1f&language=en-US&page=1";
     public static final String topFILM = "https://api.themoviedb.org/3/movie/top_rated?api_key=26bedf3e3be75a2810a53f4a445e7b1f&language=en-US&page=1";
-    public static final String[] permissions = new String[]{
+    public static final String[] permissions = new String[] {
             Manifest.permission.READ_MEDIA_IMAGES,
             Manifest.permission.READ_MEDIA_AUDIO,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -95,14 +95,14 @@ public class Constants {
 
     public static String getMovieLogo(int id, String type) {
         String api_key = "?api_key=26bedf3e3be75a2810a53f4a445e7b1f";
-        return movieDetails + type + "/" + id + "/images" + api_key + "&include_adult=false&language=en-US&page=1";
+        return movieDetails + type + "/" + id + "/images" + api_key + "&include_adult=false&language=fr&page=1";
     }
 
 
     public static String getMovieData(String name, String type) {
         name = name.replace(" ", "%20");
         String api_key = "&api_key=26bedf3e3be75a2810a53f4a445e7b1f";
-        return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&language=en-US&page=1";
+        return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&language=fr&page=1";
     }
 
     public static String getMovieDetails(int id, String type) { // Type movie / tv

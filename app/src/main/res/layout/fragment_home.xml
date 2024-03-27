@@ -58,6 +58,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         tools:text="Synopsis"
+                        android:layout_marginVertical="3dp"
                         android:textColor="@color/white"
                         android:textSize="22sp" />
 
@@ -67,6 +68,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/white2"
                         android:textSize="18sp"
+                        android:visibility="gone"
                         android:scrollHorizontally="true"
                         android:ellipsize="end"
                         android:maxLines="2"
@@ -139,6 +141,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/details"
             android:nextFocusUp="@id/Accueil"
+            android:layout_marginTop="30dp"
             tools:listitem="@layout/parent_item" />
 
     </RelativeLayout>

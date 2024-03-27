@@ -67,6 +67,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="2"
+                        android:visibility="gone"
                         android:scrollHorizontally="true"
                         android:textColor="@color/white2"
                         android:textSize="18sp"
@@ -139,6 +140,7 @@
             android:layout_height="match_parent"
             android:layout_below="@id/details"
             android:nextFocusUp="@id/series"
+            android:layout_marginTop="30dp"
             tools:listitem="@layout/parent_item" />
 
     </RelativeLayout>

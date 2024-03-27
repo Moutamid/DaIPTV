@@ -2,18 +2,8 @@ package com.moutamid.daiptv.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-
 import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
@@ -22,6 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -29,21 +25,16 @@ import com.bumptech.glide.Glide;
 import com.fxn.stash.Stash;
 import com.mannan.translateapi.Language;
 import com.mannan.translateapi.TranslateAPI;
-import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
-import com.moutamid.daiptv.activities.VideoPlayerActivity;
-import com.moutamid.daiptv.adapters.HomeParentAdapter;
 import com.moutamid.daiptv.adapters.ParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentSeriesBinding;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MovieModel;
-import com.moutamid.daiptv.models.MoviesGroupModel;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.models.SeriesGroupModel;
 import com.moutamid.daiptv.models.TopItems;
-import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.VolleySingleton;
 import com.moutamid.daiptv.viewmodels.ChannelViewModel;
@@ -55,13 +46,10 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SeriesFragment extends Fragment {
     private static final String TAG = "SeriesFragment";
@@ -84,6 +72,7 @@ public class SeriesFragment extends Fragment {
             "Arcane",
             "Rick and Morty",
     };
+
     public SeriesFragment() {
         // Required empty public constructor
     }
@@ -95,6 +84,7 @@ public class SeriesFragment extends Fragment {
     }
 
     private Context mContext;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -106,6 +96,7 @@ public class SeriesFragment extends Fragment {
         super.onDetach();
         this.mContext = null;
     }
+
     ArrayList<MovieModel> series;
     ArrayList<TopItems> list;
 
@@ -141,7 +132,7 @@ public class SeriesFragment extends Fragment {
         Random random = new Random();
         randomChannel = database.channelsDAO().getRand(Constants.TYPE_SERIES);
 
-        if (randomChannel == null){
+        if (randomChannel == null) {
             randomChannel = new ChannelsModel();
             randomChannel.setChannelName(movieNames[random.nextInt(movieNames.length)]);
             randomChannel.setChannelGroup(Constants.TYPE_SERIES);
@@ -156,7 +147,7 @@ public class SeriesFragment extends Fragment {
 
         items = database.seriesGroupDAO().getAll();
         parent.add(new ParentItemModel("Top Series", false));
-        for (SeriesGroupModel model : items){
+        for (SeriesGroupModel model : items) {
             String group = model.getChannelGroup();
             parent.add(new ParentItemModel(group, true));
         }
@@ -194,6 +185,7 @@ public class SeriesFragment extends Fragment {
             fetchID();
         }
     };
+
     private void fetchID() {
         String name = Constants.regexName(randomChannel.getChannelName());
         Log.d(TAG, "fetchID: " + name);
@@ -230,14 +222,15 @@ public class SeriesFragment extends Fragment {
 
                         try {
                             movieModel.original_title = response.getString("original_title");
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             movieModel.original_title = response.getString("original_name");
                         }
                         try {
                             movieModel.release_date = response.getString("release_date");
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             movieModel.release_date = response.getString("first_air_date");
                         }
+                        movieModel.tagline = response.getString("tagline");
                         movieModel.overview = response.getString("overview");
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
@@ -248,7 +241,7 @@ public class SeriesFragment extends Fragment {
 
                         Random r = new Random();
                         int index = 0;
-                        if (images.length() > 1){
+                        if (images.length() > 1) {
                             index = r.nextInt(images.length());
                         }
 
@@ -258,7 +251,11 @@ public class SeriesFragment extends Fragment {
                             logoIndex = r.nextInt(logos.length());
                             String path = logos.getJSONObject(logoIndex).getString("file_path");
                             Log.d(TAG, "getlogo: " + path);
-                            Glide.with(this).load(Constants.getImageLink(path)).into(binding.logo);
+                            try {
+                                Glide.with(mContext).load(Constants.getImageLink(path)).into(binding.logo);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         movieModel.banner = images.getJSONObject(index).getString("file_path");
@@ -287,7 +284,8 @@ public class SeriesFragment extends Fragment {
 
     private void setUI() {
         dialog.dismiss();
-        binding.name.setText(movieModel.original_title);
+        String name = movieModel.tagline.isEmpty() ? movieModel.original_title : movieModel.tagline;
+        binding.name.setText(name);
         binding.desc.setText(movieModel.overview);
         double d = Double.parseDouble(movieModel.vote_average);
         binding.tmdbRating.setText(String.format("%.1f", d));
@@ -317,6 +315,23 @@ public class SeriesFragment extends Fragment {
                     Language.FRENCH,         //Target Language
                     movieModel.genres);           //Query Text
 
+            TranslateAPI tagline = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    name);           //Query Text
+
+            tagline.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.name.setText(translatedText);
+                }
+
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
             desc.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {
@@ -341,7 +356,7 @@ public class SeriesFragment extends Fragment {
                     Log.d(TAG, "onFailure: " + ErrorText);
                 }
             });
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             e.printStackTrace();
         }
 

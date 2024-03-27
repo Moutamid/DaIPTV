@@ -42,6 +42,8 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
@@ -54,7 +56,8 @@ public class HomeFragment extends Fragment {
     Dialog dialog;
     MovieModel movieModel;
     ArrayList<MovieModel> films, series, latest, additions;
-    ArrayList<ChannelsModel> filmsChan, seriesChan;
+    static ArrayList<ChannelsModel> filmsChan;
+    static ArrayList<ChannelsModel> seriesChan;
     ArrayList<TopItems> list;
     private RequestQueue requestQueue;
     String[] type = {Constants.TYPE_MOVIE, Constants.TYPE_SERIES};
@@ -160,6 +163,7 @@ public class HomeFragment extends Fragment {
 
     private void getTopFilms() {
         String url = Constants.topFILM;
+        Log.d(TAG, "getTopFilms: " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
@@ -199,6 +203,14 @@ public class HomeFragment extends Fragment {
         requestQueue.add(objectRequest);
     }
 
+    public void refreshList(){
+        Collections.shuffle(series);
+        Collections.shuffle(films);
+        if (adapter != null){
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     private void getSeries() {
         Log.d(TAG, "getSeries: ");
         String url = Constants.topTV;
@@ -216,7 +228,6 @@ public class HomeFragment extends Fragment {
                             model.type = Constants.TYPE_SERIES;
                             series.add(model);
 
-
                             ChannelsModel channel = new ChannelsModel();
                             channel.setChannelName(object.getString("name"));
                             channel.setChannelImg(object.getString("poster_path"));
@@ -231,13 +242,15 @@ public class HomeFragment extends Fragment {
                         if (fvrt.size() > 0) {
                             ArrayList<MovieModel> fvrtList = new ArrayList<>();
                             for (ChannelsModel channelsModel : fvrt) {
-                                MovieModel model = new MovieModel();
-                                model.type = channelsModel.getType();
-                                model.banner = channelsModel.getChannelImg();
-                                model.original_title = channelsModel.getChannelName();
-                                fvrtList.add(model);
+                                if (!channelsModel.getType().equals(Constants.TYPE_CHANNEL)) {
+                                    MovieModel model = new MovieModel();
+                                    model.type = channelsModel.getType();
+                                    model.banner = channelsModel.getChannelImg();
+                                    model.original_title = channelsModel.getChannelName();
+                                    fvrtList.add(model);
+                                }
                             }
-                            list.add(new TopItems("Favourites", fvrtList));
+                            list.add(new TopItems("Favoris", fvrtList));
                         }
                         adapter = new HomeParentAdapter(mContext, list, selected);
                         binding.recycler.setAdapter(adapter);
@@ -281,12 +294,12 @@ public class HomeFragment extends Fragment {
                             for (int i = 0; i < array.length(); i++) {
                                 JSONObject object = array.getJSONObject(i);
                                 String original_language = object.getString("original_language");
-                                if (original_language.equals("en")){
+                                if (original_language.equals("en")) {
                                     id = object.getInt("id");
                                     break;
                                 }
                             }
-                            if (id == 0){
+                            if (id == 0) {
                                 JSONObject object = array.getJSONObject(0);
                                 id = object.getInt("id");
                             }
@@ -327,6 +340,7 @@ public class HomeFragment extends Fragment {
                             movieModel.release_date = response.getString("first_air_date");
                         }
                         movieModel.overview = response.getString("overview");
+                        movieModel.tagline = response.getString("tagline");
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
 
@@ -343,19 +357,22 @@ public class HomeFragment extends Fragment {
                         }
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
                         if (logos.length() > 1) {
+                            String lang = "";
                             for (int i = 0; i < logos.length(); i++) {
                                 JSONObject object = logos.getJSONObject(i);
-                                String lang = object.getString("iso_639_1");
-                                if (lang.equals("fr")){
+                                lang = object.getString("iso_639_1");
+                                if (lang.equals("fr")) {
                                     logoIndex = i;
                                     break;
+                                } else {
+                                    lang = "";
                                 }
                             }
-                            if (logoIndex == 0){
+                            if (logoIndex == 0 && lang.isEmpty()) {
                                 for (int i = 0; i < logos.length(); i++) {
                                     JSONObject object = logos.getJSONObject(i);
-                                    String lang = object.getString("iso_639_1");
-                                    if (lang.equals("en")){
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("en")) {
                                         logoIndex = i;
                                         break;
                                     }
@@ -371,7 +388,7 @@ public class HomeFragment extends Fragment {
                         } else {
                             try {
                                 Glide.with(mContext).load(R.color.transparent).placeholder(R.color.transparent).into(binding.logo);
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -399,7 +416,8 @@ public class HomeFragment extends Fragment {
 
     private void setUI() {
         dialog.dismiss();
-        binding.name.setText(movieModel.original_title);
+        String name = movieModel.tagline.isEmpty() ? movieModel.original_title : movieModel.tagline;
+        binding.name.setText(name);
         binding.desc.setText(movieModel.overview);
         double d = Double.parseDouble(movieModel.vote_average);
         binding.tmdbRating.setText(String.format("%.1f", d));
@@ -417,7 +435,7 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
-        Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
+        Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).placeholder(R.color.transparent).into(binding.banner);
 
         try {
             TranslateAPI desc = new TranslateAPI(
@@ -429,7 +447,23 @@ public class HomeFragment extends Fragment {
                     Language.AUTO_DETECT,   //Source Language
                     Language.FRENCH,         //Target Language
                     movieModel.genres);           //Query Text
+            TranslateAPI tagline = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    name);           //Query Text
 
+            tagline.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: " + translatedText);
+                    binding.name.setText(translatedText);
+                }
+
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: " + ErrorText);
+                }
+            });
             desc.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {
@@ -455,7 +489,7 @@ public class HomeFragment extends Fragment {
                 }
             });
 
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             e.printStackTrace();
         }
     }

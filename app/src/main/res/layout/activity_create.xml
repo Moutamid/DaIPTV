@@ -34,7 +34,7 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@id/help"
         android:layout_marginBottom="6dp"
-        android:text="Setting Up"
+        android:text="Configuration"
         android:textColor="@color/grey2"
         android:textSize="18dp" />
 
@@ -45,7 +45,7 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
-        android:text="This may take some time dont close the app"
+        android:text="Cela peut prendre un certain temps, ne fermez pas l'application"
         android:textColor="@color/grey2"
         android:textSize="13dp" />
 

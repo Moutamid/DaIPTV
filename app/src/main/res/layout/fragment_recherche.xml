@@ -21,7 +21,7 @@
         android:backgroundTint="@color/black_bg"
         android:padding="12dp"
         android:focusable="true"
-        android:nextFocusUp="@id/Accueil"
+        android:nextFocusUp="@id/Recherche"
         android:focusableInTouchMode="true"
         android:focusedByDefault="true"
         android:inputType="textPersonName"
