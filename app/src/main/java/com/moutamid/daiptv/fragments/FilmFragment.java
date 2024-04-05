@@ -253,10 +253,43 @@ public class FilmFragment extends Fragment {
                         JSONArray images = response.getJSONObject("images").getJSONArray("backdrops");
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
-                        Random r = new Random();
-                        int index;
-                        if (images.length() > 1){
-                            index = r.nextInt(images.length());
+                        int index = 0;
+                        if  (images.length() > 1) {
+                            String lang = "NULL";
+                            for (int i = 0; i < images.length(); i++) {
+                                JSONObject object = images.getJSONObject(i);
+                                lang = object.getString("iso_639_1");
+                                if (lang == null || lang.isEmpty()) {
+                                    index = i;
+                                    lang = "FILL";
+                                    break;
+                                } else {
+                                    lang = "NULL";
+                                }
+                            }
+                            if (index == 0 && lang.equals("NULL")){
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("fr")) {
+                                        index = i;
+                                        lang = "FILL";
+                                        break;
+                                    } else {
+                                        lang = "NULL";
+                                    }
+                                }
+                            }
+                            if (index == 0 && lang.equals("NULL")){
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("en")) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                            }
                             movieModel.banner = images.getJSONObject(index).getString("file_path");
                         }
                         int logoIndex = 0;

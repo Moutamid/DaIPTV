@@ -102,7 +102,7 @@ public class Constants {
     public static String getMovieData(String name, String type) {
         name = name.replace(" ", "%20");
         String api_key = "&api_key=26bedf3e3be75a2810a53f4a445e7b1f";
-        return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&language=fr&page=1";
+        return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&page=1";
     }
 
     public static String getMovieDetails(int id, String type) { // Type movie / tv
