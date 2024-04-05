@@ -254,21 +254,49 @@ public class FilmFragment extends Fragment {
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
                         Random r = new Random();
-                        int index = 0;
+                        int index;
                         if (images.length() > 1){
                             index = r.nextInt(images.length());
+                            movieModel.banner = images.getJSONObject(index).getString("file_path");
                         }
-                        int logoIndex;
+                        int logoIndex = 0;
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
                         if (logos.length() > 1) {
-                            logoIndex = r.nextInt(logos.length());
+                            String lang = "";
+                            for (int i = 0; i < logos.length(); i++) {
+                                JSONObject object = logos.getJSONObject(i);
+                                lang = object.getString("iso_639_1");
+                                if (lang.equals("fr")) {
+                                    logoIndex = i;
+                                    break;
+                                } else {
+                                    lang = "";
+                                }
+                            }
+                            if (logoIndex == 0 && lang.isEmpty()) {
+                                for (int i = 0; i < logos.length(); i++) {
+                                    JSONObject object = logos.getJSONObject(i);
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("en")) {
+                                        logoIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
                             String path = logos.getJSONObject(logoIndex).getString("file_path");
                             Log.d(TAG, "getlogo: " + path);
-                            Glide.with(this).load(Constants.getImageLink(path)).into(binding.logo);
+                            try {
+                                Glide.with(mContext).load(Constants.getImageLink(path)).placeholder(R.color.transparent).into(binding.logo);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                Glide.with(mContext).load(R.color.transparent).placeholder(R.color.transparent).into(binding.logo);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-
-
-                        movieModel.banner = images.getJSONObject(index).getString("file_path");
 
                         for (int i = 0; i < videos.length(); i++) {
                             JSONObject object = videos.getJSONObject(i);
@@ -294,9 +322,9 @@ public class FilmFragment extends Fragment {
 
     private void setUI() {
         dialog.dismiss();
-        String name = movieModel.tagline.isEmpty() ? movieModel.original_title : movieModel.tagline;
-        binding.name.setText(name);
-        binding.desc.setText(movieModel.overview);
+       // String name = movieModel.tagline.isEmpty() ? movieModel.original_title : movieModel.tagline;
+        binding.name.setText(movieModel.original_title);
+        binding.desc.setText(movieModel.tagline);
         double d = Double.parseDouble(movieModel.vote_average);
         binding.tmdbRating.setText(String.format("%.1f", d));
         binding.filmType.setText(movieModel.genres);
@@ -315,10 +343,25 @@ public class FilmFragment extends Fragment {
         Log.d(TAG, "setUI: " + Constants.getImageLink(movieModel.banner));
         Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).into(binding.banner);
         try {
-            TranslateAPI desc = new TranslateAPI(
-                    Language.AUTO_DETECT,   //Source Language
-                    Language.FRENCH,         //Target Language
-                    movieModel.overview);
+            if (!movieModel.tagline.isEmpty()) {
+                TranslateAPI desc = new TranslateAPI(
+                        Language.AUTO_DETECT,   //Source Language
+                        Language.FRENCH,         //Target Language
+                        movieModel.tagline);
+                desc.setTranslateListener(new TranslateAPI.TranslateListener() {
+                    @Override
+                    public void onSuccess(String translatedText) {
+                        Log.d(TAG, "onSuccess: " + translatedText);
+                        binding.desc.setText(translatedText);
+                    }
+
+                    @Override
+                    public void onFailure(String ErrorText) {
+                        Log.d(TAG, "onFailure: " + ErrorText);
+                    }
+                });
+            }
+
 
             TranslateAPI type = new TranslateAPI(
                     Language.AUTO_DETECT,   //Source Language
@@ -327,7 +370,7 @@ public class FilmFragment extends Fragment {
             TranslateAPI tagline = new TranslateAPI(
                     Language.AUTO_DETECT,   //Source Language
                     Language.FRENCH,         //Target Language
-                    name);           //Query Text
+                    movieModel.original_title);           //Query Text
 
             tagline.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
@@ -341,18 +384,7 @@ public class FilmFragment extends Fragment {
                     Log.d(TAG, "onFailure: " + ErrorText);
                 }
             });
-            desc.setTranslateListener(new TranslateAPI.TranslateListener() {
-                @Override
-                public void onSuccess(String translatedText) {
-                    Log.d(TAG, "onSuccess: " + translatedText);
-                    binding.desc.setText(translatedText);
-                }
 
-                @Override
-                public void onFailure(String ErrorText) {
-                    Log.d(TAG, "onFailure: " + ErrorText);
-                }
-            });
             type.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {

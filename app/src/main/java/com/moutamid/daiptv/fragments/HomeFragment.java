@@ -416,9 +416,8 @@ public class HomeFragment extends Fragment {
 
     private void setUI() {
         dialog.dismiss();
-        String name = movieModel.tagline.isEmpty() ? movieModel.original_title : movieModel.tagline;
-        binding.name.setText(name);
-        binding.desc.setText(movieModel.overview);
+        binding.name.setText(movieModel.original_title);
+        binding.desc.setText(movieModel.tagline);
         double d = Double.parseDouble(movieModel.vote_average);
         binding.tmdbRating.setText(String.format("%.1f", d));
         binding.filmType.setText(movieModel.genres);
@@ -438,10 +437,24 @@ public class HomeFragment extends Fragment {
         Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).placeholder(R.color.transparent).into(binding.banner);
 
         try {
-            TranslateAPI desc = new TranslateAPI(
-                    Language.AUTO_DETECT,   //Source Language
-                    Language.FRENCH,         //Target Language
-                    movieModel.overview);
+            if (!movieModel.tagline.isEmpty()) {
+                TranslateAPI desc = new TranslateAPI(
+                        Language.AUTO_DETECT,   //Source Language
+                        Language.FRENCH,         //Target Language
+                        movieModel.tagline);
+                desc.setTranslateListener(new TranslateAPI.TranslateListener() {
+                    @Override
+                    public void onSuccess(String translatedText) {
+                        Log.d(TAG, "onSuccess: " + translatedText);
+                        binding.desc.setText(translatedText);
+                    }
+
+                    @Override
+                    public void onFailure(String ErrorText) {
+                        Log.d(TAG, "onFailure: " + ErrorText);
+                    }
+                });
+            }
 
             TranslateAPI type = new TranslateAPI(
                     Language.AUTO_DETECT,   //Source Language
@@ -450,25 +463,13 @@ public class HomeFragment extends Fragment {
             TranslateAPI tagline = new TranslateAPI(
                     Language.AUTO_DETECT,   //Source Language
                     Language.FRENCH,         //Target Language
-                    name);           //Query Text
+                    movieModel.original_title);           //Query Text
 
             tagline.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {
                     Log.d(TAG, "onSuccess: " + translatedText);
                     binding.name.setText(translatedText);
-                }
-
-                @Override
-                public void onFailure(String ErrorText) {
-                    Log.d(TAG, "onFailure: " + ErrorText);
-                }
-            });
-            desc.setTranslateListener(new TranslateAPI.TranslateListener() {
-                @Override
-                public void onSuccess(String translatedText) {
-                    Log.d(TAG, "onSuccess: " + translatedText);
-                    binding.desc.setText(translatedText);
                 }
 
                 @Override

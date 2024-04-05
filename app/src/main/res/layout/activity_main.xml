@@ -55,6 +55,7 @@
                     app:cardCornerRadius="12dp"
                     android:focusableInTouchMode="true"
                     android:focusable="true"
+                    android:nextFocusLeft="@null"
                     android:nextFocusRight="@id/Chaines"
                     android:foreground="@color/transparent"
                     app:cardBackgroundColor="@color/focus"

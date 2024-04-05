@@ -81,6 +81,11 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
         } catch (Exception e){
             e.printStackTrace();
         }
+
+        if (holder.getAbsoluteAdapterPosition() == 0 && holder.itemView.hasFocus()) {
+            holder.itemView.requestFocus();
+        }
+
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setCancelable(true)

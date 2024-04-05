@@ -68,7 +68,6 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/white2"
                         android:textSize="18sp"
-                        android:visibility="gone"
                         android:scrollHorizontally="true"
                         android:ellipsize="end"
                         android:maxLines="2"

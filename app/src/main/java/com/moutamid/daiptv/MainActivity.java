@@ -90,10 +90,12 @@ public class MainActivity extends AppCompatActivity {
                     if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Home")) {
                         Constants.checkFeature(MainActivity.this, Features.HOME);
                         binding.indicatorAccueil.setVisibility(View.VISIBLE);
+                        binding.indicatorChaines.setVisibility(View.GONE);
+                        binding.indicatorFilms.setVisibility(View.GONE);
+                        binding.indicatorSeries.setVisibility(View.GONE);
+                        binding.indicatorRecherche.setVisibility(View.GONE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, homeFragment).commit();
                     }
-                } else {
-                    binding.indicatorAccueil.setVisibility(View.GONE);
                 }
             }
         });
@@ -106,11 +108,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    Constants.checkFeature(MainActivity.this, Features.CHANNELS);
-                    binding.indicatorChaines.setVisibility(View.VISIBLE);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChannelsFragment()).commit();
-                } else {
-                    binding.indicatorChaines.setVisibility(View.GONE);
+                    if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Channels")) {
+                        Constants.checkFeature(MainActivity.this, Features.CHANNELS);
+                        binding.indicatorAccueil.setVisibility(View.GONE);
+                        binding.indicatorChaines.setVisibility(View.VISIBLE);
+                        binding.indicatorFilms.setVisibility(View.GONE);
+                        binding.indicatorSeries.setVisibility(View.GONE);
+                        binding.indicatorRecherche.setVisibility(View.GONE);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ChannelsFragment()).commit();
+                    }
                 }
             }
         });
@@ -119,11 +125,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    Constants.checkFeature(MainActivity.this, Features.FILMS);
-                    binding.indicatorFilms.setVisibility(View.VISIBLE);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FilmFragment()).commit();
-                } else {
-                    binding.indicatorFilms.setVisibility(View.GONE);
+                    if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Film")) {
+                        Constants.checkFeature(MainActivity.this, Features.FILMS);
+                        binding.indicatorAccueil.setVisibility(View.GONE);
+                        binding.indicatorChaines.setVisibility(View.GONE);
+                        binding.indicatorFilms.setVisibility(View.VISIBLE);
+                        binding.indicatorSeries.setVisibility(View.GONE);
+                        binding.indicatorRecherche.setVisibility(View.GONE);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FilmFragment()).commit();
+                    }
                 }
             }
         });
@@ -132,11 +142,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    Constants.checkFeature(MainActivity.this, Features.SERIES);
-                    binding.indicatorSeries.setVisibility(View.VISIBLE);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new SeriesFragment()).commit();
-                } else {
-                    binding.indicatorSeries.setVisibility(View.GONE);
+                    if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Series")) {
+                        Constants.checkFeature(MainActivity.this, Features.SERIES);
+                        binding.indicatorAccueil.setVisibility(View.GONE);
+                        binding.indicatorChaines.setVisibility(View.GONE);
+                        binding.indicatorFilms.setVisibility(View.GONE);
+                        binding.indicatorSeries.setVisibility(View.VISIBLE);
+                        binding.indicatorRecherche.setVisibility(View.GONE);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new SeriesFragment()).commit();
+                    }
                 }
             }
         });
@@ -147,11 +161,13 @@ public class MainActivity extends AppCompatActivity {
                 if (hasFocus) {
                     if (!Stash.getString(Constants.SELECTED_PAGE, "Home").equals("Recherche")) {
                         Constants.checkFeature(MainActivity.this, Features.RECHERCHE);
+                        binding.indicatorAccueil.setVisibility(View.GONE);
+                        binding.indicatorChaines.setVisibility(View.GONE);
+                        binding.indicatorFilms.setVisibility(View.GONE);
+                        binding.indicatorSeries.setVisibility(View.GONE);
                         binding.indicatorRecherche.setVisibility(View.VISIBLE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new RechercheFragment()).commit();
                     }
-                } else {
-                    binding.indicatorRecherche.setVisibility(View.GONE);
                 }
             }
         });

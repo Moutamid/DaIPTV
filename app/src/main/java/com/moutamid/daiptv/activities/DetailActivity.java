@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -24,6 +25,7 @@ import com.moutamid.daiptv.databinding.ActivityDetailBinding;
 import com.moutamid.daiptv.models.CastModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MovieModel;
+import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.VolleySingleton;
 
@@ -59,6 +61,33 @@ public class DetailActivity extends AppCompatActivity {
         cast = new ArrayList<>();
 
         binding.back.setOnClickListener(v -> onBackPressed());
+        
+        binding.reader.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl()));
+            intent.setType("video/*");
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.add.setOnClickListener(v->{
+            new AlertDialog.Builder(this)
+                    .setCancelable(true)
+                    .setTitle("Ajouter aux Favoris")
+                    .setMessage("Souhaitez-vous ajouter cet article à votre liste de favoris ? Une fois ajouté, vous pourrez facilement y accéder plus tard.")
+                    .setPositiveButton("Ajouter", (dialog, which) -> {
+                        dialog.dismiss();
+                        UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
+                        ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
+                        list.add(model);
+                        Stash.put(userModel.id, list);
+                    }).setNegativeButton("Fermer", (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .show();
+        });
 
         initializeDialog();
 
@@ -67,7 +96,7 @@ public class DetailActivity extends AppCompatActivity {
         if (model != null){
             fetchID();
         } else {
-            Toast.makeText(this, "Channel not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Chaîne introuvable", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -203,7 +232,11 @@ public class DetailActivity extends AppCompatActivity {
 
         binding.trailer.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(movieModel.trailer));
-            startActivity(intent);
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
+            }
         });
 
         binding.play.requestFocus();

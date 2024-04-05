@@ -69,7 +69,6 @@
                         android:textSize="18sp"
                         android:scrollHorizontally="true"
                         android:ellipsize="end"
-                        android:visibility="gone"
                         android:maxLines="2"
                         tools:text="@string/lorem" />
 
@@ -140,7 +139,7 @@
             android:layout_height="match_parent"
             android:layout_below="@id/details"
             android:nextFocusUp="@id/Films"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="25dp"
             tools:listitem="@layout/parent_item" />
 
     </RelativeLayout>

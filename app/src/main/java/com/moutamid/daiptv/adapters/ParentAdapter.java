@@ -1,26 +1,19 @@
 package com.moutamid.daiptv.adapters;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
-import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ParentItemModel;
-import com.moutamid.daiptv.utilis.CircularLayoutManager;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.viewmodels.ChannelViewModel;
 
@@ -60,7 +53,18 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         ChildAdapter adapter = new ChildAdapter(context, itemSelected);
         holder.childRC.setAdapter(adapter);
 
-        if (model.isRoom){
+        holder.childRC.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    if (adapter.getItemCount() > 0) {
+                        adapter.notifyItemChanged(0);
+                    }
+                }
+            }
+        });
+
+        if (model.isRoom) {
             itemViewModel.getItemsByGroup(model.name, type).observe(viewLifecycleOwner, adapter::submitList);
         } else {
             if (type.equals(Constants.TYPE_MOVIE)) {
@@ -77,9 +81,10 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         return list.size();
     }
 
-    public class ParentVH extends RecyclerView.ViewHolder{
+    public class ParentVH extends RecyclerView.ViewHolder {
         TextView name;
         RecyclerView childRC;
+
         public ParentVH(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
