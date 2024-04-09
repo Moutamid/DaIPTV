@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
     ChannelsModel randomChannel;
     Dialog dialog;
     MovieModel movieModel;
-    ArrayList<MovieModel> films, series, latest, additions;
+    ArrayList<MovieModel> films = new ArrayList<>(), series = new ArrayList<>(), latest, additions;
     static ArrayList<ChannelsModel> filmsChan;
     static ArrayList<ChannelsModel> seriesChan;
     ArrayList<TopItems> list;
@@ -180,6 +180,7 @@ public class HomeFragment extends Fragment {
                             channel.setChannelGroup(Constants.TYPE_MOVIE);
 
                             MovieModel model = new MovieModel();
+                            model.id = object.getInt("id");
                             model.original_title = object.getString("title");
                             model.banner = object.getString("poster_path");
                             model.type = Constants.TYPE_MOVIE;
@@ -187,6 +188,7 @@ public class HomeFragment extends Fragment {
                             filmsChan.add(channel);
                             films.add(model);
                         }
+                        Log.d(TAG, "getTopFilms: Films " + films.size());
                         list.add(new TopItems("Top Films", films));
                         Stash.put(Constants.TOP_FILMS, filmsChan);
                         adapter = new HomeParentAdapter(mContext, list, selected);
@@ -223,6 +225,7 @@ public class HomeFragment extends Fragment {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject object = array.getJSONObject(i);
                             MovieModel model = new MovieModel();
+                            model.id = object.getInt("id");
                             model.original_title = object.getString("name");
                             model.banner = object.getString("poster_path");
                             model.type = Constants.TYPE_SERIES;
@@ -254,6 +257,7 @@ public class HomeFragment extends Fragment {
                         }
                         adapter = new HomeParentAdapter(mContext, list, selected);
                         binding.recycler.setAdapter(adapter);
+                        updatePosters();
                     } catch (JSONException e) {
                         e.printStackTrace();
                         dialog.dismiss();
@@ -263,6 +267,139 @@ public class HomeFragment extends Fragment {
             dialog.dismiss();
         });
         requestQueue.add(objectRequest);
+    }
+
+    private void updatePosters() {
+        dialog.show();
+        for (int j = 0; j < films.size(); j++) {
+            MovieModel movie = films.get(j);
+            String url = Constants.getMovieDetails(movie.id, Constants.TYPE_MOVIE);
+            int finalJ = j;
+            JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                    response -> {
+                        try {
+                            JSONArray images = response.getJSONObject("images").getJSONArray("posters");
+                            int index = 0;
+                            if (images.length() > 1) {
+                                String lang = "NULL";
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("fr")) {
+                                        Log.d(TAG, "getDetails: FR");
+                                        index = i;
+                                        break;
+                                    } else {
+                                        lang = "NULL";
+                                    }
+                                }
+                                if (index == 0 && lang.equals("NULL")) {
+                                    for (int i = 0; i < images.length(); i++) {
+                                        JSONObject object = images.getJSONObject(i);
+                                        lang = object.getString("iso_639_1");
+                                        if (lang.equals("en")) {
+                                            Log.d(TAG, "getDetails: ENG");
+                                            index = i;
+                                            break;
+                                        } else {
+                                            lang = "NULL";
+                                        }
+                                    }
+                                }
+                                if (index == 0 && lang.equals("NULL")) {
+                                    for (int i = 0; i < images.length(); i++) {
+                                        JSONObject object = images.getJSONObject(i);
+                                        lang = object.getString("iso_639_1");
+                                        if (lang.equals("null")) {
+                                            Log.d(TAG, "getDetails: ENG");
+                                            index = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                                films.get(finalJ).banner = images.getJSONObject(index).getString("file_path");
+                                filmsChan.get(finalJ).setChannelImg(images.getJSONObject(index).getString("file_path"));
+                                Stash.put(Constants.TOP_FILMS, filmsChan);
+                                updateSeriesPoster();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            dialog.dismiss();
+                        }
+                    }, error -> {
+                error.printStackTrace();
+                dialog.dismiss();
+            });
+            requestQueue.add(objectRequest);
+        }
+    }
+
+    private void updateSeriesPoster() {
+        for (int j = 0; j < series.size(); j++) {
+            MovieModel movie = series.get(j);
+            String url = Constants.getMovieDetails(movie.id, Constants.TYPE_TV);
+            int finalJ = j;
+            JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                    response -> {
+                        try {
+                            JSONArray images = response.getJSONObject("images").getJSONArray("posters");
+                            int index = 0;
+                            if (images.length() > 1) {
+                                String lang = "NULL";
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("fr")) {
+                                        Log.d(TAG, "getDetails: FR");
+                                        index = i;
+                                        break;
+                                    } else {
+                                        lang = "NULL";
+                                    }
+                                }
+                                if (index == 0 && lang.equals("NULL")) {
+                                    for (int i = 0; i < images.length(); i++) {
+                                        JSONObject object = images.getJSONObject(i);
+                                        lang = object.getString("iso_639_1");
+                                        if (lang.equals("en")) {
+                                            Log.d(TAG, "getDetails: ENG");
+                                            index = i;
+                                            break;
+                                        } else {
+                                            lang = "NULL";
+                                        }
+                                    }
+                                }
+                                if (index == 0 && lang.equals("NULL")) {
+                                    for (int i = 0; i < images.length(); i++) {
+                                        JSONObject object = images.getJSONObject(i);
+                                        lang = object.getString("iso_639_1");
+                                        if (lang.equals("null")) {
+                                            Log.d(TAG, "getDetails: ENG");
+                                            index = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                                series.get(finalJ).banner = images.getJSONObject(index).getString("file_path");
+                                seriesChan.get(finalJ).setChannelImg(images.getJSONObject(index).getString("file_path"));
+                                Stash.put(Constants.TOP_SERIES, seriesChan);
+                                dialog.dismiss();
+                                list.get(0).list = new ArrayList<>(films);
+                                list.get(1).list = new ArrayList<>(series);
+                                adapter = new HomeParentAdapter(mContext, list, selected);
+                                binding.recycler.setAdapter(adapter);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            dialog.dismiss();
+                        }
+                    }, error -> {
+                error.printStackTrace();
+                dialog.dismiss();
+            });
+            requestQueue.add(objectRequest);
+        }
     }
 
     ItemSelected selected = new ItemSelected() {
@@ -355,21 +492,23 @@ public class HomeFragment extends Fragment {
                             for (int i = 0; i < images.length(); i++) {
                                 JSONObject object = images.getJSONObject(i);
                                 lang = object.getString("iso_639_1");
-                                if (lang == null || lang.isEmpty()) {
+                                Log.d(TAG, "getDetails: " + lang);
+                                if (lang.equals("null")) {
+                                    Log.d(TAG, "getDetails: NULL");
                                     index = i;
-                                    lang = "FILL";
                                     break;
                                 } else {
                                     lang = "NULL";
                                 }
+                                Log.d(TAG, "getDetails: LANGGGG " + lang);
                             }
                             if (index == 0 && lang.equals("NULL")){
                                 for (int i = 0; i < images.length(); i++) {
                                     JSONObject object = images.getJSONObject(i);
                                     lang = object.getString("iso_639_1");
                                     if (lang.equals("fr")) {
+                                        Log.d(TAG, "getDetails: FR");
                                         index = i;
-                                        lang = "FILL";
                                         break;
                                     } else {
                                         lang = "NULL";
@@ -381,6 +520,7 @@ public class HomeFragment extends Fragment {
                                     JSONObject object = images.getJSONObject(i);
                                     lang = object.getString("iso_639_1");
                                     if (lang.equals("en")) {
+                                        Log.d(TAG, "getDetails: ENG");
                                         index = i;
                                         break;
                                     }

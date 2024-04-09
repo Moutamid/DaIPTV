@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.reload.setOnClickListener(v -> {
-//            homeFragment.refreshList();
+            homeFragment.refreshList();
         });
 
         binding.Chaines.setOnFocusChangeListener(new View.OnFocusChangeListener() {

@@ -245,9 +245,8 @@ public class SeriesFragment extends Fragment {
                             for (int i = 0; i < images.length(); i++) {
                                 JSONObject object = images.getJSONObject(i);
                                 lang = object.getString("iso_639_1");
-                                if (lang == null || lang.isEmpty()) {
+                                if (lang.equals("null")) {
                                     index = i;
-                                    lang = "FILL";
                                     break;
                                 } else {
                                     lang = "NULL";
@@ -259,7 +258,6 @@ public class SeriesFragment extends Fragment {
                                     lang = object.getString("iso_639_1");
                                     if (lang.equals("fr")) {
                                         index = i;
-                                        lang = "FILL";
                                         break;
                                     } else {
                                         lang = "NULL";
