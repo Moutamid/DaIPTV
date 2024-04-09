@@ -320,7 +320,6 @@ public class HomeFragment extends Fragment {
                                 films.get(finalJ).banner = images.getJSONObject(index).getString("file_path");
                                 filmsChan.get(finalJ).setChannelImg(images.getJSONObject(index).getString("file_path"));
                                 Stash.put(Constants.TOP_FILMS, filmsChan);
-                                updateSeriesPoster();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -332,6 +331,7 @@ public class HomeFragment extends Fragment {
             });
             requestQueue.add(objectRequest);
         }
+        updateSeriesPoster();
     }
 
     private void updateSeriesPoster() {
