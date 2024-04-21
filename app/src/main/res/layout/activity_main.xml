@@ -55,8 +55,9 @@
                     app:cardCornerRadius="12dp"
                     android:focusableInTouchMode="true"
                     android:focusable="true"
-                    android:nextFocusLeft="@null"
+                    android:nextFocusLeft="@id/Accueil"
                     android:nextFocusRight="@id/Chaines"
+                    android:nextFocusDown="@id/childRC"
                     android:foreground="@color/transparent"
                     app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
@@ -86,7 +87,6 @@
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
-
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/Chaines"

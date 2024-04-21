@@ -96,11 +96,11 @@ public class CreateActivity extends AppCompatActivity {
 
         updateAndroidSecurityProvider();
 
-         startPRDownloader();
+//         startPRDownloader();
 
         // startDownloading();
 
-      // new ReadFileAsyncTask("tv_channels_sHnEqTKwSbGnKRzq_plus.m3u").execute();
+       new ReadFileAsyncTask("dummy.m3u").execute();
     }
 
     private void startPRDownloader() {
@@ -187,13 +187,11 @@ public class CreateActivity extends AppCompatActivity {
         int totalLines = 600000; // 500000
         private final WeakReference<TextView> progressTextView;
         private final WeakReference<TextView> message;
-
         ReadFileAsyncTask(String fileName) {
             this.fileName = fileName;
             this.progressTextView = new WeakReference<>(binding.progress);
             this.message = new WeakReference<>(binding.message);
         }
-
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
@@ -291,7 +289,7 @@ public class CreateActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "Finally");
             } catch (IOException e) {
-                Toast.makeText(activity, "Erreur de lecture du fichier", Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> Toast.makeText(activity, "Erreur de lecture du fichier", Toast.LENGTH_SHORT).show());
                 Log.d(TAG, "readFile: " + e.getLocalizedMessage());
             } finally {
                 Log.d(TAG, "Finally");

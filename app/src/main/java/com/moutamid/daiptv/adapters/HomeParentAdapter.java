@@ -41,13 +41,13 @@ public class HomeParentAdapter extends RecyclerView.Adapter<HomeParentAdapter.It
         TopItems model = list.get(holder.getAdapterPosition());
         holder.name.setText(model.name);
 
-        if (Stash.getString(Constants.SELECTED_PAGE).equals("Home")){
-            holder.childRC.setNextFocusUpId(R.id.Accueil);
-        }else if (Stash.getString(Constants.SELECTED_PAGE).equals("Film")){
-            holder.childRC.setNextFocusUpId(R.id.Films);
-        } else if (Stash.getString(Constants.SELECTED_PAGE).equals("Series")){
-            holder.childRC.setNextFocusUpId(R.id.series);
-        }
+//        if (Stash.getString(Constants.SELECTED_PAGE).equals("Home")){
+//            holder.childRC.setNextFocusUpId(R.id.Accueil);
+//        }else if (Stash.getString(Constants.SELECTED_PAGE).equals("Film")){
+//            holder.childRC.setNextFocusUpId(R.id.Films);
+//        } else if (Stash.getString(Constants.SELECTED_PAGE).equals("Series")){
+//            holder.childRC.setNextFocusUpId(R.id.series);
+//        }
 
         holder.childRC.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.childRC.setHasFixedSize(false);

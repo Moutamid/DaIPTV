@@ -50,19 +50,19 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
 
         holder.childRC.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.childRC.setHasFixedSize(false);
-        ChildAdapter adapter = new ChildAdapter(context, itemSelected);
+        ChildAdapter adapter = new ChildAdapter(context, itemSelected, type);
         holder.childRC.setAdapter(adapter);
 
-        holder.childRC.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (adapter.getItemCount() > 0) {
-                        adapter.notifyItemChanged(0);
-                    }
-                }
-            }
-        });
+//        holder.childRC.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (hasFocus) {
+//                    if (adapter.getItemCount() > 0) {
+//                        adapter.notifyItemChanged(0);
+//                    }
+//                }
+//            }
+//        });
 
         if (model.isRoom) {
             itemViewModel.getItemsByGroup(model.name, type).observe(viewLifecycleOwner, adapter::submitList);

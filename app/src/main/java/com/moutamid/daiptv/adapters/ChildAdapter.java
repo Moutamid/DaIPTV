@@ -22,7 +22,6 @@ import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.DetailSeriesActivity;
-import com.moutamid.daiptv.activities.SeriesActivity;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.UserModel;
@@ -36,6 +35,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
     Context context;
     private static final String TAG = "ChildAdapter";
     ItemSelected itemSelected;
+    String type;
     private static final DiffUtil.ItemCallback<ChannelsModel> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<ChannelsModel>() {
                 @Override
@@ -49,17 +49,25 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
                 }
             };
 
-    protected ChildAdapter(Context context, ItemSelected itemSelected) {
+    protected ChildAdapter(Context context, ItemSelected itemSelected, String type) {
         super(DIFF_CALLBACK);
         this.context = context;
         this.itemSelected = itemSelected;
+        this.type = type;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return type.equals(Constants.TYPE_MOVIE) ? 0 : 1;
+    }
 
     @NonNull
     @Override
     public ChildVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ChildVH(LayoutInflater.from(context).inflate(R.layout.child_item, parent, false));
+        if (viewType == 0)
+            return new ChildVH(LayoutInflater.from(context).inflate(R.layout.film_child_item, parent, false));
+        else
+            return new ChildVH(LayoutInflater.from(context).inflate(R.layout.series_child_item, parent, false));
     }
 
     @Nullable
@@ -78,7 +86,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
                             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
                     .build());
             Glide.with(context).load(glideUrl).placeholder(R.color.transparent).into(holder.image);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
