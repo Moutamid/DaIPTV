@@ -57,6 +57,8 @@ public class Constants {
     public static final String TYPE_MOVIE = "movie";
     public static final String TYPE_SERIES = "series";
     public static final String TYPE_TV = "tv";
+    public static final String lang_fr = "&language=fr";
+    public static final String lang_en = "&language=en-US";
     public static final String imageLink = "https://image.tmdb.org/t/p/original";
     public static final String movieSearch = "https://api.themoviedb.org/3/search/"; // https://api.themoviedb.org/3/search/tv?query=
     public static final String movieDetails = "https://api.themoviedb.org/3/";
@@ -104,9 +106,9 @@ public class Constants {
         return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&page=1";
     }
 
-    public static String getMovieDetails(int id, String type) { // Type movie / tv
+    public static String getMovieDetails(int id, String type, String lang) { // Type movie / tv
         String api_key = "?api_key=26bedf3e3be75a2810a53f4a445e7b1f";
-        return movieDetails + type + "/" + id + api_key + "&append_to_response=videos,images,credits";
+        return movieDetails + type + "/" + id + api_key + "&append_to_response=videos,images,credits" + lang;
     }
 
     public static String getEpisodeDetails(int id, int count) {

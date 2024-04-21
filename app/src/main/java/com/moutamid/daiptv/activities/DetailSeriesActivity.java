@@ -116,7 +116,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
                         JSONArray array = response.getJSONArray("results");
                         JSONObject object = array.getJSONObject(0);
                         int id = object.getInt("id");
-                        getDetails(id);
+                        getDetails(id, Constants.lang_fr);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         runOnUiThread(() -> {
@@ -133,8 +133,8 @@ public class DetailSeriesActivity extends AppCompatActivity {
         requestQueue.add(objectRequest);
     }
 
-    private void getDetails(int id) {
-        String url = Constants.getMovieDetails(id, Constants.TYPE_TV);
+    private void getDetails(int id, String language) {
+        String url = Constants.getMovieDetails(id, Constants.TYPE_TV, language);
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -155,6 +155,11 @@ public class DetailSeriesActivity extends AppCompatActivity {
                         movieModel.overview = response.getString("overview");
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
+
+                        if (movieModel.overview.isEmpty())
+                            getDetails(id, "");
+
+                        movieModel.isFrench = !movieModel.overview.isEmpty();
 
                         JSONArray videos = response.getJSONObject("videos").getJSONArray("results");
                         JSONArray images = response.getJSONObject("images").getJSONArray("backdrops");
@@ -260,23 +265,25 @@ public class DetailSeriesActivity extends AppCompatActivity {
         });
 
 
-        TranslateAPI nameAPI = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.original_title);           //Query Text
+        if (!movieModel.isFrench){
+            TranslateAPI nameAPI = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.original_title);           //Query Text
 
-        nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: "+translatedText);
-                binding.name.setText(translatedText);
-            }
+            nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: "+translatedText);
+                    binding.name.setText(translatedText);
+                }
 
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: "+ErrorText);
-            }
-        });
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: "+ErrorText);
+                }
+            });
+        }
 
     }
 

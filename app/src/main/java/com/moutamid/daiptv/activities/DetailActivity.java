@@ -120,7 +120,7 @@ public class DetailActivity extends AppCompatActivity {
                         JSONArray array = response.getJSONArray("results");
                         JSONObject object = array.getJSONObject(0);
                         int id = object.getInt("id");
-                        getDetails(id);
+                        getDetails(id, Constants.lang_fr);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         runOnUiThread(() -> {
@@ -137,8 +137,8 @@ public class DetailActivity extends AppCompatActivity {
         requestQueue.add(objectRequest);
     }
 
-    private void getDetails(int id) {
-        String url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
+    private void getDetails(int id, String language) {
+        String url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE, language);
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -147,9 +147,9 @@ public class DetailActivity extends AppCompatActivity {
                         movieModel = new MovieModel();
 
                         try {
-                            movieModel.original_title = response.getString("original_title");
+                            movieModel.original_title = response.getString("title");
                         } catch (Exception e){
-                            movieModel.original_title = response.getString("original_name");
+                            movieModel.original_title = response.getString("name");
                         }
                         try {
                             movieModel.release_date = response.getString("release_date");
@@ -159,6 +159,11 @@ public class DetailActivity extends AppCompatActivity {
                         movieModel.overview = response.getString("overview");
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
+
+                        if (movieModel.overview.isEmpty())
+                            getDetails(id, "");
+
+                        movieModel.isFrench = !movieModel.overview.isEmpty();
 
                         JSONArray videos = response.getJSONObject("videos").getJSONArray("results");
                         JSONArray images = response.getJSONObject("images").getJSONArray("backdrops");
@@ -265,23 +270,25 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        TranslateAPI nameAPI = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.original_title);           //Query Text
+        if (!movieModel.isFrench){
+            TranslateAPI nameAPI = new TranslateAPI(
+                    Language.AUTO_DETECT,   //Source Language
+                    Language.FRENCH,         //Target Language
+                    movieModel.original_title);           //Query Text
 
-        nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: "+translatedText);
-                binding.name.setText(translatedText);
-            }
+            nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+                @Override
+                public void onSuccess(String translatedText) {
+                    Log.d(TAG, "onSuccess: "+translatedText);
+                    binding.name.setText(translatedText);
+                }
 
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: "+ErrorText);
-            }
-        });
+                @Override
+                public void onFailure(String ErrorText) {
+                    Log.d(TAG, "onFailure: "+ErrorText);
+                }
+            });
+        }
 
 
     }

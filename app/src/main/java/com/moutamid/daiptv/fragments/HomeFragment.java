@@ -42,7 +42,6 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
@@ -205,10 +204,10 @@ public class HomeFragment extends Fragment {
         requestQueue.add(objectRequest);
     }
 
-    public void refreshList(){
+    public void refreshList() {
         Collections.shuffle(series);
         Collections.shuffle(films);
-        if (adapter != null){
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
     }
@@ -273,7 +272,7 @@ public class HomeFragment extends Fragment {
         dialog.show();
         for (int j = 0; j < films.size(); j++) {
             MovieModel movie = films.get(j);
-            String url = Constants.getMovieDetails(movie.id, Constants.TYPE_MOVIE);
+            String url = Constants.getMovieDetails(movie.id, Constants.TYPE_MOVIE, "");
             int finalJ = j;
             JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                     response -> {
@@ -337,7 +336,7 @@ public class HomeFragment extends Fragment {
     private void updateSeriesPoster() {
         for (int j = 0; j < series.size(); j++) {
             MovieModel movie = series.get(j);
-            String url = Constants.getMovieDetails(movie.id, Constants.TYPE_TV);
+            String url = Constants.getMovieDetails(movie.id, Constants.TYPE_TV, "");
             int finalJ = j;
             JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                     response -> {
@@ -440,7 +439,7 @@ public class HomeFragment extends Fragment {
                                 JSONObject object = array.getJSONObject(0);
                                 id = object.getInt("id");
                             }
-                            getDetails(id);
+                            getDetails(id, Constants.lang_fr);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -454,12 +453,12 @@ public class HomeFragment extends Fragment {
         requestQueue.add(objectRequest);
     }
 
-    private void getDetails(int id) {
+    private void getDetails(int id, String language) {
         String url;
         if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieDetails(id, Constants.TYPE_TV);
+            url = Constants.getMovieDetails(id, Constants.TYPE_TV, language);
         } else {
-            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE);
+            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE, language);
         }
         Log.d(TAG, "fetchID: ID  " + id);
         Log.d(TAG, "fetchID: URL  " + url);
@@ -468,9 +467,9 @@ public class HomeFragment extends Fragment {
                     try {
                         movieModel = new MovieModel();
                         try {
-                            movieModel.original_title = response.getString("original_title");
+                            movieModel.original_title = response.getString("title");
                         } catch (Exception e) {
-                            movieModel.original_title = response.getString("original_name");
+                            movieModel.original_title = response.getString("name");
                         }
                         try {
                             movieModel.release_date = response.getString("release_date");
@@ -478,6 +477,11 @@ public class HomeFragment extends Fragment {
                             movieModel.release_date = response.getString("first_air_date");
                         }
                         movieModel.overview = response.getString("overview");
+
+                        if (movieModel.overview.isEmpty())
+                            getDetails(id, "");
+
+                        movieModel.isFrench = !movieModel.overview.isEmpty();
                         movieModel.tagline = response.getString("tagline");
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
@@ -488,7 +492,7 @@ public class HomeFragment extends Fragment {
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
                         int index = 0, logoIndex = 0;
-                        if  (images.length() > 1) {
+                        if (images.length() > 1) {
                             String lang = "NULL";
                             for (int i = 0; i < images.length(); i++) {
                                 JSONObject object = images.getJSONObject(i);
@@ -503,7 +507,7 @@ public class HomeFragment extends Fragment {
                                 }
                                 Log.d(TAG, "getDetails: LANGGGG " + lang);
                             }
-                            if (index == 0 && lang.equals("NULL")){
+                            if (index == 0 && lang.equals("NULL")) {
                                 for (int i = 0; i < images.length(); i++) {
                                     JSONObject object = images.getJSONObject(i);
                                     lang = object.getString("iso_639_1");
@@ -516,7 +520,7 @@ public class HomeFragment extends Fragment {
                                     }
                                 }
                             }
-                            if (index == 0 && lang.equals("NULL")){
+                            if (index == 0 && lang.equals("NULL")) {
                                 for (int i = 0; i < images.length(); i++) {
                                     JSONObject object = images.getJSONObject(i);
                                     lang = object.getString("iso_639_1");
@@ -528,8 +532,10 @@ public class HomeFragment extends Fragment {
                                 }
                             }
                             movieModel.banner = images.getJSONObject(index).getString("file_path");
+                        } else {
+                            getBackdrop(id, "");
                         }
-
+                        Log.d(TAG, "getDetails: after Back");
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
                         if (logos.length() > 1) {
                             String lang = "";
@@ -590,6 +596,74 @@ public class HomeFragment extends Fragment {
         requestQueue.add(objectRequest);
     }
 
+    private void getBackdrop(int id, String language) {
+        Log.d(TAG, "getBackdrop: ");
+        String url;
+        if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
+            url = Constants.getMovieDetails(id, Constants.TYPE_TV, language);
+        } else {
+            url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE, language);
+        }
+        Log.d(TAG, "fetchID: ID  " + id);
+        Log.d(TAG, "fetchID: URL  " + url);
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                jsonObject -> {
+                    try {
+                        JSONArray images = jsonObject.getJSONObject("images").getJSONArray("backdrops");
+                        int index = 0, logoIndex = 0;
+                        if (images.length() > 1) {
+                            String lang = "NULL";
+                            for (int i = 0; i < images.length(); i++) {
+                                JSONObject object = images.getJSONObject(i);
+                                lang = object.getString("iso_639_1");
+                                Log.d(TAG, "getDetails: " + lang);
+                                if (lang.equals("null")) {
+                                    Log.d(TAG, "getDetails: NULL");
+                                    index = i;
+                                    break;
+                                } else {
+                                    lang = "NULL";
+                                }
+                                Log.d(TAG, "getDetails: LANGGGG " + lang);
+                            }
+                            if (index == 0 && lang.equals("NULL")) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("fr")) {
+                                        Log.d(TAG, "getDetails: FR");
+                                        index = i;
+                                        break;
+                                    } else {
+                                        lang = "NULL";
+                                    }
+                                }
+                            }
+                            if (index == 0 && lang.equals("NULL")) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("en")) {
+                                        Log.d(TAG, "getDetails: ENG");
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                            }
+                            movieModel.banner = images.getJSONObject(index).getString("file_path");
+                            Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).placeholder(R.color.transparent).into(binding.banner);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }, volleyError -> {
+            Log.d(TAG, "getBackdrop: " + volleyError.getLocalizedMessage());
+        }
+        );
+        requestQueue.add(objectRequest);
+    }
+
     private void setUI() {
         dialog.dismiss();
         binding.name.setText(movieModel.original_title);
@@ -636,23 +710,25 @@ public class HomeFragment extends Fragment {
                     Language.AUTO_DETECT,   //Source Language
                     Language.FRENCH,         //Target Language
                     movieModel.genres);           //Query Text
-            TranslateAPI tagline = new TranslateAPI(
-                    Language.AUTO_DETECT,   //Source Language
-                    Language.FRENCH,         //Target Language
-                    movieModel.original_title);           //Query Text
+            if (!movieModel.isFrench) {
+                TranslateAPI tagline = new TranslateAPI(
+                        Language.AUTO_DETECT,   //Source Language
+                        Language.FRENCH,         //Target Language
+                        movieModel.original_title);           //Query Text
 
-            tagline.setTranslateListener(new TranslateAPI.TranslateListener() {
-                @Override
-                public void onSuccess(String translatedText) {
-                    Log.d(TAG, "onSuccess: " + translatedText);
-                    // binding.name.setText(translatedText);
-                }
+                tagline.setTranslateListener(new TranslateAPI.TranslateListener() {
+                    @Override
+                    public void onSuccess(String translatedText) {
+                        Log.d(TAG, "onSuccess: " + translatedText);
+                        binding.name.setText(translatedText);
+                    }
 
-                @Override
-                public void onFailure(String ErrorText) {
-                    Log.d(TAG, "onFailure: " + ErrorText);
-                }
-            });
+                    @Override
+                    public void onFailure(String ErrorText) {
+                        Log.d(TAG, "onFailure: " + ErrorText);
+                    }
+                });
+            }
             type.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {
