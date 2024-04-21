@@ -19,7 +19,7 @@ import com.moutamid.daiptv.viewmodels.ChannelViewModel;
 
 import java.util.ArrayList;
 
-public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> {
+public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.ParentVH> {
     private static final String TAG = "ParentAdapter";
     Context context;
     ChannelViewModel itemViewModel;
@@ -28,7 +28,7 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
     String type;
     ItemSelected itemSelected;
 
-    public ParentAdapter(Context context, ArrayList<ParentItemModel> list, String type, ChannelViewModel itemViewModel, LifecycleOwner viewLifecycleOwner, ItemSelected itemSelected) {
+    public FilmParentAdapter(Context context, ArrayList<ParentItemModel> list, String type, ChannelViewModel itemViewModel, LifecycleOwner viewLifecycleOwner, ItemSelected itemSelected) {
         this.context = context;
         this.list = list;
         this.type = type;
@@ -40,7 +40,7 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
     @NonNull
     @Override
     public ParentVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ParentVH(LayoutInflater.from(context).inflate(R.layout.parent_item, parent, false));
+        return new ParentVH(LayoutInflater.from(context).inflate(R.layout.film_parent_item, parent, false));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         public ParentVH(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
-            childRC = itemView.findViewById(R.id.childRC);
+            childRC = itemView.findViewById(R.id.filmChildRC);
         }
     }
 

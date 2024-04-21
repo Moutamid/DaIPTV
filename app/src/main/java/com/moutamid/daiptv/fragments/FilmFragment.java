@@ -31,6 +31,7 @@ import com.mannan.translateapi.TranslateAPI;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
+import com.moutamid.daiptv.adapters.FilmParentAdapter;
 import com.moutamid.daiptv.adapters.HomeParentAdapter;
 import com.moutamid.daiptv.adapters.ParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
@@ -66,7 +67,7 @@ public class FilmFragment extends Fragment {
     AppDatabase database;
     ChannelsModel randomChannel;
     ChannelViewModel itemViewModel;
-    ParentAdapter parentAdapter;
+    FilmParentAdapter parentAdapter;
     Dialog dialog;
     MovieModel movieModel;
     private RequestQueue requestQueue;
@@ -152,7 +153,7 @@ public class FilmFragment extends Fragment {
             String group = model.getChannelGroup();
             parent.add(new ParentItemModel(group, true));
         }
-        parentAdapter = new ParentAdapter(mContext, parent, Constants.TYPE_MOVIE, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
+        parentAdapter = new FilmParentAdapter(mContext, parent, Constants.TYPE_MOVIE, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
             @Override
             public void selected(ChannelsModel model) {
                 randomChannel = model;

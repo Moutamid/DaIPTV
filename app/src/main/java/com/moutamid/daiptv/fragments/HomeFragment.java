@@ -421,7 +421,7 @@ public class HomeFragment extends Fragment {
         }
 
         Log.d(TAG, "fetchID: URL  " + url);
-
+        requestQueue.cancelAll("FIND_ID");
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
@@ -450,6 +450,7 @@ public class HomeFragment extends Fragment {
             error.printStackTrace();
             dialog.dismiss();
         });
+        objectRequest.setTag("FIND_ID");
         requestQueue.add(objectRequest);
     }
 
@@ -585,6 +586,7 @@ public class HomeFragment extends Fragment {
             error.printStackTrace();
             dialog.dismiss();
         });
+        objectRequest.setTag("FIND_ID");
         requestQueue.add(objectRequest);
     }
 
@@ -643,7 +645,7 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onSuccess(String translatedText) {
                     Log.d(TAG, "onSuccess: " + translatedText);
-                    binding.name.setText(translatedText);
+                    // binding.name.setText(translatedText);
                 }
 
                 @Override

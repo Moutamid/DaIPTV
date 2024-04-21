@@ -10,6 +10,7 @@
     android:clickable="true"
     android:focusable="true"
     app:strokeWidth="3dp"
+    android:nextFocusUp="@id/Chaines"
     app:strokeColor="@color/stroke"
     android:focusableInTouchMode="true"
     app:cardElevation="0dp">

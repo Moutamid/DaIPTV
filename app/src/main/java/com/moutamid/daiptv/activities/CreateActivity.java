@@ -96,11 +96,11 @@ public class CreateActivity extends AppCompatActivity {
 
         updateAndroidSecurityProvider();
 
-//         startPRDownloader();
+         startPRDownloader();
 
         // startDownloading();
 
-       new ReadFileAsyncTask("dummy.m3u").execute();
+//       new ReadFileAsyncTask("dummy.m3u").execute();
     }
 
     private void startPRDownloader() {
