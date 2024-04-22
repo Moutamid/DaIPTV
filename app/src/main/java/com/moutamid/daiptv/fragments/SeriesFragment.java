@@ -26,6 +26,7 @@ import com.fxn.stash.Stash;
 import com.mannan.translateapi.Language;
 import com.mannan.translateapi.TranslateAPI;
 import com.moutamid.daiptv.R;
+import com.moutamid.daiptv.adapters.FilmParentAdapter;
 import com.moutamid.daiptv.adapters.ParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentSeriesBinding;
@@ -154,12 +155,9 @@ public class SeriesFragment extends Fragment {
 
         binding.recycler.setHasFixedSize(false);
         binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
-        adapter = new ParentAdapter(mContext, parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
-            @Override
-            public void selected(ChannelsModel model) {
-                randomChannel = model;
-                fetchID();
-            }
+        adapter = new ParentAdapter(mContext, parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), model -> {
+            randomChannel = model;
+            fetchID();
         });
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(binding.recycler);
@@ -178,13 +176,6 @@ public class SeriesFragment extends Fragment {
     }
 
     ParentAdapter adapter;
-    ItemSelected selected = new ItemSelected() {
-        @Override
-        public void selected(ChannelsModel model) {
-            randomChannel = model;
-            fetchID();
-        }
-    };
 
     private void fetchID() {
         String name = Constants.regexName(randomChannel.getChannelName());
@@ -213,8 +204,8 @@ public class SeriesFragment extends Fragment {
 
     private void getDetails(int id, String language) {
         String url = Constants.getMovieDetails(id, Constants.TYPE_TV, language);
-        Log.d(TAG, "fetchID: ID  " + id);
-        Log.d(TAG, "fetchID: URL  " + url);
+        Log.d(TAG, "getDetails: ID  " + id);
+        Log.d(TAG, "getDetails: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
@@ -235,8 +226,9 @@ public class SeriesFragment extends Fragment {
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
 
-                        if (!movieModel.overview.isEmpty())
+                        if (movieModel.overview.isEmpty())
                             getDetails(id, "");
+
                         movieModel.isFrench = !movieModel.overview.isEmpty();
 
                         JSONArray videos = response.getJSONObject("videos").getJSONArray("results");
@@ -348,8 +340,8 @@ public class SeriesFragment extends Fragment {
         } else {
             url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE, language);
         }
-        Log.d(TAG, "fetchID: ID  " + id);
-        Log.d(TAG, "fetchID: URL  " + url);
+        Log.d(TAG, "getBackdrop: ID  " + id);
+        Log.d(TAG, "getBackdrop: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 jsonObject -> {
                     try {

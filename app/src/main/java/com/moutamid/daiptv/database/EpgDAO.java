@@ -23,7 +23,7 @@ public interface EpgDAO {
     @Query("SELECT * FROM epg WHERE channel = :channel ORDER BY ID ASC")
     List<EPGModel> getTitle(String channel);
 
-//    @Delete(entity = EPGModel.class)
-//    void Delete();
+    @Query("DELETE FROM epg")
+    void Delete();
 
 }

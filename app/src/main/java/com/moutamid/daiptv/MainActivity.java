@@ -79,8 +79,9 @@ public class MainActivity extends AppCompatActivity {
         toolbar = binding.toolbar;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
+//        database.epgDAO().Delete();
         List<EPGModel> list = database.epgDAO().getEPG();
-        if (list.size() == 0)
+        if (list.isEmpty())
             get();
 
         binding.Accueil.setOnFocusChangeListener(new View.OnFocusChangeListener() {

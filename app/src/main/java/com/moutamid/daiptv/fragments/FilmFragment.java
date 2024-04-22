@@ -215,18 +215,73 @@ public class FilmFragment extends Fragment {
     }
 
     HomeParentAdapter adapter;
-    ItemSelected selected = new ItemSelected() {
-        @Override
-        public void selected(ChannelsModel model) {
-            randomChannel = model;
-            fetchID();
+
+    private void updatePosters() {
+        for (int j = 0; j < films.size(); j++) {
+            MovieModel movie = films.get(j);
+            String url = Constants.getMovieDetails(movie.id, Constants.TYPE_MOVIE, "");
+            int finalJ = j;
+            JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                    response -> {
+                        try {
+                            JSONArray images = response.getJSONObject("images").getJSONArray("posters");
+                            int index = 0;
+                            if (images.length() > 1) {
+                                String lang = "NULL";
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    lang = object.getString("iso_639_1");
+                                    if (lang.equals("fr")) {
+                                        Log.d(TAG, "getDetails: FR");
+                                        index = i;
+                                        break;
+                                    } else {
+                                        lang = "NULL";
+                                    }
+                                }
+                                if (index == 0 && lang.equals("NULL")) {
+                                    for (int i = 0; i < images.length(); i++) {
+                                        JSONObject object = images.getJSONObject(i);
+                                        lang = object.getString("iso_639_1");
+                                        if (lang.equals("en")) {
+                                            Log.d(TAG, "getDetails: ENG");
+                                            index = i;
+                                            break;
+                                        } else {
+                                            lang = "NULL";
+                                        }
+                                    }
+                                }
+                                if (index == 0 && lang.equals("NULL")) {
+                                    for (int i = 0; i < images.length(); i++) {
+                                        JSONObject object = images.getJSONObject(i);
+                                        lang = object.getString("iso_639_1");
+                                        if (lang.equals("null")) {
+                                            Log.d(TAG, "getDetails: ENG");
+                                            index = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                                String poster = images.getJSONObject(index).getString("file_path");
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            dialog.dismiss();
+                        }
+                    }, error -> {
+                error.printStackTrace();
+                dialog.dismiss();
+            });
+            requestQueue.add(objectRequest);
         }
-    };
+    }
 
     private void getDetails(int id, String language) {
         String url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE, language);
-        Log.d(TAG, "fetchID: ID  " + id);
-        Log.d(TAG, "fetchID: URL  " + url);
+        Log.d(TAG, "getDetails: ID  " + id);
+        Log.d(TAG, "getDetails: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
@@ -362,8 +417,8 @@ public class FilmFragment extends Fragment {
         } else {
             url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE, language);
         }
-        Log.d(TAG, "fetchID: ID  " + id);
-        Log.d(TAG, "fetchID: URL  " + url);
+        Log.d(TAG, "getBackdrop: ID  " + id);
+        Log.d(TAG, "getBackdrop: URL  " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 jsonObject -> {
                     try {
