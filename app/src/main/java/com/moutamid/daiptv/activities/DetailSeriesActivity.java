@@ -1,8 +1,5 @@
 package com.moutamid.daiptv.activities;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -11,6 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,7 +38,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 
 public class DetailSeriesActivity extends AppCompatActivity {
     ActivityDetailSeriesBinding binding;
@@ -48,6 +47,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
     MovieModel movieModel;
     private static final String TAG = "DetailSeriesActivity";
     ArrayList<CastModel> cast;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,16 +64,20 @@ public class DetailSeriesActivity extends AppCompatActivity {
         initializeDialog();
 
         binding.reader.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl()));
-            intent.setType("video/*");
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
+            if (model.getChannelUrl() != null) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl()));
+                intent.setType("video/*");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
             }
         });
 
-        binding.add.setOnClickListener(v->{
+        binding.add.setOnClickListener(v -> {
             new AlertDialog.Builder(this)
                     .setCancelable(true)
                     .setTitle("Ajouter aux Favoris")
@@ -92,7 +96,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
 
         requestQueue = VolleySingleton.getInstance(DetailSeriesActivity.this).getRequestQueue();
 
-        if (model != null){
+        if (model != null) {
             fetchID();
         } else {
             Toast.makeText(this, "Chaîne introuvable", Toast.LENGTH_SHORT).show();
@@ -144,12 +148,12 @@ public class DetailSeriesActivity extends AppCompatActivity {
 
                         try {
                             movieModel.original_title = response.getString("original_title");
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             movieModel.original_title = response.getString("original_name");
                         }
                         try {
                             movieModel.release_date = response.getString("release_date");
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             movieModel.release_date = response.getString("first_air_date");
                         }
                         movieModel.overview = response.getString("overview");
@@ -165,12 +169,28 @@ public class DetailSeriesActivity extends AppCompatActivity {
                         JSONArray images = response.getJSONObject("images").getJSONArray("backdrops");
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
-                        Random r = new Random();
-                        movieModel.banner = "";
-                        if (images.length() > 1){
-                            int index = r.nextInt(images.length());
-                            movieModel.banner = images.getJSONObject(index).getString("file_path");
-                        }
+                        int index = -1;
+                        if (images.length() > 1) {
+                            String[] preferredLanguages = {"null", "fr", "en"};
+                            for (String lang : preferredLanguages) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    String isoLang = object.getString("iso_639_1");
+                                    if (isoLang.equalsIgnoreCase(lang)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
+                                    break;
+                                }
+                            }
+                            String banner = "";
+                            if (index != -1) {
+                                banner = images.getJSONObject(index).getString("file_path");
+                            }
+                            movieModel.banner = banner;
+                        } else getBackdrop(id, "");
 
                         for (int i = 0; i < videos.length(); i++) {
                             JSONObject object = videos.getJSONObject(i);
@@ -197,7 +217,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
                         e.printStackTrace();
                         runOnUiThread(() -> {
                             dialog.dismiss();
-                            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Aucun contenu trouvé sur le serveur", Toast.LENGTH_LONG).show();
                         });
                     }
                 }, error -> {
@@ -206,6 +226,49 @@ public class DetailSeriesActivity extends AppCompatActivity {
                 dialog.dismiss();
             });
         });
+        requestQueue.add(objectRequest);
+    }
+
+    private void getBackdrop(int id, String language) {
+        Log.d(TAG, "getBackdrop: ");
+        String url = Constants.getMovieDetails(id, Constants.TYPE_TV, language);
+        Log.d(TAG, "fetchID: ID  " + id);
+        Log.d(TAG, "fetchID: URL  " + url);
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                jsonObject -> {
+                    try {
+                        JSONArray images = jsonObject.getJSONObject("images").getJSONArray("backdrops");
+                        int index = -1, logoIndex = 0;
+                        if (images.length() > 1) {
+                            String[] preferredLanguages = {"null", "fr", "en"};
+                            for (String lang : preferredLanguages) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    String isoLang = object.getString("iso_639_1");
+                                    if (isoLang.equalsIgnoreCase(lang)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
+                                    break;
+                                }
+                            }
+                            String banner = "";
+                            if (index != -1) {
+                                banner = images.getJSONObject(index).getString("file_path");
+                            }
+                            movieModel.banner = banner;
+                            Glide.with(this).load(Constants.getImageLink(movieModel.banner)).placeholder(R.color.transparent).into(binding.banner);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }, volleyError -> {
+            Log.d(TAG, "getBackdrop: " + volleyError.getLocalizedMessage());
+        }
+        );
         requestQueue.add(objectRequest);
     }
 
@@ -254,18 +317,18 @@ public class DetailSeriesActivity extends AppCompatActivity {
         translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
             @Override
             public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: "+translatedText);
+                Log.d(TAG, "onSuccess: " + translatedText);
                 binding.desc.setText(translatedText);
             }
 
             @Override
             public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: "+ErrorText);
+                Log.d(TAG, "onFailure: " + ErrorText);
             }
         });
 
 
-        if (!movieModel.isFrench){
+        if (!movieModel.isFrench) {
             TranslateAPI nameAPI = new TranslateAPI(
                     Language.AUTO_DETECT,   //Source Language
                     Language.FRENCH,         //Target Language
@@ -274,13 +337,13 @@ public class DetailSeriesActivity extends AppCompatActivity {
             nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {
-                    Log.d(TAG, "onSuccess: "+translatedText);
+                    Log.d(TAG, "onSuccess: " + translatedText);
                     binding.name.setText(translatedText);
                 }
 
                 @Override
                 public void onFailure(String ErrorText) {
-                    Log.d(TAG, "onFailure: "+ErrorText);
+                    Log.d(TAG, "onFailure: " + ErrorText);
                 }
             });
         }

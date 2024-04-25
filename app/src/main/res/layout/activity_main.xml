@@ -223,6 +223,7 @@
                     android:focusable="true"
                     android:nextFocusLeft="@id/series"
                     android:nextFocusRight="@id/profile"
+                    android:nextFocusDown="@id/searchET"
                     android:layout_marginHorizontal="10dp"
                     android:foreground="@color/transparent"
                     app:cardBackgroundColor="@color/focus"

@@ -16,6 +16,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.ArrayList;
 
@@ -37,7 +38,8 @@ public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ListVH> {
     @Override
     public void onBindViewHolder(@NonNull ListVH holder, int position) {
         ChannelsModel model = list.get(holder.getAbsoluteAdapterPosition());
-        Glide.with(context).load(model.getChannelImg()).placeholder(R.color.transparent).into(holder.image);
+        String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg();
+        Glide.with(context).load(link).placeholder(R.color.transparent).into(holder.image);
         holder.title.setText(model.getChannelName());
         holder.epg.setText(model.getChannelGroup());
 

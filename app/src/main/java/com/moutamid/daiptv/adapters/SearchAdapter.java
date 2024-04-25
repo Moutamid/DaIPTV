@@ -2,6 +2,7 @@ package com.moutamid.daiptv.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.fxn.stash.Stash;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
+import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -27,6 +29,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
 
     Context context;
     List<ChannelsModel> list;
+    private static final String TAG = "SearchAdapter";
 
     public SearchAdapter(Context context, List<ChannelsModel> list) {
         this.context = context;
@@ -36,7 +39,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
     @NonNull
     @Override
     public SearchVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new SearchVH(LayoutInflater.from(context).inflate(R.layout.child_item, parent, false));
+        return new SearchVH(LayoutInflater.from(context).inflate(R.layout.search_item, parent, false));
     }
 
     @Override
@@ -46,26 +49,16 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
             Glide.with(context).load(model.getChannelImg()).placeholder(R.color.transparent).into(holder.image);
 
             holder.itemView.setOnClickListener(v -> {
+                Log.d(TAG, "onBindViewHolder: " + model.channelName);
                 context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", model.getChannelName()));
             });
 
             holder.itemView.setOnLongClickListener(v -> {
-                new AlertDialog.Builder(context)
-                        .setCancelable(true)
-                        .setTitle("Add to Favorites")
-                        .setMessage("Would you like to add this item to your Favorites list? Once added, you can easily access it later.")
-                        .setPositiveButton("Add", (dialog, which) -> {
-                            dialog.dismiss();
-                            UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
-                            ArrayList<ChannelsModel> list  = Stash.getArrayList(userModel.id, ChannelsModel.class);
-                            list.add(model);
-                        }).setNegativeButton("Close", (dialog, which) -> {
-                            dialog.dismiss();
-                        })
-                        .show();
+                new AddFavortDialog(context, model).show();
                 return false;
             });
         } catch (Exception e){
+            Log.d(TAG, "onBindViewHolder: " + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -82,7 +75,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
         public SearchVH(@NonNull View itemView) {
             super(itemView);
             add = itemView.findViewById(R.id.add);
-            play = itemView.findViewById(R.id.play);
+//            play = itemView.findViewById(R.id.play);
             image = itemView.findViewById(R.id.image);
         }
     }

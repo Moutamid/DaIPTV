@@ -17,8 +17,10 @@ import com.bumptech.glide.Glide;
 import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
+import com.moutamid.daiptv.activities.DetailSeriesActivity;
 import com.moutamid.daiptv.activities.SeriesActivity;
 import com.moutamid.daiptv.database.AppDatabase;
+import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MovieModel;
@@ -50,33 +52,20 @@ public class HomeChildAdapter extends RecyclerView.Adapter<HomeChildAdapter.Movi
         MovieModel model = list.get(holder.getAbsoluteAdapterPosition());
         Glide.with(context).load(Constants.getImageLink(model.banner)).placeholder(R.color.grey2).into(holder.image);
         holder.itemView.setOnLongClickListener(v -> {
-            new AlertDialog.Builder(context)
-                    .setCancelable(true)
-                    .setTitle("Ajouter aux Favoris")
-                    .setMessage("Souhaitez-vous ajouter cet article à votre liste de favoris ? Une fois ajouté, vous pourrez facilement y accéder plus tard.")
-                    .setPositiveButton("Ajouter", (dialog, which) -> {
-                        dialog.dismiss();
-                        UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
-                        ChannelsModel model1 = AppDatabase.getInstance(context).channelsDAO().getSearchChannel(model.original_title, model.type);
-                        if (model1 != null){
-                            ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
-                            list.add(model1);
-                            Stash.put(userModel.id, list);
-                        } else {
-                            Toast.makeText(context, "Je ne peux pas être ajouté à la liste pour le moment", Toast.LENGTH_SHORT).show();
-                        }
-                    }).setNegativeButton("Fermer", (dialog, which) -> {
-                        dialog.dismiss();
-                    })
-                    .show();
+            ChannelsModel model1 = AppDatabase.getInstance(context).channelsDAO().getSearchChannel(model.original_title, model.type);
+            new AddFavortDialog(context, model1).show();
             return true;
         });
 
         holder.itemView.setOnClickListener(v -> {
-            ChannelsModel channelsModel = AppDatabase.getInstance(context).channelsDAO().getSearchChannel(model.original_title, model.type);
+            ChannelsModel channelsModel = new ChannelsModel();
+            channelsModel.setChannelImg(model.banner);
+            channelsModel.setChannelName(model.original_title);
+            channelsModel.setType(model.type);
+            channelsModel.setChannelGroup(model.type);
             Stash.put(Constants.PASS, channelsModel);
             if (model.type.equals(Constants.TYPE_SERIES))
-                context.startActivity(new Intent(context, SeriesActivity.class));
+                context.startActivity(new Intent(context, DetailSeriesActivity.class));
             else
                 context.startActivity(new Intent(context, DetailActivity.class));
         });

@@ -36,6 +36,7 @@ import com.moutamid.daiptv.models.MoviesGroupModel;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.models.TopItems;
 import com.moutamid.daiptv.utilis.Constants;
+import com.moutamid.daiptv.utilis.CustomPagerSnapHelper;
 import com.moutamid.daiptv.utilis.VolleySingleton;
 import com.moutamid.daiptv.viewmodels.ChannelViewModel;
 
@@ -84,7 +85,6 @@ public class FilmFragment extends Fragment {
 
     ArrayList<MovieModel> films;
     ArrayList<TopItems> list;
-
     List<MoviesGroupModel> items = new ArrayList<>();
     ArrayList<ParentItemModel> parent = new ArrayList<>();
 
@@ -147,16 +147,31 @@ public class FilmFragment extends Fragment {
             String group = model.getChannelGroup();
             parent.add(new ParentItemModel(group, true));
         }
+
         parentAdapter = new FilmParentAdapter(mContext, parent, Constants.TYPE_MOVIE, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
             @Override
             public void selected(ChannelsModel model) {
                 randomChannel = model;
                 fetchID();
             }
+
+            @Override
+            public void cancel() {
+                requestQueue.cancelAll(Constants.FIND_ID);
+                requestQueue.cancelAll(Constants.getDetails);
+                requestQueue.cancelAll(Constants.Backdrop);
+            }
         });
-        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        CustomPagerSnapHelper snapHelper = new CustomPagerSnapHelper();
         snapHelper.attachToRecyclerView(binding.recycler);
         binding.recycler.setAdapter(parentAdapter);
+
+        snapHelper.setSnapPositionChangeListener(new CustomPagerSnapHelper.OnSnapPositionChangeListener() {
+            @Override
+            public void onSnapPositionChange(int position) {
+
+            }
+        });
 
         return binding.getRoot();
     }
@@ -197,6 +212,7 @@ public class FilmFragment extends Fragment {
             error.printStackTrace();
             dialog.dismiss();
         });
+        objectRequest.setTag(Constants.FIND_ID);
         requestQueue.add(objectRequest);
     }
 
@@ -215,68 +231,6 @@ public class FilmFragment extends Fragment {
     }
 
     HomeParentAdapter adapter;
-
-    private void updatePosters() {
-        for (int j = 0; j < films.size(); j++) {
-            MovieModel movie = films.get(j);
-            String url = Constants.getMovieDetails(movie.id, Constants.TYPE_MOVIE, "");
-            int finalJ = j;
-            JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                    response -> {
-                        try {
-                            JSONArray images = response.getJSONObject("images").getJSONArray("posters");
-                            int index = 0;
-                            if (images.length() > 1) {
-                                String lang = "NULL";
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("fr")) {
-                                        Log.d(TAG, "getDetails: FR");
-                                        index = i;
-                                        break;
-                                    } else {
-                                        lang = "NULL";
-                                    }
-                                }
-                                if (index == 0 && lang.equals("NULL")) {
-                                    for (int i = 0; i < images.length(); i++) {
-                                        JSONObject object = images.getJSONObject(i);
-                                        lang = object.getString("iso_639_1");
-                                        if (lang.equals("en")) {
-                                            Log.d(TAG, "getDetails: ENG");
-                                            index = i;
-                                            break;
-                                        } else {
-                                            lang = "NULL";
-                                        }
-                                    }
-                                }
-                                if (index == 0 && lang.equals("NULL")) {
-                                    for (int i = 0; i < images.length(); i++) {
-                                        JSONObject object = images.getJSONObject(i);
-                                        lang = object.getString("iso_639_1");
-                                        if (lang.equals("null")) {
-                                            Log.d(TAG, "getDetails: ENG");
-                                            index = i;
-                                            break;
-                                        }
-                                    }
-                                }
-                                String poster = images.getJSONObject(index).getString("file_path");
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            dialog.dismiss();
-                        }
-                    }, error -> {
-                error.printStackTrace();
-                dialog.dismiss();
-            });
-            requestQueue.add(objectRequest);
-        }
-    }
 
     private void getDetails(int id, String language) {
         String url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE, language);
@@ -309,44 +263,28 @@ public class FilmFragment extends Fragment {
 
                         JSONArray videos = response.getJSONObject("videos").getJSONArray("results");
                         JSONArray images = response.getJSONObject("images").getJSONArray("backdrops");
-                        JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
-
-                        int index = 0;
+                        int index = -1;
                         if (images.length() > 1) {
-                            String lang = "NULL";
-                            for (int i = 0; i < images.length(); i++) {
-                                JSONObject object = images.getJSONObject(i);
-                                lang = object.getString("iso_639_1");
-                                if (lang.equals("null")) {
-                                    index = i;
+
+                            String[] preferredLanguages = {"null", "fr", "en"};
+                            for (String lang : preferredLanguages) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    String isoLang = object.getString("iso_639_1");
+                                    if (isoLang.equalsIgnoreCase(lang)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
                                     break;
-                                } else {
-                                    lang = "NULL";
                                 }
                             }
-                            if (index == 0 && lang.equals("NULL")) {
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("fr")) {
-                                        index = i;
-                                        break;
-                                    } else {
-                                        lang = "NULL";
-                                    }
-                                }
+                            String banner = "";
+                            if (index != -1) {
+                                banner = images.getJSONObject(index).getString("file_path");
                             }
-                            if (index == 0 && lang.equals("NULL")) {
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("en")) {
-                                        index = i;
-                                        break;
-                                    }
-                                }
-                            }
-                            movieModel.banner = images.getJSONObject(index).getString("file_path");
+                            movieModel.banner = banner;
                         } else getBackdrop(id, "");
                         int logoIndex = 0;
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
@@ -406,6 +344,7 @@ public class FilmFragment extends Fragment {
             error.printStackTrace();
             dialog.dismiss();
         });
+        objectRequest.setTag(Constants.getDetails);
         requestQueue.add(objectRequest);
     }
 
@@ -423,47 +362,27 @@ public class FilmFragment extends Fragment {
                 jsonObject -> {
                     try {
                         JSONArray images = jsonObject.getJSONObject("images").getJSONArray("backdrops");
-                        int index = 0, logoIndex = 0;
+                        int index = -1, logoIndex = 0;
                         if (images.length() > 1) {
-                            String lang = "NULL";
-                            for (int i = 0; i < images.length(); i++) {
-                                JSONObject object = images.getJSONObject(i);
-                                lang = object.getString("iso_639_1");
-                                Log.d(TAG, "getDetails: " + lang);
-                                if (lang.equals("null")) {
-                                    Log.d(TAG, "getDetails: NULL");
-                                    index = i;
+                            String[] preferredLanguages = {"null", "fr", "en"};
+                            for (String lang : preferredLanguages) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    String isoLang = object.getString("iso_639_1");
+                                    if (isoLang.equalsIgnoreCase(lang)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
                                     break;
-                                } else {
-                                    lang = "NULL";
-                                }
-                                Log.d(TAG, "getDetails: LANGGGG " + lang);
-                            }
-                            if (index == 0 && lang.equals("NULL")) {
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("fr")) {
-                                        Log.d(TAG, "getDetails: FR");
-                                        index = i;
-                                        break;
-                                    } else {
-                                        lang = "NULL";
-                                    }
                                 }
                             }
-                            if (index == 0 && lang.equals("NULL")) {
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("en")) {
-                                        Log.d(TAG, "getDetails: ENG");
-                                        index = i;
-                                        break;
-                                    }
-                                }
+                            String banner = "";
+                            if (index != -1) {
+                                banner = images.getJSONObject(index).getString("file_path");
                             }
-                            movieModel.banner = images.getJSONObject(index).getString("file_path");
+                            movieModel.banner = banner;
                             Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).placeholder(R.color.transparent).into(binding.banner);
                         }
                     } catch (JSONException e) {
@@ -474,6 +393,7 @@ public class FilmFragment extends Fragment {
             Log.d(TAG, "getBackdrop: " + volleyError.getLocalizedMessage());
         }
         );
+        objectRequest.setTag(Constants.Backdrop);
         requestQueue.add(objectRequest);
     }
 

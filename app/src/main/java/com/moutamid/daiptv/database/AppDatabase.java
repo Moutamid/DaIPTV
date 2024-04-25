@@ -16,7 +16,7 @@ import com.moutamid.daiptv.models.SeriesGroupModel;
 
 @Database(entities = {  ChannelsModel.class, ChannelsGroupModel.class, SeriesGroupModel.class,
                         MoviesGroupModel.class, RecentChannelsModel.class, EPGModel.class
-                    }, version = 2, exportSchema = false)
+                    }, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase database;
     private static String Channels_DATABASE = "Channels_DATABASE";

@@ -169,13 +169,28 @@ public class DetailActivity extends AppCompatActivity {
                         JSONArray images = response.getJSONObject("images").getJSONArray("backdrops");
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
-                        Random r = new Random();
-                        int index = 0;
-                        if (images.length() > 1){
-                            index = r.nextInt(images.length());
-                        }
-
-                        movieModel.banner = images.getJSONObject(index).getString("file_path");
+                        int index = -1;
+                        if (images.length()>1){
+                            String[] preferredLanguages = {"null", "fr", "en"};
+                            for (String lang : preferredLanguages) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    String isoLang = object.getString("iso_639_1");
+                                    if (isoLang.equalsIgnoreCase(lang)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
+                                    break;
+                                }
+                            }
+                            String banner = "";
+                            if (index != -1) {
+                                banner = images.getJSONObject(index).getString("file_path");
+                            }
+                            movieModel.banner = banner;
+                        } else getBackdrop(id, "");
 
                         for (int i = 0; i < videos.length(); i++) {
                             JSONObject object = videos.getJSONObject(i);
@@ -202,7 +217,7 @@ public class DetailActivity extends AppCompatActivity {
                         e.printStackTrace();
                         runOnUiThread(() -> {
                             dialog.dismiss();
-                            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Aucun contenu trouvé sur le serveur", Toast.LENGTH_LONG).show();
                         });
                     }
                 }, error -> {
@@ -211,6 +226,49 @@ public class DetailActivity extends AppCompatActivity {
                 dialog.dismiss();
             });
         });
+        requestQueue.add(objectRequest);
+    }
+
+    private void getBackdrop(int id, String language) {
+        Log.d(TAG, "getBackdrop: ");
+        String url = Constants.getMovieDetails(id, Constants.TYPE_MOVIE, language);
+        Log.d(TAG, "fetchID: ID  " + id);
+        Log.d(TAG, "fetchID: URL  " + url);
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                jsonObject -> {
+                    try {
+                        JSONArray images = jsonObject.getJSONObject("images").getJSONArray("backdrops");
+                        int index = -1, logoIndex = 0;
+                        if (images.length() > 1) {
+                            String[] preferredLanguages = {"null", "fr", "en"};
+                            for (String lang : preferredLanguages) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    String isoLang = object.getString("iso_639_1");
+                                    if (isoLang.equalsIgnoreCase(lang)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
+                                    break;
+                                }
+                            }
+                            String banner = "";
+                            if (index != -1) {
+                                banner = images.getJSONObject(index).getString("file_path");
+                            }
+                            movieModel.banner = banner;
+                            Glide.with(this).load(Constants.getImageLink(movieModel.banner)).placeholder(R.color.transparent).into(binding.banner);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }, volleyError -> {
+            Log.d(TAG, "getBackdrop: " + volleyError.getLocalizedMessage());
+        }
+        );
         requestQueue.add(objectRequest);
     }
 

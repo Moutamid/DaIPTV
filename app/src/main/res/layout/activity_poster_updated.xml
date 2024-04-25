@@ -2,10 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".activities.CreateActivity">
+    tools:context=".activities.PosterUpdatedActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -16,15 +17,6 @@
         android:layout_marginBottom="24dp"
         android:layout_centerInParent="true"/>
 
-    <TextView
-        android:id="@+id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="0%"
-        android:textStyle="bold"
-        android:textColor="@color/grey2"
-        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/message"
@@ -33,7 +25,7 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@id/help"
         android:layout_marginBottom="6dp"
-        android:text="Configuration"
+        android:text="Veuillez patienter"
         android:textColor="@color/grey2"
         android:textSize="18dp" />
 
@@ -44,9 +36,7 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
-        android:text="Cela peut prendre un certain temps, ne fermez pas l'application"
+        android:text="La mise à jour des affiches ne prendra pas beaucoup de temps."
         android:textColor="@color/grey2"
         android:textSize="13dp" />
-
-
 </RelativeLayout>

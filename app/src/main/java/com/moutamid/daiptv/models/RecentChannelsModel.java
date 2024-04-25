@@ -24,6 +24,16 @@ public class RecentChannelsModel {
 
     @ColumnInfo(name = "type")
     public String type;
+    @ColumnInfo(name = "isPosterUpdated")
+    public boolean isPosterUpdated = false;
+
+    public boolean isPosterUpdated() {
+        return isPosterUpdated;
+    }
+
+    public void setPosterUpdated(boolean posterUpdated) {
+        isPosterUpdated = posterUpdated;
+    }
 
     public int getID() {
         return ID;

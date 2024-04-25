@@ -19,6 +19,12 @@ public interface ChannelsDAO {
     @Insert(onConflict = REPLACE)
     void insert(ChannelsModel channelsModel);
 
+    @Query("UPDATE channels SET channelImg = :link, isPosterUpdated = 1 WHERE ID = :id")
+    void update(int id, String link);
+
+    @Query("SELECT * FROM channels WHERE type IN (:types) AND type NOT IN (:excludedTypes) ORDER BY channelName ASC")
+    List<ChannelsModel> getAllFiltered(List<String> types, List<String> excludedTypes);
+
     @Query("SELECT * FROM channels WHERE type =:type ORDER BY channelName ASC")
     DataSource.Factory<Integer, ChannelsModel> getAllItems(String type);
 

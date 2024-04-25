@@ -33,6 +33,7 @@ import com.moutamid.daiptv.fragments.FilmFragment;
 import com.moutamid.daiptv.fragments.HomeFragment;
 import com.moutamid.daiptv.fragments.RechercheFragment;
 import com.moutamid.daiptv.fragments.SeriesFragment;
+import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.EPGModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -45,6 +46,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -83,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
         List<EPGModel> list = database.epgDAO().getEPG();
         if (list.isEmpty())
             get();
-
+//
+//
         binding.Accueil.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -103,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.reload.setOnClickListener(v -> {
             homeFragment.refreshList();
+            Toast.makeText(this, "la playlist est rafraîchissante", Toast.LENGTH_SHORT).show();
         });
 
         binding.Chaines.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -225,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
         new Thread(() -> {
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-            String url = "http://infinity-ott.com:8080/xmltv.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt&type=m3u_plus&output=mpegts";
+            String url = "http://vbn123.com:8080/xmltv.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt";
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new com.android.volley.Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {

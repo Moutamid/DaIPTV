@@ -36,6 +36,13 @@ public class SplashActivity extends AppCompatActivity {
                 if (userModel!=null){
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     finish();
+//                    if (Stash.getBoolean(Constants.IS_POSTER_UPDATED, false)) {
+//                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+//                        finish();
+//                    } else {
+//                        startActivity(new Intent(SplashActivity.this, PosterUpdatedActivity.class));
+//                        finish();
+//                    }
                 } else {
                     startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                     finish();

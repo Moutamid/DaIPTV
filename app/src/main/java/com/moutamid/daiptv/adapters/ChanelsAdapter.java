@@ -22,6 +22,7 @@ import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.database.ChannelsDAO;
+import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.EPGModel;
 import com.moutamid.daiptv.models.UserModel;
@@ -91,20 +92,7 @@ public class ChanelsAdapter extends PagedListAdapter<ChannelsModel, ChanelsAdapt
             });
 
             holder.itemView.setOnLongClickListener(v -> {
-                new AlertDialog.Builder(context)
-                        .setCancelable(true)
-                        .setTitle("Ajouter aux Favoris")
-                        .setMessage("Souhaitez-vous ajouter cet article à votre liste de favoris ? Une fois ajouté, vous pourrez facilement y accéder plus tard.")
-                        .setPositiveButton("Ajouter", (dialog, which) -> {
-                            dialog.dismiss();
-                            UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
-                            ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
-                            list.add(model);
-                            Stash.put(userModel.id, list);
-                        }).setNegativeButton("Fermer", (dialog, which) -> {
-                            dialog.dismiss();
-                        })
-                        .show();
+                new AddFavortDialog(context, model).show();
                 return false;
             });
 

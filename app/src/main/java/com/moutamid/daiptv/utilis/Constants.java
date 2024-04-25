@@ -46,12 +46,16 @@ public class Constants {
     public static final String USER = "USER";
     public static final String PASS = "PASS";
     public static final String EPG = "EPG";
+    public static final String IS_POSTER_UPDATED = "IS_POSTER_UPDATED";
     public static final String SELECTED_PAGE = "SELECTED_PAGE";
     public static final String USER_LIST = "USER_LIST";
     public static final String PASS_USER = "PASS_USER";
     public static final String TOP_FILMS = "TOP_FILMS";
     public static final String TOP_SERIES = "TOP_SERIES";
     public static final String MY_LIST = "MY_LIST";
+    public static final String getDetails = "getDetails";
+    public static final String Backdrop = "Backdrop";
+    public static final String FIND_ID = "FIND_ID";
     public static final String ChannelList = "ChannelList";
     public static final String TYPE_CHANNEL = "channel";
     public static final String TYPE_MOVIE = "movie";
@@ -261,12 +265,34 @@ public class Constants {
     }
 
     public static String regexName(String name) {
+        name = name.replace("|PT| ", "");
+        name = name.replace("PT| ", "");
+        name = name.replace("|IN| ", "");
+        name = name.replace("IN| ", "");
+        name = name.replace("|IT| ", "");
+        name = name.replace("IT| ", "");
         name = name.replace("|FR| ", "");
         name = name.replace("FR| ", "");
+        name = name.replace("|AR| ", "");
+        name = name.replace("AR| ", "");
         name = name.replace("|EN| ", "");
         name = name.replace("EN| ", "");
+        name = name.replace("|ES| ", "");
+        name = name.replace("ES| ", "");
         name = name.replace("|BE| ", "");
         name = name.replace("BE| ", "");
+        name = name.replace("|DE| ", "");
+        name = name.replace("DE| ", "");
+        name = name.replace("|PK| ", "");
+        name = name.replace("PK| ", "");
+        name = name.replace("|RO| ", "");
+        name = name.replace("RO| ", "");
+        name = name.replace("|RU| ", "");
+        name = name.replace("RU| ", "");
+        name = name.replace("|BR| ", "");
+        name = name.replace("BR| ", "");
+        name = name.replace("|UFC| ", "");
+        name = name.replace("UFC| ", "");
         name = name.replaceAll("\\(\\d{4}\\)", "");
         Pattern pattern = Pattern.compile("\\b\\d{4}\\b");
         Matcher matcher = pattern.matcher(name);
@@ -275,11 +301,21 @@ public class Constants {
         Matcher patternMatcher = patternPattern.matcher(name);
         name = patternMatcher.replaceAll("");
         name = name.replace(" (VOST) ", " ");
+        name = name.replace(" VOST ", " ");
         name = name.replace(" FHD ", " ");
+        name = name.replace(" (FHD) ", " ");
         name = name.replace(" HD ", " ");
+        name = name.replace(" (HD) ", " ");
         name = name.replace(" SD ", " ");
+        name = name.replace(" (SD) ", " ");
         name = name.replace(" MULTI ", " ");
+        name = name.replace(" (MULTI) ", " ");
         name = name.replace(" HEVC ", " ");
+        name = name.replace(" (HEVC) ", " ");
+        name = name.replace("(", " ");
+        name = name.replace(")", " ");
+        name = name.replace(" ( ", " ");
+        name = name.replace(" ) ", " ");
         return name.trim();
     }
 

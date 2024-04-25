@@ -249,7 +249,7 @@ public class CreateActivity extends AppCompatActivity {
                         b[0] = b[0].equals(Constants.TYPE_MOVIE) || b[0].equals(Constants.TYPE_SERIES) ? b[0] : Constants.TYPE_CHANNEL;
 
                         channel.setType(b[0]);
-
+                        channel.setPosterUpdated(false);
                      //   Log.d(TAG, "getChannelUrl: " + channel.getChannelUrl());
                         channelList.add(channel);
                         database.channelsDAO().insert(channel);

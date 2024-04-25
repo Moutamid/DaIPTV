@@ -28,6 +28,8 @@ public class ChannelsModel {
     @ColumnInfo(name = "type")
     public String type;
 
+    @ColumnInfo(name = "isPosterUpdated")
+    public boolean isPosterUpdated = false;
 
     public int getID() {
         return ID;
@@ -83,5 +85,13 @@ public class ChannelsModel {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean isPosterUpdated() {
+        return isPosterUpdated;
+    }
+
+    public void setPosterUpdated(boolean posterUpdated) {
+        isPosterUpdated = posterUpdated;
     }
 }

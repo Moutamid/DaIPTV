@@ -278,48 +278,29 @@ public class HomeFragment extends Fragment {
                     response -> {
                         try {
                             JSONArray images = response.getJSONObject("images").getJSONArray("posters");
+                            String lang = "NULL";
                             int index = 0;
-                            if (images.length() > 1) {
-                                String lang = "NULL";
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("fr")) {
-                                        Log.d(TAG, "getDetails: FR");
-                                        index = i;
-                                        break;
-                                    } else {
-                                        lang = "NULL";
-                                    }
+
+                            for (int i = 0; i < images.length(); i++) {
+                                JSONObject object = images.getJSONObject(i);
+                                lang = object.getString("iso_639_1");
+
+                                if (lang.equals("fr")) {
+                                    Log.d(TAG, "getDetails: FR");
+                                    index = i;
+                                    break;
+                                } else if (lang.equals("en") && index == 0) {
+                                    Log.d(TAG, "getDetails: ENG");
+                                    index = i;
+                                } else if (lang.equals("null") && index == 0) {
+                                    Log.d(TAG, "getDetails: NULL");
+                                    index = i;
                                 }
-                                if (index == 0 && lang.equals("NULL")) {
-                                    for (int i = 0; i < images.length(); i++) {
-                                        JSONObject object = images.getJSONObject(i);
-                                        lang = object.getString("iso_639_1");
-                                        if (lang.equals("en")) {
-                                            Log.d(TAG, "getDetails: ENG");
-                                            index = i;
-                                            break;
-                                        } else {
-                                            lang = "NULL";
-                                        }
-                                    }
-                                }
-                                if (index == 0 && lang.equals("NULL")) {
-                                    for (int i = 0; i < images.length(); i++) {
-                                        JSONObject object = images.getJSONObject(i);
-                                        lang = object.getString("iso_639_1");
-                                        if (lang.equals("null")) {
-                                            Log.d(TAG, "getDetails: ENG");
-                                            index = i;
-                                            break;
-                                        }
-                                    }
-                                }
-                                films.get(finalJ).banner = images.getJSONObject(index).getString("file_path");
-                                filmsChan.get(finalJ).setChannelImg(images.getJSONObject(index).getString("file_path"));
-                                Stash.put(Constants.TOP_FILMS, filmsChan);
                             }
+
+                            films.get(finalJ).banner = images.getJSONObject(index).getString("file_path");
+                            filmsChan.get(finalJ).setChannelImg(images.getJSONObject(index).getString("file_path"));
+                            Stash.put(Constants.TOP_FILMS, filmsChan);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             dialog.dismiss();
@@ -342,53 +323,34 @@ public class HomeFragment extends Fragment {
                     response -> {
                         try {
                             JSONArray images = response.getJSONObject("images").getJSONArray("posters");
+                            String lang;
                             int index = 0;
-                            if (images.length() > 1) {
-                                String lang = "NULL";
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("fr")) {
-                                        Log.d(TAG, "getDetails: FR");
-                                        index = i;
-                                        break;
-                                    } else {
-                                        lang = "NULL";
-                                    }
+
+                            for (int i = 0; i < images.length(); i++) {
+                                JSONObject object = images.getJSONObject(i);
+                                lang = object.getString("iso_639_1");
+
+                                if (lang.equals("fr")) {
+                                    Log.d(TAG, "getDetails: FR");
+                                    index = i;
+                                    break;
+                                } else if (lang.equals("en") && index == 0) {
+                                    Log.d(TAG, "getDetails: ENG");
+                                    index = i;
+                                } else if (lang.equals("null") && index == 0) {
+                                    Log.d(TAG, "getDetails: NULL");
+                                    index = i;
                                 }
-                                if (index == 0 && lang.equals("NULL")) {
-                                    for (int i = 0; i < images.length(); i++) {
-                                        JSONObject object = images.getJSONObject(i);
-                                        lang = object.getString("iso_639_1");
-                                        if (lang.equals("en")) {
-                                            Log.d(TAG, "getDetails: ENG");
-                                            index = i;
-                                            break;
-                                        } else {
-                                            lang = "NULL";
-                                        }
-                                    }
-                                }
-                                if (index == 0 && lang.equals("NULL")) {
-                                    for (int i = 0; i < images.length(); i++) {
-                                        JSONObject object = images.getJSONObject(i);
-                                        lang = object.getString("iso_639_1");
-                                        if (lang.equals("null")) {
-                                            Log.d(TAG, "getDetails: ENG");
-                                            index = i;
-                                            break;
-                                        }
-                                    }
-                                }
-                                series.get(finalJ).banner = images.getJSONObject(index).getString("file_path");
-                                seriesChan.get(finalJ).setChannelImg(images.getJSONObject(index).getString("file_path"));
-                                Stash.put(Constants.TOP_SERIES, seriesChan);
-                                dialog.dismiss();
-                                list.get(0).list = new ArrayList<>(films);
-                                list.get(1).list = new ArrayList<>(series);
-                                adapter = new HomeParentAdapter(mContext, list, selected);
-                                binding.recycler.setAdapter(adapter);
                             }
+
+                            series.get(finalJ).banner = images.getJSONObject(index).getString("file_path");
+                            seriesChan.get(finalJ).setChannelImg(images.getJSONObject(index).getString("file_path"));
+                            Stash.put(Constants.TOP_SERIES, seriesChan);
+                            dialog.dismiss();
+                            list.get(0).list = new ArrayList<>(films);
+                            list.get(1).list = new ArrayList<>(series);
+                            adapter = new HomeParentAdapter(mContext, list, selected);
+                            binding.recycler.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             dialog.dismiss();
@@ -406,6 +368,13 @@ public class HomeFragment extends Fragment {
         public void selected(ChannelsModel model) {
             randomChannel = model;
             fetchID();
+        }
+
+        @Override
+        public void cancel() {
+            requestQueue.cancelAll(Constants.FIND_ID);
+            requestQueue.cancelAll(Constants.getDetails);
+            requestQueue.cancelAll(Constants.Backdrop);
         }
     };
 
@@ -449,7 +418,7 @@ public class HomeFragment extends Fragment {
             error.printStackTrace();
             dialog.dismiss();
         });
-        objectRequest.setTag("FIND_ID");
+        objectRequest.setTag(Constants.FIND_ID);
         requestQueue.add(objectRequest);
     }
 
@@ -489,49 +458,27 @@ public class HomeFragment extends Fragment {
                         JSONArray videos = response.getJSONObject("videos").getJSONArray("results");
                         JSONArray images = response.getJSONObject("images").getJSONArray("backdrops");
 
-                        JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
-
-                        int index = 0, logoIndex = 0;
+                        int index = -1, logoIndex = 0;
                         if (images.length() > 1) {
-                            String lang = "NULL";
-                            for (int i = 0; i < images.length(); i++) {
-                                JSONObject object = images.getJSONObject(i);
-                                lang = object.getString("iso_639_1");
-                                Log.d(TAG, "getDetails: " + lang);
-                                if (lang.equals("null")) {
-                                    Log.d(TAG, "getDetails: NULL");
-                                    index = i;
+                            String[] preferredLanguages = {"null", "fr", "en"};
+                            for (String lang : preferredLanguages) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    String isoLang = object.getString("iso_639_1");
+                                    if (isoLang.equalsIgnoreCase(lang)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
                                     break;
-                                } else {
-                                    lang = "NULL";
-                                }
-                                Log.d(TAG, "getDetails: LANGGGG " + lang);
-                            }
-                            if (index == 0 && lang.equals("NULL")) {
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("fr")) {
-                                        Log.d(TAG, "getDetails: FR");
-                                        index = i;
-                                        break;
-                                    } else {
-                                        lang = "NULL";
-                                    }
                                 }
                             }
-                            if (index == 0 && lang.equals("NULL")) {
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("en")) {
-                                        Log.d(TAG, "getDetails: ENG");
-                                        index = i;
-                                        break;
-                                    }
-                                }
+                            String banner = "";
+                            if (index != -1) {
+                                banner = images.getJSONObject(index).getString("file_path");
                             }
-                            movieModel.banner = images.getJSONObject(index).getString("file_path");
+                            movieModel.banner = banner;
                         } else {
                             getBackdrop(id, "");
                         }
@@ -592,7 +539,7 @@ public class HomeFragment extends Fragment {
             error.printStackTrace();
             dialog.dismiss();
         });
-        objectRequest.setTag("FIND_ID");
+        objectRequest.setTag(Constants.getDetails);
         requestQueue.add(objectRequest);
     }
 
@@ -610,47 +557,27 @@ public class HomeFragment extends Fragment {
                 jsonObject -> {
                     try {
                         JSONArray images = jsonObject.getJSONObject("images").getJSONArray("backdrops");
-                        int index = 0, logoIndex = 0;
+                        int index = -1, logoIndex = 0;
                         if (images.length() > 1) {
-                            String lang = "NULL";
-                            for (int i = 0; i < images.length(); i++) {
-                                JSONObject object = images.getJSONObject(i);
-                                lang = object.getString("iso_639_1");
-                                Log.d(TAG, "getDetails: " + lang);
-                                if (lang.equals("null")) {
-                                    Log.d(TAG, "getDetails: NULL");
-                                    index = i;
+                            String[] preferredLanguages = {"null", "fr", "en"};
+                            for (String lang : preferredLanguages) {
+                                for (int i = 0; i < images.length(); i++) {
+                                    JSONObject object = images.getJSONObject(i);
+                                    String isoLang = object.getString("iso_639_1");
+                                    if (isoLang.equalsIgnoreCase(lang)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index != -1) {
                                     break;
-                                } else {
-                                    lang = "NULL";
-                                }
-                                Log.d(TAG, "getDetails: LANGGGG " + lang);
-                            }
-                            if (index == 0 && lang.equals("NULL")) {
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("fr")) {
-                                        Log.d(TAG, "getDetails: FR");
-                                        index = i;
-                                        break;
-                                    } else {
-                                        lang = "NULL";
-                                    }
                                 }
                             }
-                            if (index == 0 && lang.equals("NULL")) {
-                                for (int i = 0; i < images.length(); i++) {
-                                    JSONObject object = images.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("en")) {
-                                        Log.d(TAG, "getDetails: ENG");
-                                        index = i;
-                                        break;
-                                    }
-                                }
+                            String banner = "";
+                            if (index != -1) {
+                                banner = images.getJSONObject(index).getString("file_path");
                             }
-                            movieModel.banner = images.getJSONObject(index).getString("file_path");
+                            movieModel.banner = banner;
                             Glide.with(mContext).load(Constants.getImageLink(movieModel.banner)).placeholder(R.color.transparent).into(binding.banner);
                         }
                     } catch (JSONException e) {
@@ -661,6 +588,7 @@ public class HomeFragment extends Fragment {
             Log.d(TAG, "getBackdrop: " + volleyError.getLocalizedMessage());
         }
         );
+        objectRequest.setTag(Constants.Backdrop);
         requestQueue.add(objectRequest);
     }
 

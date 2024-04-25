@@ -72,9 +72,9 @@ public class RechercheFragment extends Fragment {
         binding.filmsRC.setAdapter(filmAdapter);
         binding.seriesRC.setAdapter(seriesAdapter);
 
-        new Handler().postDelayed(() -> {
-            binding.searchET.requestFocus();
-        }, 1500);
+//        new Handler().postDelayed(() -> {
+//            binding.searchET.requestFocus();
+//        }, 1500);
 
         binding.searchET.addTextChangedListener(new TextWatcher() {
             @Override
