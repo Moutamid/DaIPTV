@@ -62,7 +62,7 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
     }
 
     int pos;
-
+    ChildAdapter adapter;
     @Override
     public void onBindViewHolder(@NonNull ParentVH holder, int position) {
         ParentItemModel model = list.get(holder.getAbsoluteAdapterPosition());
@@ -72,27 +72,24 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         LinearLayoutManager lm = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         holder.childRC.setLayoutManager(lm);
         holder.childRC.setHasFixedSize(false);
-        ChildAdapter adapter = new ChildAdapter(context, itemSelected, type);
+        adapter = new ChildAdapter(context, itemSelected, type);
         holder.childRC.setAdapter(adapter);
 
-        holder.childRC.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                int first = lm.findFirstCompletelyVisibleItemPosition();
-                int last = lm.findLastCompletelyVisibleItemPosition();
-                ArrayList<ChannelsModel> channelsList = Stash.getArrayList(model.name, ChannelsModel.class);
-                if (!channelsList.isEmpty()) {
-                    for (int i = first; i < last; i++) {
-                        ChannelsModel channelsModel = channelsList.get(i);
-                        if (channelsModel != null) {
-                            if (!channelsModel.isPosterUpdated) {
-                                Log.d(TAG, "onScrollChange: changing poster for " + channelsModel.channelName);
-                                boolean exclude = channelsModel.channelName.startsWith("|XXX|") || channelsModel.channelName.startsWith("XXX|") ||
-                                        channelsModel.channelName.startsWith("|XX|") || channelsModel.channelName.startsWith("XX|") ||
-                                        channelsModel.channelName.startsWith("|X|") || channelsModel.channelName.startsWith("X|");
-                                if (!exclude)
-                                    makeApiCall(channelsModel, holder.getAbsoluteAdapterPosition());
-                            }
+        holder.childRC.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            int first = lm.findFirstCompletelyVisibleItemPosition();
+            int last = lm.findLastCompletelyVisibleItemPosition();
+            ArrayList<ChannelsModel> channelsList = Stash.getArrayList(model.name, ChannelsModel.class);
+            if (!channelsList.isEmpty()) {
+                for (int i = first; i < last; i++) {
+                    ChannelsModel channelsModel = channelsList.get(i);
+                    if (channelsModel != null) {
+                        if (!channelsModel.isPosterUpdated) {
+                            Log.d(TAG, "onScrollChange: changing poster for " + channelsModel.channelName);
+                            boolean exclude = channelsModel.channelName.startsWith("|XXX|") || channelsModel.channelName.startsWith("XXX|") ||
+                                    channelsModel.channelName.startsWith("|XX|") || channelsModel.channelName.startsWith("XX|") ||
+                                    channelsModel.channelName.startsWith("|X|") || channelsModel.channelName.startsWith("X|");
+                            if (!exclude)
+                                makeApiCall(channelsModel, i);
                         }
                     }
                 }
@@ -177,8 +174,19 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
 
                         String poster = images.getJSONObject(index).getString("file_path");
                         String link = poster.isEmpty() ? item.getChannelImg() : poster;
+                        Log.d("LINKKK", "getDetails: " + link);
                         database.channelsDAO().update(item.getID(), link);
-                        notifyItemChanged(absoluteAdapterPosition);
+                       // adapter = new ChildAdapter(context, itemSelected, type);
+                        itemViewModel.getItemsByGroup(item.channelGroup, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsModel>>() {
+                            @Override
+                            public void onChanged(PagedList<ChannelsModel> channelsModels) {
+                                adapter.submitList(channelsModels);
+                                // Copy items to myList
+                                Log.d("LINKKK", "onChanged: " + channelsList.size());
+                            }
+                        });
+                        Log.d("LINKKK", "absoluteAdapterPosition: " + absoluteAdapterPosition);
+                        adapter.notifyItemChanged(absoluteAdapterPosition);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

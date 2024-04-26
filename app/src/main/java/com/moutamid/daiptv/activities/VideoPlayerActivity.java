@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.android.iplayer.controller.VideoController;
 import com.android.iplayer.interfaces.IVideoController;
+import com.android.iplayer.listener.OnPlayerEventListener;
+import com.android.iplayer.model.PlayerState;
 import com.android.iplayer.widget.WidgetFactory;
 import com.android.iplayer.widget.controls.ControWindowView;
 import com.android.iplayer.widget.controls.ControlCompletionView;
@@ -16,6 +18,7 @@ import com.android.iplayer.widget.controls.ControlGestureView;
 import com.android.iplayer.widget.controls.ControlLoadingView;
 import com.android.iplayer.widget.controls.ControlStatusView;
 import com.android.iplayer.widget.controls.ControlToolBarView;
+import com.fxn.stash.Stash;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.databinding.ActivityVideoPlayerBinding;
@@ -33,6 +36,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         String url = getIntent().getStringExtra("url");
         String name = getIntent().getStringExtra("name");
+        String resume = getIntent().getStringExtra("resume");
 
         Log.d("VideoURLPlayer", ""+url);
 
@@ -89,7 +93,23 @@ public class VideoPlayerActivity extends AppCompatActivity {
         binding.videoPlayer.setDataSource(url);
         // binding.videoPlayer.setDataSource("https://upload.dongfeng-nissan.com.cn/nissan/video/202204/4cfde6f0-bf80-11ec-95c3-214c38efbbc8.mp4");
         binding.videoPlayer.prepareAsync();
+        binding.videoPlayer.setOnPlayerActionListener(new OnPlayerEventListener() {
+            @Override
+            public void onProgress(long currentDurtion, long totalDurtion) {
+                super.onProgress(currentDurtion, totalDurtion);
+                Stash.put(resume, currentDurtion);
+            }
 
+            @Override
+            public void onPlayerState(PlayerState state, String message) {
+                super.onPlayerState(state, message);
+//                if (binding.videoPlayer.isPlaying()){
+//
+//                }
+            }
+        });
+
+        binding.videoPlayer.seekTo(Stash.getLong(resume, 0));
     }
 
     @Override

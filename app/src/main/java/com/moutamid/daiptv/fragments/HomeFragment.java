@@ -447,7 +447,7 @@ public class HomeFragment extends Fragment {
                         }
                         movieModel.overview = response.getString("overview");
 
-                        if (movieModel.overview.isEmpty())
+                        if (movieModel.overview.isEmpty() && !language.isEmpty())
                             getDetails(id, "");
 
                         movieModel.isFrench = !movieModel.overview.isEmpty();
@@ -483,27 +483,17 @@ public class HomeFragment extends Fragment {
                             getBackdrop(id, "");
                         }
                         Log.d(TAG, "getDetails: after Back");
+
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
                         if (logos.length() > 1) {
-                            String lang = "";
                             for (int i = 0; i < logos.length(); i++) {
                                 JSONObject object = logos.getJSONObject(i);
-                                lang = object.getString("iso_639_1");
-                                if (lang.equals("fr")) {
+                                String lang = object.getString("iso_639_1");
+                                if (lang.equals("fr") || (logoIndex == 0 && lang.isEmpty())) {
                                     logoIndex = i;
                                     break;
-                                } else {
-                                    lang = "";
-                                }
-                            }
-                            if (logoIndex == 0 && lang.isEmpty()) {
-                                for (int i = 0; i < logos.length(); i++) {
-                                    JSONObject object = logos.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("en")) {
-                                        logoIndex = i;
-                                        break;
-                                    }
+                                } else if (logoIndex == 0 && lang.equals("en")) {
+                                    logoIndex = i;
                                 }
                             }
                             String path = logos.getJSONObject(logoIndex).getString("file_path");

@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -152,7 +151,9 @@ public class FilmFragment extends Fragment {
             @Override
             public void selected(ChannelsModel model) {
                 randomChannel = model;
-                fetchID();
+                if (randomChannel != null){
+                    fetchID();
+                }
             }
 
             @Override
@@ -253,7 +254,7 @@ public class FilmFragment extends Fragment {
                         }
                         movieModel.overview = response.getString("overview");
 
-                        if (movieModel.overview.isEmpty())
+                        if (movieModel.overview.isEmpty() && !language.isEmpty())
                             getDetails(id, "");
 
                         movieModel.isFrench = !movieModel.overview.isEmpty();
@@ -286,28 +287,18 @@ public class FilmFragment extends Fragment {
                             }
                             movieModel.banner = banner;
                         } else getBackdrop(id, "");
+
                         int logoIndex = 0;
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
                         if (logos.length() > 1) {
-                            String lang = "";
                             for (int i = 0; i < logos.length(); i++) {
                                 JSONObject object = logos.getJSONObject(i);
-                                lang = object.getString("iso_639_1");
-                                if (lang.equals("fr")) {
+                                String lang = object.getString("iso_639_1");
+                                if (lang.equals("fr") || (logoIndex == 0 && lang.isEmpty())) {
                                     logoIndex = i;
                                     break;
-                                } else {
-                                    lang = "";
-                                }
-                            }
-                            if (logoIndex == 0 && lang.isEmpty()) {
-                                for (int i = 0; i < logos.length(); i++) {
-                                    JSONObject object = logos.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("en")) {
-                                        logoIndex = i;
-                                        break;
-                                    }
+                                } else if (logoIndex == 0 && lang.equals("en")) {
+                                    logoIndex = i;
                                 }
                             }
                             String path = logos.getJSONObject(logoIndex).getString("file_path");

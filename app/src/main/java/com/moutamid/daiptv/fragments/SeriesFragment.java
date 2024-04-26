@@ -158,7 +158,9 @@ public class SeriesFragment extends Fragment {
             @Override
             public void selected(ChannelsModel model) {
                 randomChannel = model;
-                fetchID();
+                if (randomChannel != null){
+                    fetchID();
+                }
             }
 
             @Override
@@ -236,7 +238,7 @@ public class SeriesFragment extends Fragment {
                         movieModel.vote_average = String.valueOf(response.getDouble("vote_average"));
                         movieModel.genres = response.getJSONArray("genres").getJSONObject(0).getString("name");
 
-                        if (movieModel.overview.isEmpty())
+                        if (movieModel.overview.isEmpty() && !language.isEmpty())
                             getDetails(id, "");
 
                         movieModel.isFrench = !movieModel.overview.isEmpty();
@@ -270,25 +272,14 @@ public class SeriesFragment extends Fragment {
                         int logoIndex = 0;
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
                         if (logos.length() > 1) {
-                            String lang = "";
                             for (int i = 0; i < logos.length(); i++) {
                                 JSONObject object = logos.getJSONObject(i);
-                                lang = object.getString("iso_639_1");
-                                if (lang.equals("fr")) {
+                                String lang = object.getString("iso_639_1");
+                                if (lang.equals("fr") || (logoIndex == 0 && lang.isEmpty())) {
                                     logoIndex = i;
                                     break;
-                                } else {
-                                    lang = "";
-                                }
-                            }
-                            if (logoIndex == 0 && lang.isEmpty()) {
-                                for (int i = 0; i < logos.length(); i++) {
-                                    JSONObject object = logos.getJSONObject(i);
-                                    lang = object.getString("iso_639_1");
-                                    if (lang.equals("en")) {
-                                        logoIndex = i;
-                                        break;
-                                    }
+                                } else if (logoIndex == 0 && lang.equals("en")) {
+                                    logoIndex = i;
                                 }
                             }
                             String path = logos.getJSONObject(logoIndex).getString("file_path");

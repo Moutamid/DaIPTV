@@ -138,7 +138,6 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
         holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-
                 if (hasFocus) {
                     itemSelected.selected(model);
                 } else {
@@ -197,7 +196,6 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
             Log.d(TAG, "onAttachedToRecyclerView: HAHAHHAHHAHAH");
         }
     }
-    ArrayList<ChannelsModel> channelsList = new ArrayList<>();
 
     private void makeApiCall(ChannelsModel item, int absoluteAdapterPosition) {
         String name = Constants.regexName(item.channelName);

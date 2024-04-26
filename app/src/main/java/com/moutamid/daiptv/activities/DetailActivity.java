@@ -276,7 +276,8 @@ public class DetailActivity extends AppCompatActivity {
         dialog.dismiss();
         binding.name.setText(movieModel.original_title);
         binding.desc.setText(movieModel.overview);
-        binding.tmdbRating.setText(movieModel.vote_average);
+        String average = String.format("%.1f", Double.parseDouble(movieModel.vote_average));
+        binding.tmdbRating.setText(average);
         binding.filmType.setText(movieModel.genres);
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -304,7 +305,11 @@ public class DetailActivity extends AppCompatActivity {
 
         binding.play.requestFocus();
         binding.play.setOnClickListener(v -> {
+            Stash.clear(String.valueOf(model.getID()));
             startActivity(new Intent(this, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", movieModel.original_title));
+        });
+        binding.resume.setOnClickListener(v -> {
+            startActivity(new Intent(this, VideoPlayerActivity.class).putExtra("resume", String.valueOf(model.getID())).putExtra("url", model.getChannelUrl()).putExtra("name", movieModel.original_title));
         });
 
         CastsAdapter adapter = new CastsAdapter(this, cast);

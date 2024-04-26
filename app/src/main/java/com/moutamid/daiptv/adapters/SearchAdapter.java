@@ -49,7 +49,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchVH> 
             Glide.with(context).load(model.getChannelImg()).placeholder(R.color.transparent).into(holder.image);
 
             holder.itemView.setOnClickListener(v -> {
-                Log.d(TAG, "onBindViewHolder: " + model.channelName);
                 context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", model.getChannelName()));
             });
 

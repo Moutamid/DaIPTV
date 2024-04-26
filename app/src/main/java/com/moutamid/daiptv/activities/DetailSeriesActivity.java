@@ -276,7 +276,8 @@ public class DetailSeriesActivity extends AppCompatActivity {
         dialog.dismiss();
         binding.name.setText(movieModel.original_title);
         binding.desc.setText(movieModel.overview);
-        binding.tmdbRating.setText(movieModel.vote_average);
+        String average = String.format("%.1f", Double.parseDouble(movieModel.vote_average));
+        binding.tmdbRating.setText(average);
         binding.filmType.setText(movieModel.genres);
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
