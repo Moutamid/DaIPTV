@@ -41,6 +41,7 @@ import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.ActivityCreateBinding;
 import com.moutamid.daiptv.models.ChannelsGroupModel;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MoviesGroupModel;
 import com.moutamid.daiptv.models.SeriesGroupModel;
 import com.moutamid.daiptv.models.UserModel;
@@ -92,15 +93,15 @@ public class CreateActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        PRDownloader.initialize(getApplicationContext());
-
         updateAndroidSecurityProvider();
 
-         startPRDownloader();
+        PRDownloader.initialize(getApplicationContext());
+
+//         startPRDownloader();
 
         // startDownloading();
 
-//       new ReadFileAsyncTask("dummy.m3u").execute();
+       new ReadFileAsyncTask("tv_channels_9tqadv9utC4B28qe_plus.m3u").execute();
     }
 
     private void startPRDownloader() {
@@ -209,13 +210,15 @@ public class CreateActivity extends AppCompatActivity {
             BufferedReader bufferedReader = null;
             int i = 0;
             try {
-//                inputStreamReader = activity.getAssets().open(fileName);
-                File file = new File(fileName);
-                fis = new FileInputStream(file);
-                bufferedReader = new BufferedReader(new InputStreamReader(fis));
+                inputStreamReader = activity.getAssets().open(fileName);
+//                File file = new File(fileName);
+//                fis = new FileInputStream(file);
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStreamReader));
 
                 String currentLine;
                 ChannelsModel channel = new ChannelsModel();
+                ChannelsSeriesModel seriesModel = new ChannelsSeriesModel();
+
                 while ((currentLine = bufferedReader.readLine()) != null) {
                     i++;
                     int progress = (int) ((i / (float) totalLines) * 100);
@@ -225,18 +228,22 @@ public class CreateActivity extends AppCompatActivity {
 
                     if (currentLine.startsWith(EXT_INF_SP)) {
                         channel.setChannelID(currentLine.split(TVG_ID).length > 1 ? currentLine.split(TVG_ID)[1].split(TVG_NAME)[0] : currentLine.split(COMMA)[1]);
-                        Log.d(TAG, "ChannelID: " + channel.getChannelID());
+                        seriesModel.setChannelID(channel.getChannelID());
+
                         channel.setChannelName(currentLine.split(TVG_NAME).length > 1 ? currentLine.split(TVG_NAME)[1].split(TVG_LOGO)[0] : currentLine.split(COMMA)[1]);
-                      //  Log.d(TAG, "ChannelName: " + channel.getChannelName());
+                        seriesModel.setChannelName(Constants.regexName(channel.getChannelName()));
+
                         channel.setChannelGroup(currentLine.split(GROUP_TITLE)[1].split(COMMA)[0]);
-                     //   Log.d(TAG, "getChannelGroup: " + channel.getChannelGroup());
+                        seriesModel.setChannelGroup(channel.getChannelGroup());
+
                         channel.setChannelImg(currentLine.split(TVG_LOGO).length > 1 ? currentLine.split(TVG_LOGO)[1].split(GROUP_TITLE)[0] : "");
-                   //     Log.d(TAG, "getChannelImg: " + channel.getChannelImg());
+                        seriesModel.setChannelImg(channel.getChannelImg());
                         continue;
                     }
 
                     if (currentLine.startsWith(HTTP) || currentLine.startsWith(HTTPS)) {
                         channel.setChannelUrl(currentLine);
+                        seriesModel.setChannelUrl(channel.getChannelUrl());
 
                         String[] a = currentLine.split("8080/", 2);
                         String[] b = new String[2];
@@ -250,8 +257,12 @@ public class CreateActivity extends AppCompatActivity {
 
                         channel.setType(b[0]);
                         channel.setPosterUpdated(false);
-                     //   Log.d(TAG, "getChannelUrl: " + channel.getChannelUrl());
+
+                        seriesModel.setType(channel.getType());
+                        seriesModel.setPosterUpdated(false);
+
                         channelList.add(channel);
+
                         database.channelsDAO().insert(channel);
 
                         ChannelsGroupModel groupModel = new ChannelsGroupModel(channel.getChannelGroup());
@@ -273,6 +284,7 @@ public class CreateActivity extends AppCompatActivity {
                                     message.get().setText("Obtenir des séries...");
                                 }
                             });
+                            database.seriesDAO().insert(seriesModel);
                             database.seriesGroupDAO().insert(seriesGroupModel);
                         } else {
                             runOnUiThread(() -> {
@@ -284,6 +296,7 @@ public class CreateActivity extends AppCompatActivity {
                             database.channelsGroupDAO().insert(groupModel);
                         }
                         channel = new ChannelsModel();
+                        seriesModel = new ChannelsSeriesModel();
                     }
 
                 }

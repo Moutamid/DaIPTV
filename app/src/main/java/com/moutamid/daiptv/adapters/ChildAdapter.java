@@ -119,8 +119,6 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
             holder.itemView.requestFocus();
         }
 
-
-
         holder.itemView.setOnLongClickListener(v -> {
             new AddFavortDialog(context, model).show();
             return true;
@@ -140,6 +138,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     itemSelected.selected(model);
+                    Log.d(TAG, "onFocusChange: " + model.getChannelName());
                 } else {
                     itemSelected.cancel();
                 }
@@ -152,21 +151,20 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
         super.onAttachedToRecyclerView(recyclerView);
         Log.d(TAG, "onAttachedToRecyclerView: Attached");
         RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
-        if (true) {
-            LinearLayoutManager lm = (LinearLayoutManager) manager;
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                }
+        LinearLayoutManager lm = (LinearLayoutManager) manager;
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
-                @Override
-                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    int first = lm.findFirstVisibleItemPosition();
-                    int last = lm.findLastVisibleItemPosition();
-                    Log.d(TAG, "onScrolled: " + first);
-                    Log.d(TAG, "onScrolled: " + last);
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int first = lm.findFirstVisibleItemPosition();
+                int last = lm.findLastVisibleItemPosition();
+                Log.d(TAG, "onScrolled: " + first);
+                Log.d(TAG, "onScrolled: " + last);
 //                    items = database.moviesGroupDAO().getAll();
 //
 //                    Log.d(TAG, "item size : " + items.size());
@@ -190,11 +188,8 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
 //                            }
 //                        }
 //                    }
-                }
-            });
-        } else {
-            Log.d(TAG, "onAttachedToRecyclerView: HAHAHHAHHAHAH");
-        }
+            }
+        });
     }
 
     private void makeApiCall(ChannelsModel item, int absoluteAdapterPosition) {

@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
         new Thread(() -> {
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-            String url = "http://vbn123.com:8080/xmltv.php?username=sHnEqTKwSbGnKRzq&password=gNXzbCNSykk693zt";
+            String url = "http://vbn123.com:8080/xmltv.php?username=9tqadv9utC4B28qe&password=X8J6qeYDNcbzvWns";
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new com.android.volley.Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {

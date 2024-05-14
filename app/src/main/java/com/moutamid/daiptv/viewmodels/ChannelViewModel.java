@@ -6,7 +6,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
@@ -14,6 +13,7 @@ import androidx.paging.PagedList;
 import com.fxn.stash.Stash;
 import com.moutamid.daiptv.database.ChannelRepository;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.CustomArrayListLiveData;
@@ -32,9 +32,8 @@ public class ChannelViewModel extends AndroidViewModel {
         repository = new ChannelRepository(application);
     }
 
-
-    public LiveData<PagedList<ChannelsModel>> getAll(String type){
-        return new LivePagedListBuilder<>(repository.getAllItems(type),
+    public LiveData<PagedList<ChannelsSeriesModel>> getSeries(String group, String type) {
+        return new LivePagedListBuilder<>(repository.getSeriesByGroup(group, type),
                 new PagedList.Config.Builder()
                         .setPageSize(PAGE_SIZE)
                         .setEnablePlaceholders(true)
@@ -42,6 +41,14 @@ public class ChannelViewModel extends AndroidViewModel {
                 .build();
     }
 
+    public LiveData<PagedList<ChannelsModel>> getAll(String type) {
+        return new LivePagedListBuilder<>(repository.getAllItems(type),
+                new PagedList.Config.Builder()
+                        .setPageSize(PAGE_SIZE)
+                        .setEnablePlaceholders(true)
+                        .build())
+                .build();
+    }
 
     public LiveData<PagedList<ChannelsModel>> getItemsByGroup(String group, String type) {
         return new LivePagedListBuilder<>(repository.getItemsByGroup(group, type),
@@ -63,6 +70,7 @@ public class ChannelViewModel extends AndroidViewModel {
     }
 
     private static final String TAG = "ChannelViewModel";
+
     public LiveData<PagedList<ChannelsModel>> getTopFilms() {
         ArrayList<ChannelsModel> fvrt = Stash.getArrayList(Constants.TOP_FILMS, ChannelsModel.class);
         Log.d(TAG, "getTopFilms: " + fvrt.size());
@@ -83,6 +91,7 @@ public class ChannelViewModel extends AndroidViewModel {
             }
         }, config).build();
     }
+
     public LiveData<PagedList<ChannelsModel>> getTopSeries() {
         ArrayList<ChannelsModel> fvrt = Stash.getArrayList(Constants.TOP_SERIES, ChannelsModel.class);
         Log.d(TAG, "getTopFilms: " + fvrt.size());

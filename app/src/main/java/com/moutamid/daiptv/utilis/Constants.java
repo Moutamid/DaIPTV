@@ -294,6 +294,8 @@ public class Constants {
         name = name.replace("|UFC| ", "");
         name = name.replace("UFC| ", "");
         name = name.replaceAll("\\(\\d{4}\\)", "");
+        name = name.replaceAll("\\| \\d{4} \\|", "");
+        name = name.replaceAll("\\|\\d{4}\\|", "");
         Pattern pattern = Pattern.compile("\\b\\d{4}\\b");
         Matcher matcher = pattern.matcher(name);
         name = matcher.replaceAll("");
@@ -316,6 +318,7 @@ public class Constants {
         name = name.replace(")", " ");
         name = name.replace(" ( ", " ");
         name = name.replace(" ) ", " ");
+        name = name.replace(" | ", " ");
         return name.trim();
     }
 

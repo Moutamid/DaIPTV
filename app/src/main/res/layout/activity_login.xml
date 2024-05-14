@@ -53,7 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textPersonName"
-                    android:text="sHnEqTKwSbGnKRzq"
+                    android:text="9tqadv9utC4B28qe"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textPassword"
-                    android:text="gNXzbCNSykk693zt"
+                    android:text="X8J6qeYDNcbzvWns"
                     android:textColor="@color/white" />
 
             </com.google.android.material.textfield.TextInputLayout>
