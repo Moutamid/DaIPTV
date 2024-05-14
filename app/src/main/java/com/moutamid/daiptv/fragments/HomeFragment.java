@@ -29,6 +29,7 @@ import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentHomeBinding;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.TopItems;
 import com.moutamid.daiptv.models.UserModel;
@@ -56,7 +57,7 @@ public class HomeFragment extends Fragment {
     MovieModel movieModel;
     ArrayList<MovieModel> films = new ArrayList<>(), series = new ArrayList<>(), latest, additions;
     static ArrayList<ChannelsModel> filmsChan;
-    static ArrayList<ChannelsModel> seriesChan;
+    static ArrayList<ChannelsSeriesModel> seriesChan;
     ArrayList<TopItems> list;
     private RequestQueue requestQueue;
     String[] type = {Constants.TYPE_MOVIE, Constants.TYPE_SERIES};
@@ -230,7 +231,7 @@ public class HomeFragment extends Fragment {
                             model.type = Constants.TYPE_SERIES;
                             series.add(model);
 
-                            ChannelsModel channel = new ChannelsModel();
+                            ChannelsSeriesModel channel = new ChannelsSeriesModel();
                             channel.setChannelName(object.getString("name"));
                             channel.setChannelImg(object.getString("poster_path"));
                             channel.setType(Constants.TYPE_SERIES);
@@ -368,6 +369,11 @@ public class HomeFragment extends Fragment {
         public void selected(ChannelsModel model) {
             randomChannel = model;
             fetchID();
+        }
+
+        @Override
+        public void selectedSeries(ChannelsSeriesModel model) {
+
         }
 
         @Override

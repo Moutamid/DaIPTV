@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,6 +25,7 @@ import com.moutamid.daiptv.adapters.CastsAdapter;
 import com.moutamid.daiptv.databinding.ActivityDetailSeriesBinding;
 import com.moutamid.daiptv.models.CastModel;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -41,7 +43,7 @@ import java.util.Locale;
 
 public class DetailSeriesActivity extends AppCompatActivity {
     ActivityDetailSeriesBinding binding;
-    ChannelsModel model;
+    ChannelsSeriesModel model;
     Dialog dialog;
     private RequestQueue requestQueue;
     MovieModel movieModel;
@@ -54,7 +56,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
         binding = ActivityDetailSeriesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        model = (ChannelsModel) Stash.getObject(Constants.PASS, ChannelsModel.class);
+        model = (ChannelsSeriesModel) Stash.getObject(Constants.PASS_SERIES, ChannelsSeriesModel.class);
 
         cast = new ArrayList<>();
 
@@ -67,11 +69,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
             if (model.getChannelUrl() != null) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl()));
                 intent.setType("video/*");
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
-                }
+                startActivity(intent);
             } else {
                 Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
             }
@@ -86,7 +84,8 @@ public class DetailSeriesActivity extends AppCompatActivity {
                         dialog.dismiss();
                         UserModel userModel = (UserModel) Stash.getObject(Constants.USER, UserModel.class);
                         ArrayList<ChannelsModel> list = Stash.getArrayList(userModel.id, ChannelsModel.class);
-                        list.add(model);
+                        ChannelsModel channelsModel = getChannelsModel();
+                        list.add(channelsModel);
                         Stash.put(userModel.id, list);
                     }).setNegativeButton("Fermer", (dialog, which) -> {
                         dialog.dismiss();
@@ -105,6 +104,19 @@ public class DetailSeriesActivity extends AppCompatActivity {
 
         binding.episodes.setOnClickListener(v -> startActivity(new Intent(this, SeriesActivity.class)));
 
+    }
+
+    @NonNull
+    private ChannelsModel getChannelsModel() {
+        ChannelsModel channelsModel = new ChannelsModel();
+        channelsModel.setChannelGroup(model.getChannelGroup());
+        channelsModel.setChannelID(model.getChannelID());
+        channelsModel.setChannelName(model.getChannelName());
+        channelsModel.setChannelUrl(model.getChannelUrl());
+        channelsModel.setChannelImg(model.getChannelImg());
+        channelsModel.setType(model.getType());
+        channelsModel.setPosterUpdated(model.isPosterUpdated());
+        return channelsModel;
     }
 
     private void fetchID() {
@@ -309,37 +321,17 @@ public class DetailSeriesActivity extends AppCompatActivity {
 
         CastsAdapter adapter = new CastsAdapter(this, cast);
         binding.castRC.setAdapter(adapter);
-
-        TranslateAPI translateAPI = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.overview);           //Query Text
-
-        translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: " + translatedText);
-                binding.desc.setText(translatedText);
-            }
-
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: " + ErrorText);
-            }
-        });
-
-
-        if (!movieModel.isFrench) {
-            TranslateAPI nameAPI = new TranslateAPI(
+        try {
+            TranslateAPI translateAPI = new TranslateAPI(
                     Language.AUTO_DETECT,   //Source Language
                     Language.FRENCH,         //Target Language
-                    movieModel.original_title);           //Query Text
+                    movieModel.overview);           //Query Text
 
-            nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+            translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {
                     Log.d(TAG, "onSuccess: " + translatedText);
-                    binding.name.setText(translatedText);
+                    binding.desc.setText(translatedText);
                 }
 
                 @Override
@@ -347,8 +339,30 @@ public class DetailSeriesActivity extends AppCompatActivity {
                     Log.d(TAG, "onFailure: " + ErrorText);
                 }
             });
-        }
 
+
+            if (!movieModel.isFrench) {
+                TranslateAPI nameAPI = new TranslateAPI(
+                        Language.AUTO_DETECT,   //Source Language
+                        Language.FRENCH,         //Target Language
+                        movieModel.original_title);           //Query Text
+
+                nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+                    @Override
+                    public void onSuccess(String translatedText) {
+                        Log.d(TAG, "onSuccess: " + translatedText);
+                        binding.name.setText(translatedText);
+                    }
+
+                    @Override
+                    public void onFailure(String ErrorText) {
+                        Log.d(TAG, "onFailure: " + ErrorText);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initializeDialog() {

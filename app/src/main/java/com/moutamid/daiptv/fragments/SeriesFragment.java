@@ -26,11 +26,12 @@ import com.fxn.stash.Stash;
 import com.mannan.translateapi.Language;
 import com.mannan.translateapi.TranslateAPI;
 import com.moutamid.daiptv.R;
-import com.moutamid.daiptv.adapters.ParentAdapter;
+import com.moutamid.daiptv.adapters.SeriesParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentSeriesBinding;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.models.SeriesGroupModel;
@@ -58,7 +59,7 @@ public class SeriesFragment extends Fragment {
     List<SeriesGroupModel> items = new ArrayList<>();
     ArrayList<ParentItemModel> parent = new ArrayList<>();
     ChannelViewModel itemViewModel;
-    ChannelsModel randomChannel;
+    ChannelsSeriesModel randomChannel;
     Dialog dialog;
     MovieModel movieModel;
     private RequestQueue requestQueue;
@@ -130,10 +131,10 @@ public class SeriesFragment extends Fragment {
 
 
         Random random = new Random();
-        randomChannel = database.channelsDAO().getRand(Constants.TYPE_SERIES);
-
+//        randomChannel = database.channelsDAO().getRand(Constants.TYPE_SERIES);
+//
         if (randomChannel == null) {
-            randomChannel = new ChannelsModel();
+            randomChannel = new ChannelsSeriesModel();
             randomChannel.setChannelName(movieNames[random.nextInt(movieNames.length)]);
             randomChannel.setChannelGroup(Constants.TYPE_SERIES);
         }
@@ -154,11 +155,17 @@ public class SeriesFragment extends Fragment {
 
         binding.recycler.setHasFixedSize(false);
         binding.recycler.setLayoutManager(new LinearLayoutManager(mContext));
-        adapter = new ParentAdapter(mContext, parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
+        adapter = new SeriesParentAdapter(mContext, parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
+
             @Override
             public void selected(ChannelsModel model) {
+
+            }
+
+            @Override
+            public void selectedSeries(ChannelsSeriesModel model) {
                 randomChannel = model;
-                if (randomChannel != null){
+                if (randomChannel != null) {
                     fetchID();
                 }
             }
@@ -186,7 +193,7 @@ public class SeriesFragment extends Fragment {
         dialog.show();
     }
 
-    ParentAdapter adapter;
+    SeriesParentAdapter adapter;
 
     private void fetchID() {
         String name = Constants.regexName(randomChannel.getChannelName());

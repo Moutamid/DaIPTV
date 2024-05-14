@@ -70,7 +70,6 @@ public class ChannelsModel {
     public void setChannelImg(String channelImg) {
         this.channelImg = channelImg;
     }
-
     public String getChannelGroup() {
         return channelGroup;
     }

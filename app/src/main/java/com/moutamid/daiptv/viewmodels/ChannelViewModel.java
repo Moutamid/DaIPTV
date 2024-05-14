@@ -18,6 +18,7 @@ import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.CustomArrayListLiveData;
 import com.moutamid.daiptv.utilis.CustomDataSource;
+import com.moutamid.daiptv.utilis.CustomDataSourceSeries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,23 +93,23 @@ public class ChannelViewModel extends AndroidViewModel {
         }, config).build();
     }
 
-    public LiveData<PagedList<ChannelsModel>> getTopSeries() {
-        ArrayList<ChannelsModel> fvrt = Stash.getArrayList(Constants.TOP_SERIES, ChannelsModel.class);
+    public LiveData<PagedList<ChannelsSeriesModel>> getTopSeries() {
+        ArrayList<ChannelsSeriesModel> fvrt = Stash.getArrayList(Constants.TOP_SERIES, ChannelsSeriesModel.class);
         Log.d(TAG, "getTopFilms: " + fvrt.size());
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPageSize(PAGE_SIZE)
                 .build();
 
-        PagedList<ChannelsModel> pagedList = new PagedList.Builder<>(new CustomDataSource(fvrt), config)
+        PagedList<ChannelsSeriesModel> pagedList = new PagedList.Builder<>(new CustomDataSourceSeries(fvrt), config)
                 .setNotifyExecutor(Executors.newSingleThreadExecutor())
                 .setFetchExecutor(Executors.newSingleThreadExecutor())
                 .build();
 
-        return new LivePagedListBuilder<>(new DataSource.Factory<Integer, ChannelsModel>() {
+        return new LivePagedListBuilder<>(new DataSource.Factory<Integer, ChannelsSeriesModel>() {
             @Override
-            public DataSource<Integer, ChannelsModel> create() {
-                return new CustomDataSource(fvrt);
+            public DataSource<Integer, ChannelsSeriesModel> create() {
+                return new CustomDataSourceSeries(fvrt);
             }
         }, config).build();
     }

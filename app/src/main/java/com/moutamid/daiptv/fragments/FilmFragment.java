@@ -30,6 +30,7 @@ import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentFilmBinding;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.MoviesGroupModel;
 import com.moutamid.daiptv.models.ParentItemModel;
@@ -154,6 +155,11 @@ public class FilmFragment extends Fragment {
                 if (randomChannel != null){
                     fetchID();
                 }
+            }
+
+            @Override
+            public void selectedSeries(ChannelsSeriesModel model) {
+
             }
 
             @Override

@@ -112,8 +112,6 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         } else {
             if (type.equals(Constants.TYPE_MOVIE)) {
                 itemViewModel.getTopFilms().observe(viewLifecycleOwner, adapter::submitList);
-            } else {
-                itemViewModel.getTopSeries().observe(viewLifecycleOwner, adapter::submitList);
             }
         }
     }

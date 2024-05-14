@@ -22,6 +22,7 @@ import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.VolleySingleton;
@@ -32,10 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> {
+public class SeriesParentAdapter extends RecyclerView.Adapter<SeriesParentAdapter.ParentVH> {
     private static final String TAG = "ParentAdapter";
     Context context;
     ChannelViewModel itemViewModel;
@@ -46,7 +45,7 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
     RequestQueue requestQueue;
     AppDatabase database;
 
-    public ParentAdapter(Context context, ArrayList<ParentItemModel> list, String type, ChannelViewModel itemViewModel, LifecycleOwner viewLifecycleOwner, ItemSelected itemSelected) {
+    public SeriesParentAdapter(Context context, ArrayList<ParentItemModel> list, String type, ChannelViewModel itemViewModel, LifecycleOwner viewLifecycleOwner, ItemSelected itemSelected) {
         this.context = context;
         this.list = list;
         this.type = type;
@@ -62,7 +61,7 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
     public ParentVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ParentVH(LayoutInflater.from(context).inflate(R.layout.parent_item, parent, false));
     }
-    ChildAdapter adapter;
+    SeriesChildAdapter adapter;
     @Override
     public void onBindViewHolder(@NonNull ParentVH holder, int position) {
         ParentItemModel model = list.get(holder.getAdapterPosition());
@@ -71,16 +70,16 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         LinearLayoutManager lm = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         holder.childRC.setLayoutManager(lm);
         holder.childRC.setHasFixedSize(false);
-        adapter = new ChildAdapter(context, itemSelected, type);
+        adapter = new SeriesChildAdapter(context, itemSelected, type);
         holder.childRC.setAdapter(adapter);
 
         holder.childRC.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             int first = lm.findFirstCompletelyVisibleItemPosition();
             int last = lm.findLastCompletelyVisibleItemPosition();
-            ArrayList<ChannelsModel> channelsList = Stash.getArrayList(model.name, ChannelsModel.class);
+            ArrayList<ChannelsSeriesModel> channelsList = Stash.getArrayList(model.name, ChannelsSeriesModel.class);
             if (!channelsList.isEmpty()) {
                 for (int i = first; i < last; i++) {
-                    ChannelsModel channelsModel = channelsList.get(i);
+                    ChannelsSeriesModel channelsModel = channelsList.get(i);
                     if (channelsModel != null) {
                         if (!channelsModel.isPosterUpdated) {
                             Log.d(TAG, "onScrollChange: changing poster for " + channelsModel.channelName);
@@ -96,9 +95,9 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         });
 
         if (model.isRoom) {
-            itemViewModel.getItemsByGroup(model.name, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsModel>>() {
+            itemViewModel.getSeries(model.name, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsSeriesModel>>() {
                 @Override
-                public void onChanged(PagedList<ChannelsModel> channelsModels) {
+                public void onChanged(PagedList<ChannelsSeriesModel> channelsModels) {
                     adapter.submitList(channelsModels);
                     // Copy items to myList
                     if (holder.getAbsoluteAdapterPosition() > 0) {
@@ -109,15 +108,13 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
                 }
             });
         } else {
-            if (type.equals(Constants.TYPE_MOVIE)) {
-                itemViewModel.getTopFilms().observe(viewLifecycleOwner, adapter::submitList);
-            }
+            itemViewModel.getTopSeries().observe(viewLifecycleOwner, adapter::submitList);
         }
     }
 
-    ArrayList<ChannelsModel> channelsList = new ArrayList<>();
+    ArrayList<ChannelsSeriesModel> channelsList = new ArrayList<>();
 
-    private void makeApiCall(ChannelsModel item, int absoluteAdapterPosition) {
+    private void makeApiCall(ChannelsSeriesModel item, int absoluteAdapterPosition) {
         String name = Constants.regexName(item.channelName);
         Log.d(TAG, "makeApiCall: " + name);
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
@@ -142,7 +139,7 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         requestQueue.add(objectRequest);
     }
 
-    private void getDetails(int id, ChannelsModel item, int absoluteAdapterPosition) {
+    private void getDetails(int id, ChannelsSeriesModel item, int absoluteAdapterPosition) {
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
         String url = Constants.getMovieDetails(id, type, "");
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -174,9 +171,9 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
                         Log.d("LINKKK", "getDetails: " + link);
                         database.channelsDAO().update(item.getID(), link);
                         // adapter = new ChildAdapter(context, itemSelected, type);
-                        itemViewModel.getItemsByGroup(item.channelGroup, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsModel>>() {
+                        itemViewModel.getSeries(item.channelGroup, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsSeriesModel>>() {
                             @Override
-                            public void onChanged(PagedList<ChannelsModel> channelsModels) {
+                            public void onChanged(PagedList<ChannelsSeriesModel> channelsModels) {
                                 adapter.submitList(channelsModels);
                                 // Copy items to myList
                                 Log.d("LINKKK", "onChanged: " + channelsList.size());

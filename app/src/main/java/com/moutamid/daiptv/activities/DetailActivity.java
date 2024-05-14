@@ -315,35 +315,17 @@ public class DetailActivity extends AppCompatActivity {
         CastsAdapter adapter = new CastsAdapter(this, cast);
         binding.castRC.setAdapter(adapter);
 
-        TranslateAPI translateAPI = new TranslateAPI(
-                Language.AUTO_DETECT,   //Source Language
-                Language.FRENCH,         //Target Language
-                movieModel.overview);           //Query Text
-
-        translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
-            @Override
-            public void onSuccess(String translatedText) {
-                Log.d(TAG, "onSuccess: "+translatedText);
-                binding.desc.setText(translatedText);
-            }
-
-            @Override
-            public void onFailure(String ErrorText) {
-                Log.d(TAG, "onFailure: "+ErrorText);
-            }
-        });
-
-        if (!movieModel.isFrench){
-            TranslateAPI nameAPI = new TranslateAPI(
+        try {
+            TranslateAPI translateAPI = new TranslateAPI(
                     Language.AUTO_DETECT,   //Source Language
                     Language.FRENCH,         //Target Language
-                    movieModel.original_title);           //Query Text
+                    movieModel.overview);           //Query Text
 
-            nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+            translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {
                     Log.d(TAG, "onSuccess: "+translatedText);
-                    binding.name.setText(translatedText);
+                    binding.desc.setText(translatedText);
                 }
 
                 @Override
@@ -351,6 +333,28 @@ public class DetailActivity extends AppCompatActivity {
                     Log.d(TAG, "onFailure: "+ErrorText);
                 }
             });
+
+            if (!movieModel.isFrench){
+                TranslateAPI nameAPI = new TranslateAPI(
+                        Language.AUTO_DETECT,   //Source Language
+                        Language.FRENCH,         //Target Language
+                        movieModel.original_title);           //Query Text
+
+                nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
+                    @Override
+                    public void onSuccess(String translatedText) {
+                        Log.d(TAG, "onSuccess: "+translatedText);
+                        binding.name.setText(translatedText);
+                    }
+
+                    @Override
+                    public void onFailure(String ErrorText) {
+                        Log.d(TAG, "onFailure: "+ErrorText);
+                    }
+                });
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
 

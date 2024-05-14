@@ -45,6 +45,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class Constants {
     public static final String USER = "USER";
     public static final String PASS = "PASS";
+    public static final String PASS_SERIES = "PASS_SERIES";
     public static final String EPG = "EPG";
     public static final String IS_POSTER_UPDATED = "IS_POSTER_UPDATED";
     public static final String SELECTED_PAGE = "SELECTED_PAGE";

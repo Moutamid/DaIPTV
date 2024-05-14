@@ -23,6 +23,7 @@ import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -58,16 +59,23 @@ public class HomeChildAdapter extends RecyclerView.Adapter<HomeChildAdapter.Movi
         });
 
         holder.itemView.setOnClickListener(v -> {
-            ChannelsModel channelsModel = new ChannelsModel();
-            channelsModel.setChannelImg(model.banner);
-            channelsModel.setChannelName(model.original_title);
-            channelsModel.setType(model.type);
-            channelsModel.setChannelGroup(model.type);
-            Stash.put(Constants.PASS, channelsModel);
-            if (model.type.equals(Constants.TYPE_SERIES))
+            if (model.type.equals(Constants.TYPE_SERIES)) {
+                ChannelsSeriesModel channelsModel = new ChannelsSeriesModel();
+                channelsModel.setChannelImg(model.banner);
+                channelsModel.setChannelName(model.original_title);
+                channelsModel.setType(model.type);
+                channelsModel.setChannelGroup(model.type);
+                Stash.put(Constants.PASS_SERIES, channelsModel);
                 context.startActivity(new Intent(context, DetailSeriesActivity.class));
-            else
+            } else {
+                ChannelsModel channelsModel = new ChannelsModel();
+                channelsModel.setChannelImg(model.banner);
+                channelsModel.setChannelName(model.original_title);
+                channelsModel.setType(model.type);
+                channelsModel.setChannelGroup(model.type);
+                Stash.put(Constants.PASS, channelsModel);
                 context.startActivity(new Intent(context, DetailActivity.class));
+            }
         });
 
         holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {

@@ -34,6 +34,7 @@ import com.moutamid.daiptv.fragments.HomeFragment;
 import com.moutamid.daiptv.fragments.RechercheFragment;
 import com.moutamid.daiptv.fragments.SeriesFragment;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.EPGModel;
 import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -86,8 +87,10 @@ public class MainActivity extends AppCompatActivity {
         List<EPGModel> list = database.epgDAO().getEPG();
         if (list.isEmpty())
             get();
-//
-//
+
+        List<ChannelsSeriesModel> chanel = database.seriesDAO().getAll();
+        Log.d("TEST1233", "onCreate: " + chanel.get(1).getChannelImg());
+
         binding.Accueil.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {

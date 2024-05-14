@@ -21,6 +21,7 @@ import com.moutamid.daiptv.adapters.SeasonsAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.ActivitySeriesBinding;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.EpisodesModel;
 import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.SeasonsItem;
@@ -42,7 +43,7 @@ import java.util.regex.Pattern;
 
 public class SeriesActivity extends AppCompatActivity {
     ActivitySeriesBinding binding;
-    ChannelsModel model;
+    ChannelsSeriesModel model;
     String output;
     private static final String TAG = "SeriesActivity";
     AppDatabase database;
@@ -82,7 +83,7 @@ public class SeriesActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         initializeDialog();
-        model = (ChannelsModel) Stash.getObject(Constants.PASS, ChannelsModel.class);
+        model = (ChannelsSeriesModel) Stash.getObject(Constants.PASS_SERIES, ChannelsSeriesModel.class);
 
         if (model!=null) {
             output = Constants.regexName(model.getChannelName());

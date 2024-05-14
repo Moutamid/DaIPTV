@@ -10,6 +10,8 @@ import androidx.room.Query;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 
+import java.util.List;
+
 @Dao
 public interface SeriesDAO {
 
@@ -18,6 +20,9 @@ public interface SeriesDAO {
 
     @Query("UPDATE series SET channelImg = :link, isPosterUpdated = 1 WHERE ID = :id")
     void update(int id, String link);
+
+    @Query("SELECT * FROM series ORDER BY channelName ASC")
+    List<ChannelsSeriesModel> getAll();
 
     @Query("SELECT * FROM series WHERE channelGroup = :channelGroup AND type= :type ORDER BY channelName ASC")
     DataSource.Factory<Integer, ChannelsSeriesModel> getAllByGroup(String channelGroup, String type);
