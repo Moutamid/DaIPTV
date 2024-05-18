@@ -74,7 +74,7 @@ public class PosterUpdatedActivity extends AppCompatActivity {
     private void makeApiCall(ChannelsModel item) {
         String name = Constants.regexName(item.getChannelName());
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
-        String url = Constants.getMovieData(name, type);
+        String url = Constants.getMovieData(name, type, type);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {

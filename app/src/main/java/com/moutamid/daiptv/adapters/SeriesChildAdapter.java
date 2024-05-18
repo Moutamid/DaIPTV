@@ -45,7 +45,8 @@ import java.util.Objects;
 public class SeriesChildAdapter extends PagedListAdapter<ChannelsSeriesModel, SeriesChildAdapter.ChildVH> {
 
     Context context;
-    private static final String TAG = "ChildAdapter";
+    private static final String TAG = "SeriesChildAdapter";
+    private static final String TAG2 = "TESTING123";
     ItemSelected itemSelected;
     String type;
     RequestQueue requestQueue;
@@ -76,7 +77,7 @@ public class SeriesChildAdapter extends PagedListAdapter<ChannelsSeriesModel, Se
     @Override
     public PagedList<ChannelsSeriesModel> getCurrentList() {
         if (super.getCurrentList() != null) {
-            Log.d(TAG, "getCurrentList:  size " + super.getCurrentList().size());
+            Log.d(TAG2, "getCurrentList:  size " + super.getCurrentList().size());
         }
         return super.getCurrentList();
     }
@@ -134,6 +135,7 @@ public class SeriesChildAdapter extends PagedListAdapter<ChannelsSeriesModel, Se
             holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
+                    Log.d(TAG2, "onFocusChange: " + model.getChannelName());
                     if (hasFocus) {
                         itemSelected.selectedSeries(model);
                     } else {
@@ -198,7 +200,7 @@ public class SeriesChildAdapter extends PagedListAdapter<ChannelsSeriesModel, Se
         String name = Constants.regexName(item.channelName);
         Log.d(TAG, "makeApiCall: " + name);
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
-        String url = Constants.getMovieData(name, type);
+        String url = Constants.getMovieData(name, Constants.extractYear(item.channelName), type);
         Log.d(TAG, "makeApiCall: " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {

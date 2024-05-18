@@ -21,8 +21,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/name"
         android:orientation="horizontal"
-        android:nextFocusUp="@id/filmChildRC"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/child_item" />
+
+<!--
+        android:nextFocusUp="@id/filmChildRC"-->
 
 </RelativeLayout>

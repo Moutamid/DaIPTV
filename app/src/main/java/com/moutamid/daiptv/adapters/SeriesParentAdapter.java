@@ -21,7 +21,6 @@ import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
-import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -35,7 +34,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class SeriesParentAdapter extends RecyclerView.Adapter<SeriesParentAdapter.ParentVH> {
-    private static final String TAG = "ParentAdapter";
+    private static final String TAG = "SeriesParentAdapter";
+    private static final String TAG2 = "TESTING123";
     Context context;
     ChannelViewModel itemViewModel;
     ArrayList<ParentItemModel> list;
@@ -118,7 +118,7 @@ public class SeriesParentAdapter extends RecyclerView.Adapter<SeriesParentAdapte
         String name = Constants.regexName(item.channelName);
         Log.d(TAG, "makeApiCall: " + name);
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
-        String url = Constants.getMovieData(name, type);
+        String url = Constants.getMovieData(name, Constants.extractYear(item.channelName), type);
         Log.d(TAG, "makeApiCall: " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {

@@ -23,7 +23,6 @@ import com.moutamid.daiptv.databinding.ActivitySeriesBinding;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.EpisodesModel;
-import com.moutamid.daiptv.models.MovieModel;
 import com.moutamid.daiptv.models.SeasonsItem;
 import com.moutamid.daiptv.utilis.Constants;
 import com.moutamid.daiptv.utilis.VolleySingleton;
@@ -37,9 +36,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SeriesActivity extends AppCompatActivity {
     ActivitySeriesBinding binding;
@@ -105,7 +101,7 @@ public class SeriesActivity extends AppCompatActivity {
 
     private void fetchID(String output) {
         String url;
-        url = Constants.getMovieData(output, Constants.TYPE_TV);
+        url = Constants.getMovieData(output, Constants.extractYear(model.channelName), Constants.TYPE_TV);
 
         Log.d(TAG, "fetchID: URL  " + url);
 

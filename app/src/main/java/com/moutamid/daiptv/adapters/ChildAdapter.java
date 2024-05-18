@@ -104,46 +104,47 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
     @Override
     public void onBindViewHolder(@NonNull ChildVH holder, int position) {
         ChannelsModel model = getItem(holder.getAbsoluteAdapterPosition());
-        try {
-            String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg();
-            GlideUrl glideUrl = new GlideUrl(link, new LazyHeaders.Builder()
-                    .addHeader("User-Agent",
-                            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
-                    .build());
-            Glide.with(context).load(glideUrl).placeholder(R.color.transparent).into(holder.image);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (holder.getAbsoluteAdapterPosition() == 0 && holder.itemView.hasFocus()) {
-            holder.itemView.requestFocus();
-        }
-
-        holder.itemView.setOnLongClickListener(v -> {
-            new AddFavortDialog(context, model).show();
-            return true;
-        });
-
-        holder.itemView.setOnClickListener(v -> {
-            Stash.put(Constants.PASS, model);
-            Log.d(TAG, "onBindViewHolder: " + model.getChannelName());
-            if (model.type.equals(Constants.TYPE_SERIES))
-                context.startActivity(new Intent(context, DetailSeriesActivity.class));
-            else
-                context.startActivity(new Intent(context, DetailActivity.class));
-        });
-
-        holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    itemSelected.selected(model);
-                    Log.d(TAG, "onFocusChange: " + model.getChannelName());
-                } else {
-                    itemSelected.cancel();
-                }
+        if (model!=null){
+            try {
+                String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg();
+                GlideUrl glideUrl = new GlideUrl(link, new LazyHeaders.Builder()
+                        .addHeader("User-Agent",
+                                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
+                        .build());
+                Glide.with(context).load(glideUrl).placeholder(R.color.transparent).into(holder.image);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+
+            if (holder.getAbsoluteAdapterPosition() == 0 && holder.itemView.hasFocus()) {
+                holder.itemView.requestFocus();
+            }
+
+            holder.itemView.setOnLongClickListener(v -> {
+                new AddFavortDialog(context, model).show();
+                return true;
+            });
+
+            holder.itemView.setOnClickListener(v -> {
+                Stash.put(Constants.PASS, model);
+                Log.d(TAG, "onBindViewHolder: " + model.getChannelName());
+                if (model.type.equals(Constants.TYPE_SERIES))
+                    context.startActivity(new Intent(context, DetailSeriesActivity.class));
+                else
+                    context.startActivity(new Intent(context, DetailActivity.class));
+            });
+
+            holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        itemSelected.selected(model);
+                    } else {
+                        itemSelected.cancel();
+                    }
+                }
+            });
+        }
     }
     List<MoviesGroupModel> items = new ArrayList<MoviesGroupModel>();
     @Override
@@ -196,7 +197,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
         String name = Constants.regexName(item.channelName);
         Log.d(TAG, "makeApiCall: " + name);
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
-        String url = Constants.getMovieData(name, type);
+        String url = Constants.getMovieData(name, Constants.extractYear(item.channelName), type);
         Log.d(TAG, "makeApiCall: " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {

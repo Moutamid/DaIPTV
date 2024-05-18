@@ -122,7 +122,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
     private void fetchID() {
         String name = Constants.regexName(model.getChannelName());
         Log.d(TAG, "fetchID: " + name);
-        String url = Constants.getMovieData(name, Constants.TYPE_TV);
+        String url = Constants.getMovieData(name, Constants.extractYear(model.channelName), Constants.TYPE_TV);
 
         Log.d(TAG, "fetchID: URL  " + url);
 

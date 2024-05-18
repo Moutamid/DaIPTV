@@ -38,7 +38,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String TAG = "DetailActivity";
@@ -63,9 +62,9 @@ public class DetailActivity extends AppCompatActivity {
         binding.back.setOnClickListener(v -> onBackPressed());
         
         binding.reader.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl()));
-            intent.setType("video/*");
-            if (intent.resolveActivity(getPackageManager()) != null) {
+            if (model.getChannelUrl() != null) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl()));
+                intent.setType("video/*");
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
@@ -107,9 +106,9 @@ public class DetailActivity extends AppCompatActivity {
         String url;
        // name = "Interstellar"; // for testing
         if (model.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieData(name, Constants.TYPE_TV);
+            url = Constants.getMovieData(name, Constants.extractYear(model.channelName), Constants.TYPE_TV);
         } else {
-            url = Constants.getMovieData(name, Constants.TYPE_MOVIE);
+            url = Constants.getMovieData(name, Constants.extractYear(model.channelName), Constants.TYPE_MOVIE);
         }
 
         Log.d(TAG, "fetchID: URL  " + url);

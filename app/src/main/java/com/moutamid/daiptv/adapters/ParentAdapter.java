@@ -32,8 +32,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> {
     private static final String TAG = "ParentAdapter";
@@ -104,6 +102,9 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
                     if (holder.getAbsoluteAdapterPosition() > 0) {
                         channelsList = new ArrayList<>(channelsModels);
                         Stash.put(model.name, channelsList);
+
+                       // ArrayList<String> newList = SeriesGrouper.groupSeries(channelsList);
+
                     }
                     Log.d(TAG, "onChanged: " + channelsList.size());
                 }
@@ -121,7 +122,7 @@ public class ParentAdapter extends RecyclerView.Adapter<ParentAdapter.ParentVH> 
         String name = Constants.regexName(item.channelName);
         Log.d(TAG, "makeApiCall: " + name);
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
-        String url = Constants.getMovieData(name, type);
+        String url = Constants.getMovieData(name, Constants.extractYear(item.channelName), type);
         Log.d(TAG, "makeApiCall: " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {

@@ -122,7 +122,7 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         String name = Constants.regexName(item.channelName);
         Log.d(TAG, "makeApiCall: " + name);
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
-        String url = Constants.getMovieData(name, type);
+        String url = Constants.getMovieData(name, Constants.extractYear(item.channelName), type);
         Log.d(TAG, "makeApiCall: " + url);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {

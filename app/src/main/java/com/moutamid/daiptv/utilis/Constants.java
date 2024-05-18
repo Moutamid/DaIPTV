@@ -1,7 +1,5 @@
 package com.moutamid.daiptv.utilis;
 
-import static androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -15,22 +13,13 @@ import androidx.core.content.ContextCompat;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.moutamid.daiptv.MainActivity;
-import com.moutamid.daiptv.R;
-import com.moutamid.daiptv.activities.LoginActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -38,9 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 public class Constants {
     public static final String USER = "USER";
@@ -70,7 +56,7 @@ public class Constants {
     public static final String episodeDetails = "https://api.themoviedb.org/3/tv/";
     public static final String topTV = "https://api.themoviedb.org/3/tv/top_rated?api_key=26bedf3e3be75a2810a53f4a445e7b1f&language=fr&page=1";
     public static final String topFILM = "https://api.themoviedb.org/3/movie/top_rated?api_key=26bedf3e3be75a2810a53f4a445e7b1f&language=fr&page=1";
-    public static final String[] permissions = new String[] {
+    public static final String[] permissions = new String[]{
             Manifest.permission.READ_MEDIA_IMAGES,
             Manifest.permission.READ_MEDIA_AUDIO,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -105,10 +91,13 @@ public class Constants {
         return movieDetails + type + "/" + id + "/images" + api_key + "&include_adult=false&language=fr&page=1";
     }
 
-    public static String getMovieData(String name, String type) {
+    public static String getMovieData(String name, String year, String type) {
         name = name.replace(" ", "%20");
         String api_key = "&api_key=26bedf3e3be75a2810a53f4a445e7b1f";
-        return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&page=1";
+        if (year == null) {
+            return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&page=1";
+        }
+        return movieSearch + type + "?query=" + name + api_key + "&include_adult=false&primary_release_year=" + year + "&page=1";
     }
 
     public static String getMovieDetails(int id, String type, String lang) { // Type movie / tv
@@ -321,6 +310,23 @@ public class Constants {
         name = name.replace(" ) ", " ");
         name = name.replace(" | ", " ");
         return name.trim();
+    }
+
+    public static String extractYear(String name) {
+        Pattern pattern = Pattern.compile("\\((\\d{4})\\)|\\| (\\d{4}) \\||\\|(\\d{4})\\||\\b(\\d{4})\\b");
+        Matcher matcher = pattern.matcher(name);
+        String year = null;
+
+        if (matcher.find()) {
+            // Extract the year without brackets or pipes
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                if (matcher.group(i) != null) {
+                    year = matcher.group(i);
+                    break;
+                }
+            }
+        }
+        return year;
     }
 
     public static String queryName(String channelName) {

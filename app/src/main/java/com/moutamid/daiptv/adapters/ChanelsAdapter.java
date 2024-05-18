@@ -2,6 +2,7 @@ package com.moutamid.daiptv.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,12 +11,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.fxn.stash.Stash;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
@@ -68,16 +79,26 @@ public class ChanelsAdapter extends PagedListAdapter<ChannelsModel, ChanelsAdapt
     public void onBindViewHolder(@NonNull ParentVH holder, int position) {
         ChannelsModel model = getItem(position);
         if (model != null) {
-            Glide.with(context).load(model.getChannelImg()).placeholder(R.color.transparent).into(holder.image);
+
+            Glide.with(context)
+                    .load(model.getChannelImg().trim()).placeholder(R.color.transparent)
+                    .into(holder.image);
+//            try {
+//                String link = model.getChannelImg();
+//                GlideUrl glideUrl = new GlideUrl(link, new LazyHeaders.Builder()
+//                        .addHeader("User-Agent",
+//                                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
+//                        .build());
+//                Glide.with(context).load(glideUrl).placeholder(R.color.transparent).into(holder.image).onStart();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
             List<EPGModel> epgList = AppDatabase.getInstance(context).epgDAO().getTitle(model.getChannelID().trim());
             Log.d(TAG, "onBindViewHolder: " + epgList.size());
             for (EPGModel e : epgList){
                 Date startDate = Constants.parseDate(e.getStart());
                 Date endDate = Constants.parseDate(e.getStop());
-                Log.d(TAG, "Current: " + new SimpleDateFormat("dd/MM/yyyy HH:mm ss").format(new Date()));
-                Log.d(TAG, "startDate: " + new SimpleDateFormat("dd/MM/yyyy HH:mm ss").format(startDate));
-                Log.d(TAG, "endDate: " + new SimpleDateFormat("dd/MM/yyyy HH:mm ss").format(endDate));
-                Log.d(TAG, "onBindViewHolder: " + Constants.isCurrentDateInBetween(startDate, endDate));
                 if (Constants.isCurrentDateInBetween(startDate, endDate)) {
                     holder.epg.setText(e.getTitle());
                     break;

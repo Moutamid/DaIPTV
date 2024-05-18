@@ -389,11 +389,10 @@ public class HomeFragment extends Fragment {
         Log.d(TAG, "fetchID: " + name);
         String url;
         if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
-            url = Constants.getMovieData(name, Constants.TYPE_TV);
+            url =  Constants.getMovieData(name, Constants.extractYear(randomChannel.channelName), Constants.TYPE_TV);
         } else {
-            url = Constants.getMovieData(name, Constants.TYPE_MOVIE);
+            url = Constants.getMovieData(name, Constants.extractYear(randomChannel.channelName), Constants.TYPE_MOVIE);
         }
-
         Log.d(TAG, "fetchID: URL  " + url);
         requestQueue.cancelAll("FIND_ID");
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,

@@ -198,7 +198,7 @@ public class SeriesFragment extends Fragment {
     private void fetchID() {
         String name = Constants.regexName(randomChannel.getChannelName());
         Log.d(TAG, "fetchID: " + name);
-        String url = Constants.getMovieData(name, Constants.TYPE_TV);
+        String url = Constants.getMovieData(name, Constants.extractYear(randomChannel.channelName), Constants.TYPE_TV);
 
         Log.d(TAG, "fetchID: URL  " + url);
 

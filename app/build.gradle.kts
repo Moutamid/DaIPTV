@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:converter-simplexml:2.9.0")
@@ -51,16 +52,17 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     implementation("com.mindorks.android:prdownloader:0.6.0")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.activity:activity:1.8.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.15.1")
 
     implementation("com.github.hty527.iPlayer:widget:2.1.26.1")
     implementation("com.github.hty527.iPlayer:iplayer:2.1.26.1")
     implementation("com.github.hty527.iPlayer:cache:2.1.26.1")
 //    implementation("com.github.hty527.iPlayer:ijk:2.1.20")
 //    implementation("com.github.hty527.iPlayer:exo:2.1.20")
-
 
     implementation("androidx.paging:paging-runtime:3.2.1")
 
