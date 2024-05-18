@@ -28,6 +28,8 @@ import com.moutamid.daiptv.adapters.HomeParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentHomeBinding;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
+import com.moutamid.daiptv.lisetenrs.ItemSelectedHome;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
@@ -364,7 +366,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    ItemSelected selected = new ItemSelected() {
+    ItemSelectedHome selected = new ItemSelectedHome() {
         @Override
         public void selected(ChannelsModel model) {
             randomChannel = model;
@@ -372,15 +374,8 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void selectedSeries(ChannelsSeriesModel model) {
-
-        }
-
-        @Override
         public void cancel() {
-            requestQueue.cancelAll(Constants.FIND_ID);
-            requestQueue.cancelAll(Constants.getDetails);
-            requestQueue.cancelAll(Constants.Backdrop);
+
         }
     };
 

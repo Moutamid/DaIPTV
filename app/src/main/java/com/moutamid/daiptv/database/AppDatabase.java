@@ -6,6 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsGroupModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
@@ -16,7 +17,7 @@ import com.moutamid.daiptv.models.RecentChannelsModel;
 import com.moutamid.daiptv.models.SeriesGroupModel;
 
 @Database(entities = {  ChannelsModel.class, ChannelsGroupModel.class, SeriesGroupModel.class,
-                        MoviesGroupModel.class, RecentChannelsModel.class, EPGModel.class, ChannelsSeriesModel.class
+                        MoviesGroupModel.class, RecentChannelsModel.class, EPGModel.class, ChannelsSeriesModel.class, ChannelsFilmsModel.class
                     }, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase database;
@@ -43,4 +44,5 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract EpgDAO epgDAO();
     public abstract SeriesDAO seriesDAO();
+    public abstract FilmsDAO filmsDAO();
 }

@@ -29,6 +29,7 @@ import com.moutamid.daiptv.adapters.HomeParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentFilmBinding;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
@@ -57,7 +58,7 @@ public class FilmFragment extends Fragment {
     private static final String TAG = "FilmFragment";
     FragmentFilmBinding binding;
     AppDatabase database;
-    ChannelsModel randomChannel;
+    ChannelsFilmsModel randomChannel;
     ChannelViewModel itemViewModel;
     FilmParentAdapter parentAdapter;
     Dialog dialog;
@@ -123,10 +124,10 @@ public class FilmFragment extends Fragment {
 
 
         Random random = new Random();
-        randomChannel = database.channelsDAO().getRand(Constants.TYPE_MOVIE);
+       // randomChannel = database.channelsDAO().getRand(Constants.TYPE_MOVIE);
 
         if (randomChannel == null) {
-            randomChannel = new ChannelsModel();
+            randomChannel = new ChannelsFilmsModel();
             randomChannel.setChannelName(movieNames[random.nextInt(movieNames.length)]);
             randomChannel.setChannelGroup(Constants.TYPE_MOVIE);
         }
@@ -150,7 +151,7 @@ public class FilmFragment extends Fragment {
 
         parentAdapter = new FilmParentAdapter(mContext, parent, Constants.TYPE_MOVIE, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
             @Override
-            public void selected(ChannelsModel model) {
+            public void selected(ChannelsFilmsModel model) {
                 randomChannel = model;
                 if (randomChannel != null){
                     fetchID();
@@ -173,11 +174,8 @@ public class FilmFragment extends Fragment {
         snapHelper.attachToRecyclerView(binding.recycler);
         binding.recycler.setAdapter(parentAdapter);
 
-        snapHelper.setSnapPositionChangeListener(new CustomPagerSnapHelper.OnSnapPositionChangeListener() {
-            @Override
-            public void onSnapPositionChange(int position) {
+        snapHelper.setSnapPositionChangeListener(position -> {
 
-            }
         });
 
         return binding.getRoot();
@@ -199,7 +197,8 @@ public class FilmFragment extends Fragment {
 
     private void fetchID() {
         String name = Constants.regexName(randomChannel.getChannelName());
-        Log.d(TAG, "fetchID: " + name);
+        Log.d(TAG, "fetchID: " + randomChannel.getChannelName());
+        Log.d(TAG, "fetchID: group " + randomChannel.getChannelGroup());
         String url = Constants.getMovieData(name, Constants.extractYear(randomChannel.channelName), Constants.TYPE_MOVIE);
 
         Log.d(TAG, "fetchID: URL  " + url);

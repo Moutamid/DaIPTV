@@ -39,6 +39,7 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.moutamid.daiptv.MainActivity;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.ActivityCreateBinding;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsGroupModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
@@ -216,6 +217,7 @@ public class CreateActivity extends AppCompatActivity {
                 String currentLine;
                 ChannelsModel channel = new ChannelsModel();
                 ChannelsSeriesModel seriesModel = new ChannelsSeriesModel();
+                ChannelsFilmsModel filmsModel = new ChannelsFilmsModel();
 
                 while ((currentLine = bufferedReader.readLine()) != null) {
                     i++;
@@ -226,22 +228,28 @@ public class CreateActivity extends AppCompatActivity {
 
                     if (currentLine.startsWith(EXT_INF_SP)) {
                         channel.setChannelID(currentLine.split(TVG_ID).length > 1 ? currentLine.split(TVG_ID)[1].split(TVG_NAME)[0] : currentLine.split(COMMA)[1]);
-                        seriesModel.setChannelID(channel.getChannelID());
+                        seriesModel.setChannelID(currentLine.split(TVG_ID).length > 1 ? currentLine.split(TVG_ID)[1].split(TVG_NAME)[0] : currentLine.split(COMMA)[1]);
+                        filmsModel.setChannelID(currentLine.split(TVG_ID).length > 1 ? currentLine.split(TVG_ID)[1].split(TVG_NAME)[0] : currentLine.split(COMMA)[1]);
 
                         channel.setChannelName(currentLine.split(TVG_NAME).length > 1 ? currentLine.split(TVG_NAME)[1].split(TVG_LOGO)[0] : currentLine.split(COMMA)[1]);
-                        seriesModel.setChannelName(Constants.regexName(channel.getChannelName()));
+                        String name = Constants.regexName(currentLine.split(TVG_NAME).length > 1 ? currentLine.split(TVG_NAME)[1].split(TVG_LOGO)[0] : currentLine.split(COMMA)[1]);
+                        seriesModel.setChannelName(name);
+                        filmsModel.setChannelName(name);
 
                         channel.setChannelGroup(currentLine.split(GROUP_TITLE)[1].split(COMMA)[0]);
-                        seriesModel.setChannelGroup(channel.getChannelGroup());
+                        seriesModel.setChannelGroup(currentLine.split(GROUP_TITLE)[1].split(COMMA)[0]);
+                        filmsModel.setChannelGroup(currentLine.split(GROUP_TITLE)[1].split(COMMA)[0]);
 
                         channel.setChannelImg(currentLine.split(TVG_LOGO).length > 1 ? currentLine.split(TVG_LOGO)[1].split(GROUP_TITLE)[0] : "");
-                        seriesModel.setChannelImg(channel.getChannelImg());
+                        seriesModel.setChannelImg(currentLine.split(TVG_LOGO).length > 1 ? currentLine.split(TVG_LOGO)[1].split(GROUP_TITLE)[0] : "");
+                        filmsModel.setChannelImg(currentLine.split(TVG_LOGO).length > 1 ? currentLine.split(TVG_LOGO)[1].split(GROUP_TITLE)[0] : "");
                         continue;
                     }
 
                     if (currentLine.startsWith(HTTP) || currentLine.startsWith(HTTPS)) {
                         channel.setChannelUrl(currentLine);
-                        seriesModel.setChannelUrl(channel.getChannelUrl());
+                        seriesModel.setChannelUrl(currentLine);
+                        filmsModel.setChannelUrl(currentLine);
 
                         String[] a = currentLine.split("8080/", 2);
                         String[] b = new String[2];
@@ -256,16 +264,17 @@ public class CreateActivity extends AppCompatActivity {
                         channel.setType(b[0]);
                         channel.setPosterUpdated(false);
 
-                        seriesModel.setType(channel.getType());
+                        seriesModel.setType(b[0]);
                         seriesModel.setPosterUpdated(false);
+
+                        filmsModel.setType(b[0]);
+                        filmsModel.setPosterUpdated(false);
 
                         channelList.add(channel);
 
-                        database.channelsDAO().insert(channel);
-
                         ChannelsGroupModel groupModel = new ChannelsGroupModel(channel.getChannelGroup());
-                        MoviesGroupModel moviesGroupModel = new MoviesGroupModel(channel.getChannelGroup());
-                        SeriesGroupModel seriesGroupModel = new SeriesGroupModel(channel.getChannelGroup());
+                        MoviesGroupModel moviesGroupModel = new MoviesGroupModel(filmsModel.getChannelGroup());
+                        SeriesGroupModel seriesGroupModel = new SeriesGroupModel(seriesModel.getChannelGroup());
 
                         if (b[0].equals(Constants.TYPE_MOVIE)) {
                             runOnUiThread(() -> {
@@ -275,6 +284,7 @@ public class CreateActivity extends AppCompatActivity {
                                 }
                             });
                             database.moviesGroupDAO().insert(moviesGroupModel);
+                            database.filmsDAO().insert(filmsModel);
                         } else if (b[0].equals(Constants.TYPE_SERIES)) {
                             runOnUiThread(() -> {
                                 if (message != null && message.get() != null) {
@@ -292,11 +302,12 @@ public class CreateActivity extends AppCompatActivity {
                                 }
                             });
                             database.channelsGroupDAO().insert(groupModel);
+                            database.channelsDAO().insert(channel);
                         }
                         channel = new ChannelsModel();
                         seriesModel = new ChannelsSeriesModel();
+                        filmsModel = new ChannelsFilmsModel();
                     }
-
                 }
                 Log.d(TAG, "Finally");
             } catch (IOException e) {
@@ -333,68 +344,4 @@ public class CreateActivity extends AppCompatActivity {
 
         }
     }
-
-    public class FileRequest extends Request<NetworkResponse> {
-        private final Response.Listener<NetworkResponse> mListener;
-        private final Handler mHandler;
-        private long mStartTime;
-
-        public FileRequest(int method, String url, Response.Listener<NetworkResponse> listener, Response.ErrorListener errorListener) {
-            super(method, url, errorListener);
-            mListener = listener;
-            mHandler = new Handler(Looper.getMainLooper());
-            mStartTime = SystemClock.elapsedRealtime();
-            setRetryPolicy(new DefaultRetryPolicy(10000, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            setShouldRetryServerErrors(false);
-        }
-
-        @Override
-        protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {
-            return Response.success(response, HttpHeaderParser.parseCacheHeaders(response));
-        }
-
-        @Override
-        public byte[] getBody() {
-            return null;
-        }
-
-        @Override
-        public String getBodyContentType() {
-            return "application/octet-stream";
-        }
-
-        @Override
-        public Priority getPriority() {
-            return Priority.IMMEDIATE;
-        }
-
-        @Override
-        public void deliverError(VolleyError error) {
-            super.deliverError(error);
-        }
-
-        @Override
-        protected Map<String, String> getParams() {
-            return null;
-        }
-
-        @Override
-        public Map<String, String> getHeaders() throws AuthFailureError {
-            return super.getHeaders();
-        }
-
-        @Override
-        protected void deliverResponse(NetworkResponse response) {
-            mListener.onResponse(response);
-            Log.d(TAG, "deliverResponse: response");
-            mHandler.post(() -> {
-                long elapsedTime = SystemClock.elapsedRealtime() - mStartTime;
-                int progress = (int) (elapsedTime / 1000);
-                runOnUiThread(() -> binding.progress.setText(progress + "%"));
-            });
-        }
-
-    }
-
-
 }

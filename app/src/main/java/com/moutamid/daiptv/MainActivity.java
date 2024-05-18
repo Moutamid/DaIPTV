@@ -33,6 +33,7 @@ import com.moutamid.daiptv.fragments.FilmFragment;
 import com.moutamid.daiptv.fragments.HomeFragment;
 import com.moutamid.daiptv.fragments.RechercheFragment;
 import com.moutamid.daiptv.fragments.SeriesFragment;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.EPGModel;
@@ -89,7 +90,9 @@ public class MainActivity extends AppCompatActivity {
             get();
 
         List<ChannelsSeriesModel> chanel = database.seriesDAO().getAll();
-        Log.d("TEST1233", "onCreate: " + chanel.get(1).getChannelImg());
+        List<ChannelsFilmsModel> films = database.filmsDAO().getAll();
+        Log.d("TEST1233", "onCreate: " + chanel.size());
+        Log.d("TEST1233", "onCreate: " + films.size());
 
         binding.Accueil.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -234,62 +237,54 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
             String url = "http://vbn123.com:8080/xmltv.php?username=9tqadv9utC4B28qe&password=X8J6qeYDNcbzvWns";
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new com.android.volley.Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Log.d("TAGGER", "onResponse/45: data loaded");
-                    //  Log.d("TAGGER", "onResponse/45: data: : " + response);
-                    Log.d("TAGGER", "onResponse/45: length: : " + response.length());
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response -> {
+                Log.d("TAGGER", "onResponse/45: data loaded");
+                //  Log.d("TAGGER", "onResponse/45: data: : " + response);
+                Log.d("TAGGER", "onResponse/45: length: : " + response.length());
 
-                    try {
-                        String xmlContent = response.toString();
+                try {
+                    String xmlContent = response.toString();
 //                        Log.d(TAG, "XML : " + xmlContent);
-                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder builder = factory.newDocumentBuilder();
-                        Document document = builder.parse(new InputSource(new StringReader(xmlContent)));
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    Document document = builder.parse(new InputSource(new StringReader(xmlContent)));
 
-                        // Get the root element
-                        Element root = document.getDocumentElement();
-                        // Get a NodeList of programme elements
-                        NodeList programmeList = root.getElementsByTagName("programme");
-                        Log.d(TAG, "programmeList: " + programmeList.getLength());
-                        for (int i = 0; i < programmeList.getLength(); i++) {
-                            Node programmeNode = programmeList.item(i);
-                            if (programmeNode.getNodeType() == Node.ELEMENT_NODE) {
-                                Element programmeElement = (Element) programmeNode;
+                    // Get the root element
+                    Element root = document.getDocumentElement();
+                    // Get a NodeList of programme elements
+                    NodeList programmeList = root.getElementsByTagName("programme");
+                    Log.d(TAG, "programmeList: " + programmeList.getLength());
+                    for (int i = 0; i < programmeList.getLength(); i++) {
+                        Node programmeNode = programmeList.item(i);
+                        if (programmeNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element programmeElement = (Element) programmeNode;
 
-                                // Get attributes
-                                String start = programmeElement.getAttribute("start");
-                                String stop = programmeElement.getAttribute("stop");
-                                String channel = programmeElement.getAttribute("channel");
+                            // Get attributes
+                            String start = programmeElement.getAttribute("start");
+                            String stop = programmeElement.getAttribute("stop");
+                            String channel = programmeElement.getAttribute("channel");
 
-                                // Get child elements
-                                String title = programmeElement.getElementsByTagName("title").item(0).getTextContent();
-                                String desc = programmeElement.getElementsByTagName("desc").item(0).getTextContent();
+                            // Get child elements
+                            String title = programmeElement.getElementsByTagName("title").item(0).getTextContent();
+                            String desc = programmeElement.getElementsByTagName("desc").item(0).getTextContent();
 
-                                EPGModel epgModel = new EPGModel(start, stop, channel, title);
-                                database.epgDAO().insert(epgModel);
+                            EPGModel epgModel = new EPGModel(start, stop, channel, title);
+                            database.epgDAO().insert(epgModel);
 
-                                Log.d(TAG, "getEPG: Programme " + (i + 1));
+                            Log.d(TAG, "getEPG: Programme " + (i + 1));
 
-                                System.out.println("Start: " + start);
-                                System.out.println("Stop: " + stop);
-                                System.out.println("Channel: " + channel);
-                                System.out.println("Title: " + title);
-                                System.out.println("Description: " + desc);
-                                System.out.println();
-                            }
+                            System.out.println("Start: " + start);
+                            System.out.println("Stop: " + stop);
+                            System.out.println("Channel: " + channel);
+                            System.out.println("Title: " + title);
+                            System.out.println("Description: " + desc);
+                            System.out.println();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }, new com.android.volley.Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d(TAG, "onErrorResponse: " + error.toString());
-                }
-            });
+            }, error -> Log.d(TAG, "onErrorResponse: " + error.toString()));
             queue.add(stringRequest);
         }).start();
     }
@@ -353,6 +348,4 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-
 }

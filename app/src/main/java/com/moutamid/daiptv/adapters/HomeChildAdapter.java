@@ -22,6 +22,7 @@ import com.moutamid.daiptv.activities.SeriesActivity;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
+import com.moutamid.daiptv.lisetenrs.ItemSelectedHome;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
@@ -34,9 +35,9 @@ public class HomeChildAdapter extends RecyclerView.Adapter<HomeChildAdapter.Movi
     private static final String TAG = "HomeChildAdapter";
     Context context;
     ArrayList<MovieModel> list;
-    ItemSelected itemSelected;
+    ItemSelectedHome itemSelected;
 
-    public HomeChildAdapter(Context context, ArrayList<MovieModel> list, ItemSelected itemSelected) {
+    public HomeChildAdapter(Context context, ArrayList<MovieModel> list, ItemSelectedHome itemSelected) {
         this.context = context;
         this.list = list;
         this.itemSelected = itemSelected;

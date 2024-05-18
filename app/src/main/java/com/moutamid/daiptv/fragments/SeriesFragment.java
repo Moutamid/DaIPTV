@@ -30,6 +30,7 @@ import com.moutamid.daiptv.adapters.SeriesParentAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentSeriesBinding;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
@@ -158,7 +159,7 @@ public class SeriesFragment extends Fragment {
         adapter = new SeriesParentAdapter(mContext, parent, Constants.TYPE_SERIES, itemViewModel, getViewLifecycleOwner(), new ItemSelected() {
 
             @Override
-            public void selected(ChannelsModel model) {
+            public void selected(ChannelsFilmsModel model) {
 
             }
 

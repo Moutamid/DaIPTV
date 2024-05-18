@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
+import com.moutamid.daiptv.lisetenrs.ItemSelectedHome;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.models.TopItems;
 import com.moutamid.daiptv.utilis.Constants;
@@ -22,9 +23,9 @@ import java.util.ArrayList;
 public class HomeParentAdapter extends RecyclerView.Adapter<HomeParentAdapter.ItemVH> {
     Context context;
     ArrayList<TopItems> list;
-    ItemSelected itemSelected;
+    ItemSelectedHome itemSelected;
 
-    public HomeParentAdapter(Context context, ArrayList<TopItems> list, ItemSelected itemSelected) {
+    public HomeParentAdapter(Context context, ArrayList<TopItems> list, ItemSelectedHome itemSelected) {
         this.context = context;
         this.list = list;
         this.itemSelected = itemSelected;

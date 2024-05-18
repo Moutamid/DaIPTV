@@ -169,8 +169,7 @@ public class SeriesParentAdapter extends RecyclerView.Adapter<SeriesParentAdapte
                         String poster = images.getJSONObject(index).getString("file_path");
                         String link = poster.isEmpty() ? item.getChannelImg() : poster;
                         Log.d("LINKKK", "getDetails: " + link);
-                        database.channelsDAO().update(item.getID(), link);
-                        // adapter = new ChildAdapter(context, itemSelected, type);
+                        database.seriesDAO().update(item.getID(), link);
                         itemViewModel.getSeries(item.channelGroup, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsSeriesModel>>() {
                             @Override
                             public void onChanged(PagedList<ChannelsSeriesModel> channelsModels) {

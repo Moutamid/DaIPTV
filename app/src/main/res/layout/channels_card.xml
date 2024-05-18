@@ -28,7 +28,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:src="@drawable/img"
-                android:scaleType="center"
                 android:id="@+id/image" />
 
             <com.google.android.material.card.MaterialCardView

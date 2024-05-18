@@ -7,6 +7,7 @@ import androidx.lifecycle.Transformations;
 import androidx.paging.DataSource;
 
 import com.fxn.stash.Stash;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.UserModel;
@@ -19,6 +20,7 @@ import java.util.List;
 public class ChannelRepository {
     private final ChannelsDAO itemDao;
     private final SeriesDAO seriesDAO;
+    private final FilmsDAO filmsDAO;
     private final RecentDAO recentDao;
 
     public ChannelRepository(Context context) {
@@ -26,6 +28,7 @@ public class ChannelRepository {
         itemDao = db.channelsDAO();
         recentDao = db.recentDAO();
         seriesDAO = db.seriesDAO();
+        filmsDAO = db.filmsDAO();
     }
 
     public DataSource.Factory<Integer, ChannelsModel> getAllItems(String type) {
@@ -38,6 +41,9 @@ public class ChannelRepository {
 
     public DataSource.Factory<Integer, ChannelsSeriesModel> getSeriesByGroup(String group, String type) {
         return seriesDAO.getAllByGroup(group, type);
+    }
+    public DataSource.Factory<Integer, ChannelsFilmsModel> getFilmByGroup(String group, String type) {
+        return filmsDAO.getAllByGroup(group, type);
     }
 
     public DataSource.Factory<Integer, ChannelsModel> getRecentItems() {

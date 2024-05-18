@@ -29,6 +29,7 @@ import com.moutamid.daiptv.activities.DetailSeriesActivity;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.MoviesGroupModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -42,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.ChildVH> {
+public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdapter.ChildVH> {
 
     Context context;
     private static final String TAG = "ChildAdapter";
@@ -50,15 +51,15 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
     String type;
     RequestQueue requestQueue;
     AppDatabase database;
-    private static final DiffUtil.ItemCallback<ChannelsModel> DIFF_CALLBACK =
-            new DiffUtil.ItemCallback<ChannelsModel>() {
+    private static final DiffUtil.ItemCallback<ChannelsFilmsModel> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<ChannelsFilmsModel>() {
                 @Override
-                public boolean areItemsTheSame(@NonNull ChannelsModel oldItem, @NonNull ChannelsModel newItem) {
+                public boolean areItemsTheSame(@NonNull ChannelsFilmsModel oldItem, @NonNull ChannelsFilmsModel newItem) {
                     return oldItem.getID() == newItem.getID();
                 }
 
                 @Override
-                public boolean areContentsTheSame(@NonNull ChannelsModel oldItem, @NonNull ChannelsModel newItem) {
+                public boolean areContentsTheSame(@NonNull ChannelsFilmsModel oldItem, @NonNull ChannelsFilmsModel newItem) {
                     return Objects.equals(oldItem, newItem);
                 }
             };
@@ -79,7 +80,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
 
     @Nullable
     @Override
-    public PagedList<ChannelsModel> getCurrentList() {
+    public PagedList<ChannelsFilmsModel> getCurrentList() {
         if (super.getCurrentList()!=null){
             Log.d(TAG, "getCurrentList:  size " + super.getCurrentList().size());
         }
@@ -97,16 +98,16 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
 
     @Nullable
     @Override
-    protected ChannelsModel getItem(int position) {
+    protected ChannelsFilmsModel getItem(int position) {
         return super.getItem(position);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ChildVH holder, int position) {
-        ChannelsModel model = getItem(holder.getAbsoluteAdapterPosition());
+        ChannelsFilmsModel model = getItem(holder.getAbsoluteAdapterPosition());
         if (model!=null){
             try {
-                String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg();
+                String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg().trim();
                 GlideUrl glideUrl = new GlideUrl(link, new LazyHeaders.Builder()
                         .addHeader("User-Agent",
                                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
@@ -121,17 +122,22 @@ public class ChildAdapter extends PagedListAdapter<ChannelsModel, ChildAdapter.C
             }
 
             holder.itemView.setOnLongClickListener(v -> {
-                new AddFavortDialog(context, model).show();
+                ChannelsModel channelsModel = new ChannelsModel();
+                channelsModel.setChannelGroup(model.getChannelGroup());
+                channelsModel.setChannelID(model.getChannelID());
+                channelsModel.setChannelName(model.getChannelName());
+                channelsModel.setChannelUrl(model.getChannelUrl());
+                channelsModel.setChannelImg(model.getChannelImg());
+                channelsModel.setType(model.getType());
+                channelsModel.setPosterUpdated(model.isPosterUpdated());
+                new AddFavortDialog(context, channelsModel).show();
                 return true;
             });
 
             holder.itemView.setOnClickListener(v -> {
                 Stash.put(Constants.PASS, model);
                 Log.d(TAG, "onBindViewHolder: " + model.getChannelName());
-                if (model.type.equals(Constants.TYPE_SERIES))
-                    context.startActivity(new Intent(context, DetailSeriesActivity.class));
-                else
-                    context.startActivity(new Intent(context, DetailActivity.class));
+                context.startActivity(new Intent(context, DetailActivity.class));
             });
 
             holder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {

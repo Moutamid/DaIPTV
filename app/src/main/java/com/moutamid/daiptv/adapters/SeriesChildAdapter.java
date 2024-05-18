@@ -99,7 +99,7 @@ public class SeriesChildAdapter extends PagedListAdapter<ChannelsSeriesModel, Se
         ChannelsSeriesModel model = getItem(holder.getAbsoluteAdapterPosition());
         if (model != null) {
             try {
-                String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg();
+                String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg().trim();
                 GlideUrl glideUrl = new GlideUrl(link, new LazyHeaders.Builder()
                         .addHeader("User-Agent",
                                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")

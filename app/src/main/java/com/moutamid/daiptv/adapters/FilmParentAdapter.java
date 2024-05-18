@@ -21,6 +21,7 @@ import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ParentItemModel;
 import com.moutamid.daiptv.utilis.Constants;
@@ -78,18 +79,20 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         holder.childRC.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             int first = lm.findFirstCompletelyVisibleItemPosition();
             int last = lm.findLastCompletelyVisibleItemPosition();
-            ArrayList<ChannelsModel> channelsList = Stash.getArrayList(model.name, ChannelsModel.class);
+            ArrayList<ChannelsFilmsModel> channelsList = Stash.getArrayList(model.name, ChannelsFilmsModel.class);
             if (!channelsList.isEmpty()) {
-                for (int i = first; i < last; i++) {
-                    ChannelsModel channelsModel = channelsList.get(i);
-                    if (channelsModel != null) {
-                        if (!channelsModel.isPosterUpdated) {
-                            Log.d(TAG, "onScrollChange: changing poster for " + channelsModel.channelName);
-                            boolean exclude = channelsModel.channelName.startsWith("|XXX|") || channelsModel.channelName.startsWith("XXX|") ||
-                                    channelsModel.channelName.startsWith("|XX|") || channelsModel.channelName.startsWith("XX|") ||
-                                    channelsModel.channelName.startsWith("|X|") || channelsModel.channelName.startsWith("X|");
-                            if (!exclude)
-                                makeApiCall(channelsModel, i);
+                if (channelsList.size() > last) {
+                    for (int i = first; i < last; i++) {
+                        ChannelsFilmsModel channelsModel = channelsList.get(i);
+                        if (channelsModel != null) {
+                            if (!channelsModel.isPosterUpdated) {
+                                Log.d(TAG, "onScrollChange: changing poster for " + channelsModel.channelName);
+                                boolean exclude = channelsModel.channelName.startsWith("|XXX|") || channelsModel.channelName.startsWith("XXX|") ||
+                                        channelsModel.channelName.startsWith("|XX|") || channelsModel.channelName.startsWith("XX|") ||
+                                        channelsModel.channelName.startsWith("|X|") || channelsModel.channelName.startsWith("X|");
+                                if (!exclude)
+                                    makeApiCall(channelsModel, i);
+                            }
                         }
                     }
                 }
@@ -97,9 +100,9 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         });
 
         if (model.isRoom) {
-            itemViewModel.getItemsByGroup(model.name, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsModel>>() {
+            itemViewModel.getFilms(model.name, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsFilmsModel>>() {
                 @Override
-                public void onChanged(PagedList<ChannelsModel> channelsModels) {
+                public void onChanged(PagedList<ChannelsFilmsModel> channelsModels) {
                     adapter.submitList(channelsModels);
                     // Copy items to myList
                     if (holder.getAbsoluteAdapterPosition() > 0) {
@@ -116,9 +119,9 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         }
     }
 
-    ArrayList<ChannelsModel> channelsList = new ArrayList<>();
+    ArrayList<ChannelsFilmsModel> channelsList = new ArrayList<>();
 
-    private void makeApiCall(ChannelsModel item, int absoluteAdapterPosition) {
+    private void makeApiCall(ChannelsFilmsModel item, int absoluteAdapterPosition) {
         String name = Constants.regexName(item.channelName);
         Log.d(TAG, "makeApiCall: " + name);
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
@@ -143,7 +146,7 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         requestQueue.add(objectRequest);
     }
 
-    private void getDetails(int id, ChannelsModel item, int absoluteAdapterPosition) {
+    private void getDetails(int id, ChannelsFilmsModel item, int absoluteAdapterPosition) {
         String type = item.type.equals(Constants.TYPE_SERIES) ? Constants.TYPE_TV : Constants.TYPE_MOVIE;
         String url = Constants.getMovieDetails(id, type, "");
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -175,9 +178,9 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
                         Log.d("LINKKK", "getDetails: " + link);
                         database.channelsDAO().update(item.getID(), link);
                        // adapter = new ChildAdapter(context, itemSelected, type);
-                        itemViewModel.getItemsByGroup(item.channelGroup, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsModel>>() {
+                        itemViewModel.getFilms(item.channelGroup, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsFilmsModel>>() {
                             @Override
-                            public void onChanged(PagedList<ChannelsModel> channelsModels) {
+                            public void onChanged(PagedList<ChannelsFilmsModel> channelsModels) {
                                 adapter.submitList(channelsModels);
                                 // Copy items to myList
                                 Log.d("LINKKK", "onChanged: " + channelsList.size());
