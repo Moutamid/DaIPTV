@@ -74,7 +74,15 @@ public class ChanelsAdapter extends PagedListAdapter<ChannelsModel, ChanelsAdapt
     public ParentVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ParentVH(LayoutInflater.from(parent.getContext()).inflate(R.layout.channels_card, parent, false));
     }
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
     @Override
     public void onBindViewHolder(@NonNull ParentVH holder, int position) {
         ChannelsModel model = getItem(position);

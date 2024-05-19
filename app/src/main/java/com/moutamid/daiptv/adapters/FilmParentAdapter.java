@@ -62,6 +62,16 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         return new ParentVH(LayoutInflater.from(context).inflate(R.layout.film_parent_item, parent, false));
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     int pos;
     ChildAdapter adapter;
     @Override

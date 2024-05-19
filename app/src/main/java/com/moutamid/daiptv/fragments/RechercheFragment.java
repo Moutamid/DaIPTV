@@ -17,7 +17,9 @@ import com.fxn.stash.Stash;
 import com.moutamid.daiptv.adapters.SearchAdapter;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.databinding.FragmentRechercheBinding;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
+import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.ArrayList;
@@ -26,7 +28,9 @@ import java.util.List;
 public class RechercheFragment extends Fragment {
     FragmentRechercheBinding binding;
     private static final String TAG = "RechercheFragment";
-    List<ChannelsModel> channels, film,series;
+    List<ChannelsModel> channels;
+    List<ChannelsFilmsModel> film;
+    List<ChannelsSeriesModel> series;
     AppDatabase database;
     SearchAdapter channelAdapter, filmAdapter, seriesAdapter;
     Thread thread;
@@ -65,8 +69,8 @@ public class RechercheFragment extends Fragment {
         database = AppDatabase.getInstance(mContext);
 
         channelAdapter = new SearchAdapter(mContext, channels);
-        filmAdapter = new SearchAdapter(mContext, film);
-        seriesAdapter = new SearchAdapter(mContext, series);
+        filmAdapter = new SearchAdapter(mContext, new ArrayList<>());
+        seriesAdapter = new SearchAdapter(mContext, new ArrayList<>());
 
         binding.chainesRC.setAdapter(channelAdapter);
         binding.filmsRC.setAdapter(filmAdapter);
@@ -98,16 +102,16 @@ public class RechercheFragment extends Fragment {
                         series.clear();
 
                         channels.add(database.channelsDAO().getSearchChannel(name, Constants.TYPE_CHANNEL));
-                        film.add(database.channelsDAO().getSearchChannel(name, Constants.TYPE_MOVIE));
-                        series.add(database.channelsDAO().getSearchChannel(name, Constants.TYPE_SERIES));
+                        film.add(database.filmsDAO().getSearchChannel(name));
+                        series.add(database.seriesDAO().getSearchChannel(name));
 
                         Log.d(TAG, "onTextChanged: channels : " + channels.size());
                         Log.d(TAG, "onTextChanged: film : " + film.size());
                         Log.d(TAG, "onTextChanged: series : " + series.size());
 
                         channelAdapter = new SearchAdapter(mContext, channels);
-                        filmAdapter = new SearchAdapter(mContext, film);
-                        seriesAdapter = new SearchAdapter(mContext, series);
+//                        filmAdapter = new SearchAdapter(mContext, film);
+//                        seriesAdapter = new SearchAdapter(mContext, series);
 
                         requireActivity().runOnUiThread(() -> {
                             binding.chainesRC.setAdapter(channelAdapter);

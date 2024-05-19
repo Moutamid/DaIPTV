@@ -55,7 +55,15 @@ public class SeriesParentAdapter extends RecyclerView.Adapter<SeriesParentAdapte
         requestQueue = VolleySingleton.getInstance(context).getRequestQueue();
         database = AppDatabase.getInstance(context);
     }
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
     @NonNull
     @Override
     public ParentVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

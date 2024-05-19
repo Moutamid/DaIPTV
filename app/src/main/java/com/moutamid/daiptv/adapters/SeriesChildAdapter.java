@@ -72,7 +72,15 @@ public class SeriesChildAdapter extends PagedListAdapter<ChannelsSeriesModel, Se
         requestQueue = VolleySingleton.getInstance(context).getRequestQueue();
         database = AppDatabase.getInstance(context);
     }
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
     @Nullable
     @Override
     public PagedList<ChannelsSeriesModel> getCurrentList() {

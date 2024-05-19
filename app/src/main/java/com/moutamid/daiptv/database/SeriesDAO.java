@@ -7,6 +7,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 
@@ -26,5 +27,6 @@ public interface SeriesDAO {
 
     @Query("SELECT * FROM series WHERE channelGroup = :channelGroup AND type= :type ORDER BY channelName ASC")
     DataSource.Factory<Integer, ChannelsSeriesModel> getAllByGroup(String channelGroup, String type);
-
+    @Query("SELECT * FROM series WHERE LOWER(channelName) LIKE '%' || LOWER(:query) || '%' LIMIT 1")
+    ChannelsSeriesModel getSearchChannel(String query);
 }

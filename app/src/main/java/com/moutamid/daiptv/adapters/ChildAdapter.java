@@ -96,6 +96,10 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
             return new ChildVH(LayoutInflater.from(context).inflate(R.layout.series_child_item, parent, false));
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
     @Nullable
     @Override
     protected ChannelsFilmsModel getItem(int position) {

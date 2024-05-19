@@ -233,12 +233,13 @@ public class CreateActivity extends AppCompatActivity {
 
                         channel.setChannelName(currentLine.split(TVG_NAME).length > 1 ? currentLine.split(TVG_NAME)[1].split(TVG_LOGO)[0] : currentLine.split(COMMA)[1]);
                         String name = Constants.regexName(currentLine.split(TVG_NAME).length > 1 ? currentLine.split(TVG_NAME)[1].split(TVG_LOGO)[0] : currentLine.split(COMMA)[1]);
-                        seriesModel.setChannelName(name);
-                        filmsModel.setChannelName(name);
+                        seriesModel.setChannelName(name.trim());
+                        filmsModel.setChannelName(name.trim());
 
                         channel.setChannelGroup(currentLine.split(GROUP_TITLE)[1].split(COMMA)[0]);
-                        seriesModel.setChannelGroup(currentLine.split(GROUP_TITLE)[1].split(COMMA)[0]);
-                        filmsModel.setChannelGroup(currentLine.split(GROUP_TITLE)[1].split(COMMA)[0]);
+                        String group = currentLine.split(GROUP_TITLE)[1].split(COMMA)[0];
+                        seriesModel.setChannelGroup(group.trim());
+                        filmsModel.setChannelGroup(group.trim());
 
                         channel.setChannelImg(currentLine.split(TVG_LOGO).length > 1 ? currentLine.split(TVG_LOGO)[1].split(GROUP_TITLE)[0] : "");
                         seriesModel.setChannelImg(currentLine.split(TVG_LOGO).length > 1 ? currentLine.split(TVG_LOGO)[1].split(GROUP_TITLE)[0] : "");

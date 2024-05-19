@@ -209,6 +209,7 @@ public class FilmFragment extends Fragment {
                         JSONArray array = response.getJSONArray("results");
                         JSONObject object = array.getJSONObject(0);
                         int id = object.getInt("id");
+                        Log.d(TAG, "fetchID: ID " + id);
                         getDetails(id, Constants.lang_fr);
                     } catch (JSONException e) {
                         e.printStackTrace();
