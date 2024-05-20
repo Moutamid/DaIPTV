@@ -19,6 +19,7 @@ import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
+import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.List;
 
@@ -43,7 +44,8 @@ public class SearchFilmsAdapter extends RecyclerView.Adapter<SearchFilmsAdapter.
     public void onBindViewHolder(@NonNull SearchVH holder, int position) {
         ChannelsFilmsModel model = list.get(holder.getAbsoluteAdapterPosition());
         try {
-            Glide.with(context).load(model.getChannelImg().trim()).placeholder(R.color.transparent).into(holder.image);
+            String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg().trim();
+            Glide.with(context).load(link).placeholder(R.color.transparent).into(holder.image);
 
             holder.itemView.setOnClickListener(v -> {
                 context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl().trim()).putExtra("name", model.getChannelName()));

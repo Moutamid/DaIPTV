@@ -7,10 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,15 +16,13 @@ import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
 import com.moutamid.daiptv.activities.DetailSeriesActivity;
-import com.moutamid.daiptv.activities.SeriesActivity;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.dialogs.AddFavortDialog;
-import com.moutamid.daiptv.lisetenrs.ItemSelected;
 import com.moutamid.daiptv.lisetenrs.ItemSelectedHome;
+import com.moutamid.daiptv.models.ChannelsFilmsModel;
 import com.moutamid.daiptv.models.ChannelsModel;
 import com.moutamid.daiptv.models.ChannelsSeriesModel;
 import com.moutamid.daiptv.models.MovieModel;
-import com.moutamid.daiptv.models.UserModel;
 import com.moutamid.daiptv.utilis.Constants;
 
 import java.util.ArrayList;
@@ -54,26 +50,26 @@ public class HomeChildAdapter extends RecyclerView.Adapter<HomeChildAdapter.Movi
         MovieModel model = list.get(holder.getAbsoluteAdapterPosition());
         Glide.with(context).load(Constants.getImageLink(model.banner)).placeholder(R.color.grey2).into(holder.image);
         holder.itemView.setOnLongClickListener(v -> {
-            ChannelsModel model1 = AppDatabase.getInstance(context).channelsDAO().getSearchChannel(model.original_title, model.type);
-            new AddFavortDialog(context, model1).show();
+            if (model.type.equals(Constants.TYPE_SERIES)) {
+                ChannelsSeriesModel model1 = AppDatabase.getInstance(context).seriesDAO().getSearchChannel(model.original_title);
+                ChannelsModel channelsModel = getSeriesModel(model1, model);
+                new AddFavortDialog(context, channelsModel).show();
+            } else {
+                ChannelsFilmsModel model1 = AppDatabase.getInstance(context).filmsDAO().getSearchChannel(model.original_title);
+                ChannelsModel channelsModel = getFilmsModel(model1, model);
+                new AddFavortDialog(context, channelsModel).show();
+            }
             return true;
         });
 
         holder.itemView.setOnClickListener(v -> {
             if (model.type.equals(Constants.TYPE_SERIES)) {
-                ChannelsSeriesModel channelsModel = new ChannelsSeriesModel();
-                channelsModel.setChannelImg(model.banner);
-                channelsModel.setChannelName(model.original_title);
-                channelsModel.setType(model.type);
-                channelsModel.setChannelGroup(model.type);
+                ChannelsSeriesModel channelsModel = AppDatabase.getInstance(context).seriesDAO().getSearchChannel(model.original_title);
                 Stash.put(Constants.PASS_SERIES, channelsModel);
                 context.startActivity(new Intent(context, DetailSeriesActivity.class));
             } else {
-                ChannelsModel channelsModel = new ChannelsModel();
-                channelsModel.setChannelImg(model.banner);
-                channelsModel.setChannelName(model.original_title);
-                channelsModel.setType(model.type);
-                channelsModel.setChannelGroup(model.type);
+                ChannelsFilmsModel model1 = AppDatabase.getInstance(context).filmsDAO().getSearchChannel(model.original_title);
+                ChannelsModel channelsModel = getFilmsModel(model1, model);
                 Stash.put(Constants.PASS, channelsModel);
                 context.startActivity(new Intent(context, DetailActivity.class));
             }
@@ -91,6 +87,45 @@ public class HomeChildAdapter extends RecyclerView.Adapter<HomeChildAdapter.Movi
                 }
             }
         });
+    }
+
+    @NonNull
+    private static ChannelsModel getSeriesModel(ChannelsSeriesModel model1, MovieModel model) {
+        ChannelsModel channelsModel = new ChannelsModel();
+        if (model1 != null){
+            channelsModel.setChannelID(model1.getChannelID());
+            channelsModel.setChannelImg(model1.getChannelImg());
+            channelsModel.setChannelName(model1.getChannelName());
+            channelsModel.setType(model1.getType());
+            channelsModel.setPosterUpdated(model1.isPosterUpdated());
+            channelsModel.setChannelGroup(model1.getChannelGroup());
+            channelsModel.setChannelUrl(model1.getChannelUrl());
+        } else {
+            channelsModel.setChannelImg(model.banner);
+            channelsModel.setChannelName(model.original_title);
+            channelsModel.setType(model.type);
+            channelsModel.setChannelGroup(model.type);
+        }
+        return channelsModel;
+    }
+    @NonNull
+    private static ChannelsModel getFilmsModel(ChannelsFilmsModel model1, MovieModel model) {
+        ChannelsModel channelsModel = new ChannelsModel();
+        if (model1 != null){
+            channelsModel.setChannelID(model1.getChannelID());
+            channelsModel.setChannelImg(model1.getChannelImg());
+            channelsModel.setChannelName(model1.getChannelName());
+            channelsModel.setType(model1.getType());
+            channelsModel.setPosterUpdated(model1.isPosterUpdated());
+            channelsModel.setChannelGroup(model1.getChannelGroup());
+            channelsModel.setChannelUrl(model1.getChannelUrl());
+        } else {
+            channelsModel.setChannelImg(model.banner);
+            channelsModel.setChannelName(model.original_title);
+            channelsModel.setType(model.type);
+            channelsModel.setChannelGroup(model.type);
+        }
+        return channelsModel;
     }
 
     @Override

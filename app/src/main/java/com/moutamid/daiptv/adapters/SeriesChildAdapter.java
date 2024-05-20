@@ -122,21 +122,15 @@ public class SeriesChildAdapter extends PagedListAdapter<ChannelsSeriesModel, Se
             }
 
             holder.itemView.setOnLongClickListener(v -> {
-                ChannelsModel channelsModel = new ChannelsModel();
-                channelsModel.setChannelGroup(model.getChannelGroup());
-                channelsModel.setChannelID(model.getChannelID());
-                channelsModel.setChannelName(model.getChannelName());
-                channelsModel.setChannelUrl(model.getChannelUrl());
-                channelsModel.setChannelImg(model.getChannelImg());
-                channelsModel.setType(model.getType());
-                channelsModel.setPosterUpdated(model.isPosterUpdated());
+                ChannelsSeriesModel seriesModel = AppDatabase.getInstance(context).seriesDAO().getSearchChannel(Constants.regexName(model.getChannelName()));
+                ChannelsModel channelsModel = getSeriesModel(seriesModel, model);
                 new AddFavortDialog(context, channelsModel).show();
                 return true;
             });
 
             holder.itemView.setOnClickListener(v -> {
-                Stash.put(Constants.PASS_SERIES, model);
-                Log.d(TAG, "onBindViewHolder: " + model.getChannelName());
+                ChannelsSeriesModel seriesModel = AppDatabase.getInstance(context).seriesDAO().getSearchChannel(Constants.regexName(model.getChannelName()));
+                Stash.put(Constants.PASS_SERIES, seriesModel);
                 context.startActivity(new Intent(context, DetailSeriesActivity.class));
             });
 
@@ -157,7 +151,28 @@ public class SeriesChildAdapter extends PagedListAdapter<ChannelsSeriesModel, Se
     }
 
     List<MoviesGroupModel> items = new ArrayList<MoviesGroupModel>();
-
+    @NonNull
+    private static ChannelsModel getSeriesModel(ChannelsSeriesModel roomModel, ChannelsSeriesModel model) {
+        ChannelsModel channelsModel = new ChannelsModel();
+        if (roomModel != null) {
+            channelsModel.setChannelID(roomModel.getChannelID());
+            channelsModel.setChannelImg(roomModel.getChannelImg());
+            channelsModel.setChannelName(roomModel.getChannelName());
+            channelsModel.setType(roomModel.getType());
+            channelsModel.setPosterUpdated(roomModel.isPosterUpdated());
+            channelsModel.setChannelGroup(roomModel.getChannelGroup());
+            channelsModel.setChannelUrl(roomModel.getChannelUrl());
+        } else {
+            channelsModel.setChannelID(model.getChannelID());
+            channelsModel.setChannelImg(model.getChannelImg());
+            channelsModel.setChannelName(model.getChannelName());
+            channelsModel.setType(model.getType());
+            channelsModel.setPosterUpdated(model.isPosterUpdated());
+            channelsModel.setChannelGroup(model.getChannelGroup());
+            channelsModel.setChannelUrl(model.getChannelUrl());
+        }
+        return channelsModel;
+    }
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);

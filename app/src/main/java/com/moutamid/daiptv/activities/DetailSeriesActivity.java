@@ -67,7 +67,7 @@ public class DetailSeriesActivity extends AppCompatActivity {
 
         binding.reader.setOnClickListener(v -> {
             if (model.getChannelUrl() != null) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl()));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl().trim()));
                 intent.setType("video/*");
                 startActivity(intent);
             } else {

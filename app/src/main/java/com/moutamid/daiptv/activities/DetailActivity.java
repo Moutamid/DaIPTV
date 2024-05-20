@@ -46,7 +46,6 @@ public class DetailActivity extends AppCompatActivity {
     Dialog dialog;
     private RequestQueue requestQueue;
     MovieModel movieModel;
-
     ArrayList<CastModel> cast;
 
     @Override
@@ -63,13 +62,15 @@ public class DetailActivity extends AppCompatActivity {
         
         binding.reader.setOnClickListener(v -> {
             if (model.getChannelUrl() != null) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl()));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl().trim()));
                 intent.setType("video/*");
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
         binding.add.setOnClickListener(v->{
             new AlertDialog.Builder(this)

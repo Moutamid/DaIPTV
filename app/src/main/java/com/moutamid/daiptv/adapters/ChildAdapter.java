@@ -126,21 +126,16 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
             }
 
             holder.itemView.setOnLongClickListener(v -> {
-                ChannelsModel channelsModel = new ChannelsModel();
-                channelsModel.setID(model.getID());
-                channelsModel.setChannelGroup(model.getChannelGroup());
-                channelsModel.setChannelID(model.getChannelID());
-                channelsModel.setChannelName(model.getChannelName());
-                channelsModel.setChannelUrl(model.getChannelUrl());
-                channelsModel.setChannelImg(model.getChannelImg());
-                channelsModel.setType(model.getType());
-                channelsModel.setPosterUpdated(model.isPosterUpdated());
+                ChannelsFilmsModel model1 = AppDatabase.getInstance(context).filmsDAO().getSearchChannel(Constants.regexName(model.getChannelName()));
+                ChannelsModel channelsModel = getFilmsModel(model1, model);
                 new AddFavortDialog(context, channelsModel).show();
                 return true;
             });
 
             holder.itemView.setOnClickListener(v -> {
-                Stash.put(Constants.PASS, model);
+                ChannelsFilmsModel model1 = AppDatabase.getInstance(context).filmsDAO().getSearchChannel(Constants.regexName(model.getChannelName()));
+                ChannelsModel channelsModel = getFilmsModel(model1, model);
+                Stash.put(Constants.PASS, channelsModel);
                 Log.d(TAG, "onBindViewHolder: " + model.getChannelName());
                 context.startActivity(new Intent(context, DetailActivity.class));
             });
@@ -156,6 +151,29 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
                 }
             });
         }
+    }
+
+    @NonNull
+    private static ChannelsModel getFilmsModel(ChannelsFilmsModel roomModel, ChannelsFilmsModel model) {
+        ChannelsModel channelsModel = new ChannelsModel();
+        if (roomModel != null) {
+            channelsModel.setChannelID(roomModel.getChannelID());
+            channelsModel.setChannelImg(roomModel.getChannelImg());
+            channelsModel.setChannelName(roomModel.getChannelName());
+            channelsModel.setType(roomModel.getType());
+            channelsModel.setPosterUpdated(roomModel.isPosterUpdated());
+            channelsModel.setChannelGroup(roomModel.getChannelGroup());
+            channelsModel.setChannelUrl(roomModel.getChannelUrl());
+        } else {
+            channelsModel.setChannelID(model.getChannelID());
+            channelsModel.setChannelImg(model.getChannelImg());
+            channelsModel.setChannelName(model.getChannelName());
+            channelsModel.setType(model.getType());
+            channelsModel.setPosterUpdated(model.isPosterUpdated());
+            channelsModel.setChannelGroup(model.getChannelGroup());
+            channelsModel.setChannelUrl(model.getChannelUrl());
+        }
+        return channelsModel;
     }
 
     List<MoviesGroupModel> items = new ArrayList<MoviesGroupModel>();
