@@ -25,7 +25,6 @@ import com.bumptech.glide.load.model.LazyHeaders;
 import com.fxn.stash.Stash;
 import com.moutamid.daiptv.R;
 import com.moutamid.daiptv.activities.DetailActivity;
-import com.moutamid.daiptv.activities.DetailSeriesActivity;
 import com.moutamid.daiptv.database.AppDatabase;
 import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.lisetenrs.ItemSelected;
@@ -41,7 +40,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdapter.ChildVH> {
 
@@ -60,7 +58,8 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
 
                 @Override
                 public boolean areContentsTheSame(@NonNull ChannelsFilmsModel oldItem, @NonNull ChannelsFilmsModel newItem) {
-                    return Objects.equals(oldItem, newItem);
+                    return oldItem.getID() == newItem.getID() &&
+                            oldItem.getChannelName().equals(newItem.getChannelName());
                 }
             };
 
@@ -81,7 +80,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
     @Nullable
     @Override
     public PagedList<ChannelsFilmsModel> getCurrentList() {
-        if (super.getCurrentList()!=null){
+        if (super.getCurrentList() != null) {
             Log.d(TAG, "getCurrentList:  size " + super.getCurrentList().size());
         }
         return super.getCurrentList();
@@ -100,6 +99,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
     public long getItemId(int position) {
         return position;
     }
+
     @Nullable
     @Override
     protected ChannelsFilmsModel getItem(int position) {
@@ -109,7 +109,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
     @Override
     public void onBindViewHolder(@NonNull ChildVH holder, int position) {
         ChannelsFilmsModel model = getItem(holder.getAbsoluteAdapterPosition());
-        if (model!=null){
+        if (model != null) {
             try {
                 String link = model.getChannelImg().startsWith("/") ? Constants.getImageLink(model.getChannelImg()) : model.getChannelImg().trim();
                 GlideUrl glideUrl = new GlideUrl(link, new LazyHeaders.Builder()
@@ -127,6 +127,7 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
 
             holder.itemView.setOnLongClickListener(v -> {
                 ChannelsModel channelsModel = new ChannelsModel();
+                channelsModel.setID(model.getID());
                 channelsModel.setChannelGroup(model.getChannelGroup());
                 channelsModel.setChannelID(model.getChannelID());
                 channelsModel.setChannelName(model.getChannelName());
@@ -156,7 +157,9 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
             });
         }
     }
+
     List<MoviesGroupModel> items = new ArrayList<MoviesGroupModel>();
+
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
@@ -172,10 +175,6 @@ public class ChildAdapter extends PagedListAdapter<ChannelsFilmsModel, ChildAdap
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int first = lm.findFirstVisibleItemPosition();
-                int last = lm.findLastVisibleItemPosition();
-                Log.d(TAG, "onScrolled: " + first);
-                Log.d(TAG, "onScrolled: " + last);
 //                    items = database.moviesGroupDAO().getAll();
 //
 //                    Log.d(TAG, "item size : " + items.size());

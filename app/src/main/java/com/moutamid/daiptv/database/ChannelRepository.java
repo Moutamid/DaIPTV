@@ -42,6 +42,12 @@ public class ChannelRepository {
     public DataSource.Factory<Integer, ChannelsSeriesModel> getSeriesByGroup(String group, String type) {
         return seriesDAO.getAllByGroup(group, type);
     }
+    public List<ChannelsSeriesModel> getAllSeries(String group, String type) {
+        return seriesDAO.getAllSeries(group, type);
+    }
+    public List<ChannelsFilmsModel> getAllFilms(String group, String type) {
+        return filmsDAO.getAllFilms(group, type);
+    }
     public DataSource.Factory<Integer, ChannelsFilmsModel> getFilmByGroup(String group, String type) {
         return filmsDAO.getAllByGroup(group, type);
     }

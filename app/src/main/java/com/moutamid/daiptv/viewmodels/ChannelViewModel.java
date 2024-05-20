@@ -43,6 +43,7 @@ public class ChannelViewModel extends AndroidViewModel {
                         .build())
                 .build();
     }
+
     public LiveData<PagedList<ChannelsFilmsModel>> getFilms(String group, String type) {
         return new LivePagedListBuilder<>(repository.getFilmByGroup(group, type),
                 new PagedList.Config.Builder()
@@ -103,8 +104,50 @@ public class ChannelViewModel extends AndroidViewModel {
         }, config).build();
     }
 
+    public LiveData<PagedList<ChannelsFilmsModel>> getAllFilms(String group, String type) {
+        List<ChannelsFilmsModel> fvrt = repository.getAllFilms(group, type);
+        Log.d(TAG, "getTopFilms: " + fvrt.size());
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setPageSize(PAGE_SIZE)
+                .build();
+
+        PagedList<ChannelsFilmsModel> pagedList = new PagedList.Builder<>(new CustomDataSourceFilms(fvrt), config)
+                .setNotifyExecutor(Executors.newSingleThreadExecutor())
+                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .build();
+
+        return new LivePagedListBuilder<>(new DataSource.Factory<Integer, ChannelsFilmsModel>() {
+            @Override
+            public DataSource<Integer, ChannelsFilmsModel> create() {
+                return new CustomDataSourceFilms(fvrt);
+            }
+        }, config).build();
+    }
+
     public LiveData<PagedList<ChannelsSeriesModel>> getTopSeries() {
         ArrayList<ChannelsSeriesModel> fvrt = Stash.getArrayList(Constants.TOP_SERIES, ChannelsSeriesModel.class);
+        Log.d(TAG, "getTopFilms: " + fvrt.size());
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setPageSize(PAGE_SIZE)
+                .build();
+
+        PagedList<ChannelsSeriesModel> pagedList = new PagedList.Builder<>(new CustomDataSourceSeries(fvrt), config)
+                .setNotifyExecutor(Executors.newSingleThreadExecutor())
+                .setFetchExecutor(Executors.newSingleThreadExecutor())
+                .build();
+
+        return new LivePagedListBuilder<>(new DataSource.Factory<Integer, ChannelsSeriesModel>() {
+            @Override
+            public DataSource<Integer, ChannelsSeriesModel> create() {
+                return new CustomDataSourceSeries(fvrt);
+            }
+        }, config).build();
+    }
+
+    public LiveData<PagedList<ChannelsSeriesModel>> getAllSeries(String group, String type) {
+        List<ChannelsSeriesModel> fvrt = repository.getAllSeries(group, type);
         Log.d(TAG, "getTopFilms: " + fvrt.size());
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(true)

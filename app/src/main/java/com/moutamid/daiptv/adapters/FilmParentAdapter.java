@@ -110,7 +110,7 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
         });
 
         if (model.isRoom) {
-            itemViewModel.getFilms(model.name, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsFilmsModel>>() {
+            itemViewModel.getAllFilms(model.name, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsFilmsModel>>() {
                 @Override
                 public void onChanged(PagedList<ChannelsFilmsModel> channelsModels) {
                     adapter.submitList(channelsModels);
@@ -197,7 +197,7 @@ public class FilmParentAdapter extends RecyclerView.Adapter<FilmParentAdapter.Pa
                             }
                         });
                         Log.d("LINKKK", "absoluteAdapterPosition: " + absoluteAdapterPosition);
-                        adapter.notifyItemChanged(absoluteAdapterPosition);
+                       // adapter.notifyItemChanged(absoluteAdapterPosition);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

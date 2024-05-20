@@ -26,7 +26,11 @@ public interface SeriesDAO {
     List<ChannelsSeriesModel> getAll();
 
     @Query("SELECT * FROM series WHERE channelGroup = :channelGroup AND type= :type ORDER BY channelName ASC")
+    List<ChannelsSeriesModel> getAllSeries(String channelGroup, String type);
+
+    @Query("SELECT * FROM series WHERE channelGroup = :channelGroup AND type= :type ORDER BY channelName ASC")
     DataSource.Factory<Integer, ChannelsSeriesModel> getAllByGroup(String channelGroup, String type);
-    @Query("SELECT * FROM series WHERE LOWER(channelName) LIKE '%' || LOWER(:query) || '%' LIMIT 1")
+
+    @Query("SELECT * FROM series WHERE LOWER(channelName) LIKE '%' || LOWER(:query) || '%' LIMIT 20")
     ChannelsSeriesModel getSearchChannel(String query);
 }

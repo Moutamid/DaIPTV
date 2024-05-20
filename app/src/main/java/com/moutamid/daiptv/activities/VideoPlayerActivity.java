@@ -1,10 +1,12 @@
 package com.moutamid.daiptv.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 
 import com.android.iplayer.controller.VideoController;
 import com.android.iplayer.interfaces.IVideoController;
@@ -27,7 +29,7 @@ import com.moutamid.daiptv.utilis.Features;
 
 public class VideoPlayerActivity extends AppCompatActivity {
     ActivityVideoPlayerBinding binding;
-
+    private static final String TAG = "VideoPlayerActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,8 +92,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
         ControWindowView windowView=new ControWindowView(this);
         controller.addControllerWidget(toolBarView,functionBarView,gestureView,completionView,statusView,loadingView,windowView);
 
-        binding.videoPlayer.setDataSource(url);
-        // binding.videoPlayer.setDataSource("https://upload.dongfeng-nissan.com.cn/nissan/video/202204/4cfde6f0-bf80-11ec-95c3-214c38efbbc8.mp4");
+        binding.videoPlayer.setDataSource(url.trim());
+//         binding.videoPlayer.setDataSource("https://upload.dongfeng-nissan.com.cn/nissan/video/202204/4cfde6f0-bf80-11ec-95c3-214c38efbbc8.mp4");
         binding.videoPlayer.prepareAsync();
         binding.videoPlayer.setOnPlayerActionListener(new OnPlayerEventListener() {
             @Override
@@ -103,12 +105,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
             @Override
             public void onPlayerState(PlayerState state, String message) {
                 super.onPlayerState(state, message);
+                Log.d(TAG, "onPlayerState: " + message);
 //                if (binding.videoPlayer.isPlaying()){
 //
 //                }
             }
         });
-
         binding.videoPlayer.seekTo(Stash.getLong(resume, 0));
     }
 

@@ -103,7 +103,7 @@ public class SeriesParentAdapter extends RecyclerView.Adapter<SeriesParentAdapte
         });
 
         if (model.isRoom) {
-            itemViewModel.getSeries(model.name, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsSeriesModel>>() {
+            itemViewModel.getAllSeries(model.name, type).observe(viewLifecycleOwner, new Observer<PagedList<ChannelsSeriesModel>>() {
                 @Override
                 public void onChanged(PagedList<ChannelsSeriesModel> channelsModels) {
                     adapter.submitList(channelsModels);
