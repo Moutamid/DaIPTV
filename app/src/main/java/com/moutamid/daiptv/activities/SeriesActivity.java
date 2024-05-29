@@ -3,9 +3,12 @@ package com.moutamid.daiptv.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,7 +64,15 @@ public class SeriesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySeriesBinding.inflate(getLayoutInflater());
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            getWindow().setDecorFitsSystemWindows(false);
+//            getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent, null));
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
 
         database = AppDatabase.getInstance(this);
 

@@ -4,9 +4,12 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -54,7 +57,15 @@ public class DetailSeriesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailSeriesBinding.inflate(getLayoutInflater());
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            getWindow().setDecorFitsSystemWindows(false);
+//            getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent, null));
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
 
         model = (ChannelsSeriesModel) Stash.getObject(Constants.PASS_SERIES, ChannelsSeriesModel.class);
 
@@ -318,6 +329,48 @@ public class DetailSeriesActivity extends AppCompatActivity {
         binding.play.setOnClickListener(v -> {
             startActivity(new Intent(this, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl()).putExtra("name", movieModel.original_title));
         });
+
+        binding.play.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+
+        binding.add.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+
+        binding.resume.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+
+        binding.trailer.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+        binding.reader.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+
+        binding.episodes.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+
 
         CastsAdapter adapter = new CastsAdapter(this, cast);
         binding.castRC.setAdapter(adapter);

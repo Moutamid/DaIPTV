@@ -296,7 +296,7 @@ public class FilmFragment extends Fragment {
 
                         int logoIndex = 0;
                         JSONArray logos = response.getJSONObject("images").getJSONArray("logos");
-                        if (logos.length() > 1) {
+                        if (logos.length() > 0) {
                             for (int i = 0; i < logos.length(); i++) {
                                 JSONObject object = logos.getJSONObject(i);
                                 String lang = object.getString("iso_639_1");

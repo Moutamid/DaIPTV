@@ -316,7 +316,6 @@ public class Constants {
         Pattern pattern = Pattern.compile("\\((\\d{4})\\)|\\| (\\d{4}) \\||\\|(\\d{4})\\||\\b(\\d{4})\\b");
         Matcher matcher = pattern.matcher(name);
         String year = null;
-
         if (matcher.find()) {
             // Extract the year without brackets or pipes
             for (int i = 1; i <= matcher.groupCount(); i++) {

@@ -2,12 +2,15 @@ package com.moutamid.daiptv;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,8 +69,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
         Constants.checkApp(this);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            getWindow().setDecorFitsSystemWindows(false);
+//            getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent, null));
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
 
         updateAndroidSecurityProvider();
 

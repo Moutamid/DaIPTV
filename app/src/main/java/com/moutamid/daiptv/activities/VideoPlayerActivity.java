@@ -3,10 +3,13 @@ package com.moutamid.daiptv.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.android.iplayer.controller.VideoController;
 import com.android.iplayer.interfaces.IVideoController;
@@ -34,7 +37,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityVideoPlayerBinding.inflate(getLayoutInflater());
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            getWindow().setDecorFitsSystemWindows(false);
+//            getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent, null));
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
 
         String url = getIntent().getStringExtra("url");
         String name = getIntent().getStringExtra("name");
@@ -91,6 +102,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
         ControlLoadingView loadingView=new ControlLoadingView(this);
         ControWindowView windowView=new ControWindowView(this);
         controller.addControllerWidget(toolBarView,functionBarView,gestureView,completionView,statusView,loadingView,windowView);
+
+        if (url==null) url = "";
 
         binding.videoPlayer.setDataSource(url.trim());
 //         binding.videoPlayer.setDataSource("https://upload.dongfeng-nissan.com.cn/nissan/video/202204/4cfde6f0-bf80-11ec-95c3-214c38efbbc8.mp4");

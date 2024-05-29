@@ -174,16 +174,20 @@ public class HomeFragment extends Fragment {
                         filmsChan.clear();
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject object = array.getJSONObject(i);
-
                             ChannelsModel channel = new ChannelsModel();
-                            channel.setChannelName(object.getString("title"));
+                            String year = object.getString("release_date");
+
+                            year = year.split("-")[0];
+                            Log.d(TAG, "getTopFilms: YEAR " + year);
+
+                            channel.setChannelName(object.getString("title") + " " + year);
                             channel.setChannelImg(object.getString("poster_path"));
                             channel.setType(Constants.TYPE_MOVIE);
                             channel.setChannelGroup(Constants.TYPE_MOVIE);
 
                             MovieModel model = new MovieModel();
                             model.id = object.getInt("id");
-                            model.original_title = object.getString("title");
+                            model.original_title = object.getString("title") + " " + year;
                             model.banner = object.getString("poster_path");
                             model.type = Constants.TYPE_MOVIE;
 
@@ -381,7 +385,8 @@ public class HomeFragment extends Fragment {
 
     private void fetchID() {
         String name = Constants.regexName(randomChannel.getChannelName());
-        Log.d(TAG, "fetchID: " + name);
+        Log.d(TAG, "fetchID: " + randomChannel.getChannelName());
+        Log.d(TAG, "Year: " + Constants.extractYear(randomChannel.channelName));
         String url;
         if (randomChannel.getChannelGroup().equals(Constants.TYPE_SERIES)) {
             url =  Constants.getMovieData(name, Constants.extractYear(randomChannel.channelName), Constants.TYPE_TV);
@@ -396,14 +401,14 @@ public class HomeFragment extends Fragment {
                         JSONArray array = response.getJSONArray("results");
                         if (array.length() >= 1) {
                             int id = 0;
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject object = array.getJSONObject(i);
-                                String original_language = object.getString("original_language");
-                                if (original_language.equals("en")) {
-                                    id = object.getInt("id");
-                                    break;
-                                }
-                            }
+//                            for (int i = 0; i < array.length(); i++) {
+//                                JSONObject object = array.getJSONObject(i);
+//                                String original_language = object.getString("original_language");
+//                                if (original_language.equals("en")) {
+//                                    id = object.getInt("id");
+//                                    break;
+//                                }
+//                            }
                             if (id == 0) {
                                 JSONObject object = array.getJSONObject(0);
                                 id = object.getInt("id");

@@ -12,8 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.fxn.stash.Stash;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
+import com.moutamid.daiptv.activities.DetailSeriesActivity;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.models.ChannelsModel;
@@ -47,7 +49,8 @@ public class SearchSeriesAdapter extends RecyclerView.Adapter<SearchSeriesAdapte
             Glide.with(context).load(link).placeholder(R.color.transparent).into(holder.image);
 
             holder.itemView.setOnClickListener(v -> {
-                context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl().trim()).putExtra("name", model.getChannelName()));
+                Stash.put(Constants.PASS_SERIES, model);
+                context.startActivity(new Intent(context, DetailSeriesActivity.class));
             });
 
             holder.itemView.setOnLongClickListener(v -> {

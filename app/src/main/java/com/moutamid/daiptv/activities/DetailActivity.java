@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -52,14 +53,22 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailBinding.inflate(getLayoutInflater());
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            getWindow().setDecorFitsSystemWindows(false);
+//            getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent, null));
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
 
         model = (ChannelsModel) Stash.getObject(Constants.PASS, ChannelsModel.class);
 
         cast = new ArrayList<>();
 
         binding.back.setOnClickListener(v -> onBackPressed());
-        
+
         binding.reader.setOnClickListener(v -> {
             if (model.getChannelUrl() != null) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(model.getChannelUrl().trim()));
@@ -70,9 +79,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-
-
-        binding.add.setOnClickListener(v->{
+        binding.add.setOnClickListener(v -> {
             new AlertDialog.Builder(this)
                     .setCancelable(true)
                     .setTitle("Ajouter aux Favoris")
@@ -93,7 +100,7 @@ public class DetailActivity extends AppCompatActivity {
 
         requestQueue = VolleySingleton.getInstance(DetailActivity.this).getRequestQueue();
 
-        if (model != null){
+        if (model != null) {
             fetchID();
         } else {
             Toast.makeText(this, "Chaîne introuvable", Toast.LENGTH_SHORT).show();
@@ -105,7 +112,7 @@ public class DetailActivity extends AppCompatActivity {
         String name = Constants.regexName(model.getChannelName());
         Log.d(TAG, "fetchID: " + name);
         String url;
-       // name = "Interstellar"; // for testing
+        // name = "Interstellar"; // for testing
         if (model.getChannelGroup().equals(Constants.TYPE_SERIES)) {
             url = Constants.getMovieData(name, Constants.extractYear(model.channelName), Constants.TYPE_TV);
         } else {
@@ -148,12 +155,12 @@ public class DetailActivity extends AppCompatActivity {
 
                         try {
                             movieModel.original_title = response.getString("title");
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             movieModel.original_title = response.getString("name");
                         }
                         try {
                             movieModel.release_date = response.getString("release_date");
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             movieModel.release_date = response.getString("first_air_date");
                         }
                         movieModel.overview = response.getString("overview");
@@ -170,7 +177,7 @@ public class DetailActivity extends AppCompatActivity {
                         JSONArray credits = response.getJSONObject("credits").getJSONArray("cast");
 
                         int index = -1;
-                        if (images.length()>1){
+                        if (images.length() > 1) {
                             String[] preferredLanguages = {"null", "fr", "en"};
                             for (String lang : preferredLanguages) {
                                 for (int i = 0; i < images.length(); i++) {
@@ -296,11 +303,7 @@ public class DetailActivity extends AppCompatActivity {
 
         binding.trailer.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(movieModel.trailer));
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Aucun lecteur externe trouvé", Toast.LENGTH_SHORT).show();
-            }
+            startActivity(intent);
         });
 
         binding.play.requestFocus();
@@ -310,6 +313,40 @@ public class DetailActivity extends AppCompatActivity {
         });
         binding.resume.setOnClickListener(v -> {
             startActivity(new Intent(this, VideoPlayerActivity.class).putExtra("resume", String.valueOf(model.getID())).putExtra("url", model.getChannelUrl()).putExtra("name", movieModel.original_title));
+        });
+
+        binding.play.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+
+        binding.add.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+
+        binding.resume.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+
+        binding.trailer.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
+        });
+        binding.reader.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (binding.nestedScroll != null)
+                    binding.nestedScroll.smoothScrollTo(0, -200);
+            }
         });
 
         CastsAdapter adapter = new CastsAdapter(this, cast);
@@ -324,17 +361,17 @@ public class DetailActivity extends AppCompatActivity {
             translateAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
                 @Override
                 public void onSuccess(String translatedText) {
-                    Log.d(TAG, "onSuccess: "+translatedText);
+                    Log.d(TAG, "onSuccess: " + translatedText);
                     binding.desc.setText(translatedText);
                 }
 
                 @Override
                 public void onFailure(String ErrorText) {
-                    Log.d(TAG, "onFailure: "+ErrorText);
+                    Log.d(TAG, "onFailure: " + ErrorText);
                 }
             });
 
-            if (!movieModel.isFrench){
+            if (!movieModel.isFrench) {
                 TranslateAPI nameAPI = new TranslateAPI(
                         Language.AUTO_DETECT,   //Source Language
                         Language.FRENCH,         //Target Language
@@ -343,17 +380,17 @@ public class DetailActivity extends AppCompatActivity {
                 nameAPI.setTranslateListener(new TranslateAPI.TranslateListener() {
                     @Override
                     public void onSuccess(String translatedText) {
-                        Log.d(TAG, "onSuccess: "+translatedText);
+                        Log.d(TAG, "onSuccess: " + translatedText);
                         binding.name.setText(translatedText);
                     }
 
                     @Override
                     public void onFailure(String ErrorText) {
-                        Log.d(TAG, "onFailure: "+ErrorText);
+                        Log.d(TAG, "onFailure: " + ErrorText);
                     }
                 });
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

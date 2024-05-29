@@ -12,8 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.fxn.stash.Stash;
 import com.google.android.material.card.MaterialCardView;
 import com.moutamid.daiptv.R;
+import com.moutamid.daiptv.activities.DetailActivity;
+import com.moutamid.daiptv.activities.DetailSeriesActivity;
 import com.moutamid.daiptv.activities.VideoPlayerActivity;
 import com.moutamid.daiptv.dialogs.AddFavortDialog;
 import com.moutamid.daiptv.models.ChannelsFilmsModel;
@@ -48,7 +51,17 @@ public class SearchFilmsAdapter extends RecyclerView.Adapter<SearchFilmsAdapter.
             Glide.with(context).load(link).placeholder(R.color.transparent).into(holder.image);
 
             holder.itemView.setOnClickListener(v -> {
-                context.startActivity(new Intent(context, VideoPlayerActivity.class).putExtra("url", model.getChannelUrl().trim()).putExtra("name", model.getChannelName()));
+                ChannelsModel channelsModel = new ChannelsModel();
+                channelsModel.setID(model.getID());
+                channelsModel.setChannelGroup(model.getChannelGroup());
+                channelsModel.setChannelID(model.getChannelID());
+                channelsModel.setChannelName(model.getChannelName());
+                channelsModel.setChannelUrl(model.getChannelUrl());
+                channelsModel.setChannelImg(model.getChannelImg());
+                channelsModel.setType(model.getType());
+                channelsModel.setPosterUpdated(model.isPosterUpdated());
+                Stash.put(Constants.PASS, channelsModel);
+                context.startActivity(new Intent(context, DetailActivity.class));
             });
 
             holder.itemView.setOnLongClickListener(v -> {

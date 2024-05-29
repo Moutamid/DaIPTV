@@ -174,7 +174,7 @@
                     android:layout_weight="1"
                     android:text="Reprendre la lecture"
                     app:cornerRadius="12dp"
-                    app:icon="@drawable/round_play_arrow_24"
+                    app:icon="@drawable/play_2_focus"
                     app:iconSize="26dp"
                     app:strokeColor="@color/grey2"
                     app:strokeWidth="1dp" />

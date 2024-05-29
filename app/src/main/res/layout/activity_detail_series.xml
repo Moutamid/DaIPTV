@@ -15,6 +15,7 @@
         tools:src="@drawable/img" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -176,7 +177,7 @@
                     android:padding="12dp"
                     android:text="Reprendre la lecture"
                     app:cornerRadius="12dp"
-                    app:icon="@drawable/round_play_arrow_24"
+                    app:icon="@drawable/play_2_focus"
                     app:iconSize="26dp"
                     android:textSize="13sp"
                     app:strokeColor="@color/grey2"
