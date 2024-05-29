@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.DetailSeriesActivity">
+    tools:context=".activities.DetailActivity">
 
     <ImageView
         android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.7"
         android:scaleType="centerCrop"
+        android:alpha="0.7"
         tools:src="@drawable/img" />
 
     <androidx.core.widget.NestedScrollView
@@ -27,8 +27,8 @@
                 android:id="@+id/banner2"
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
-                android:alpha="0"
                 android:scaleType="centerCrop"
+                android:alpha="0"
                 android:visibility="invisible"
                 tools:src="@drawable/img" />
 
@@ -51,11 +51,12 @@
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
-                android:id="@+id/layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/back"
+                android:layout_alignBottom="@+id/banner2"
+                android:layout_above="@id/linearLayout"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 android:layout_marginStart="15dp"
                 android:gravity="center"
                 android:orientation="vertical">
@@ -80,7 +81,7 @@
                             android:id="@+id/name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            tools:text="Synopsis"
+                            android:text="Synopsis"
                             android:textColor="@color/white"
                             android:textSize="22sp" />
 
@@ -88,11 +89,11 @@
                             android:id="@+id/desc"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            tools:text="@string/lorem50"
+                            android:textColor="@color/white2"
                             android:ellipsize="end"
                             android:maxLines="5"
-                            android:textColor="@color/white2"
-                            android:textSize="18sp"
-                            tools:text="@string/lorem50" />
+                            android:textSize="18sp" />
 
                     </LinearLayout>
 
@@ -109,14 +110,13 @@
                         android:id="@+id/date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        tools:text="January 16"
                         android:background="@drawable/text_bg"
-                        android:gravity="center"
                         android:padding="12dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
-                        tools:text="January 16" />
-
+                        android:textSize="14sp" />
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/tmdb_rating"
                         android:layout_width="match_parent"
@@ -124,11 +124,11 @@
                         android:layout_marginHorizontal="10dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/black_bg_trans"
-                        android:enabled="false"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
                         android:gravity="center"
                         android:padding="12dp"
+                        android:focusable="false"
+                        android:enabled="false"
+                        android:focusableInTouchMode="false"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:cornerRadius="8dp"
@@ -138,18 +138,17 @@
                         app:strokeColor="@color/grey2"
                         app:strokeWidth="1dp"
                         tools:text="8.1" />
-
                     <TextView
                         android:id="@+id/filmType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        tools:text="Duree Film"
+                        android:gravity="center"
                         android:layout_weight="1"
                         android:background="@drawable/text_bg"
-                        android:gravity="center"
                         android:padding="12dp"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
-                        tools:text="Duree Film" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
@@ -159,40 +158,22 @@
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/layout"
+                android:layout_alignBottom="@+id/banner2"
                 android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="25dp"
+                android:layout_marginHorizontal="25dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/resume"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:backgroundTint="@color/black_bg_trans"
                     android:padding="12dp"
+                    android:layout_weight="1"
                     android:text="Reprendre la lecture"
                     app:cornerRadius="12dp"
-                    app:icon="@drawable/round_play_arrow_24"
-                    app:iconSize="26dp"
-                    android:textSize="13sp"
-                    app:strokeColor="@color/grey2"
-                    app:strokeWidth="1dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/episodes"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/black_bg_trans"
-                    android:padding="12dp"
-                    android:text="Episodes"
-                    app:cornerRadius="12dp"
-                    android:textSize="13sp"
                     app:icon="@drawable/round_play_arrow_24"
                     app:iconSize="26dp"
                     app:strokeColor="@color/grey2"
@@ -200,17 +181,16 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/trailer"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:textSize="13sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:backgroundTint="@color/black_bg_trans"
                     android:padding="12dp"
                     android:text="Bande Annonce"
+                    android:layout_weight="1"
                     app:cornerRadius="12dp"
                     app:icon="@drawable/youtube_focus"
                     app:iconTint="@null"
+                    android:layout_marginStart="10dp"
                     app:iconSize="26dp"
                     app:strokeColor="@color/grey2"
                     app:strokeWidth="1dp" />
@@ -228,32 +208,31 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/add"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:backgroundTint="@color/black_bg_trans"
                     android:padding="12dp"
-                    android:textSize="13sp"
+                    app:icon="@drawable/heart_focus"
+                    android:layout_weight="1"
                     android:text="Ajouter aux Favoris"
                     app:cornerRadius="12dp"
-                    app:icon="@drawable/heart_focus"
                     app:iconSize="26dp"
                     app:strokeColor="@color/grey2"
                     app:strokeWidth="1dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/reader"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:backgroundTint="@color/black_bg_trans"
                     android:padding="12dp"
-                    android:text="Lecteur Externe"
-                    app:cornerRadius="12dp"
+                    android:layout_marginStart="8dp"
                     app:icon="@drawable/video_focus"
+                    android:layout_weight="1"
                     app:iconPadding="12dp"
+                    android:text="Lecteur Externe"
                     app:iconSize="26dp"
+                    app:cornerRadius="12dp"
                     app:strokeColor="@color/grey2"
                     app:strokeWidth="1dp" />
 
@@ -263,7 +242,7 @@
                 android:id="@+id/cast"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/linearLayout"
+                android:layout_below="@id/banner2"
                 android:padding="15dp"
                 android:text="Acteurs"
                 android:textColor="@color/white"
@@ -273,11 +252,11 @@
                 android:id="@+id/castRC"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/cast"
-                android:layout_marginHorizontal="10dp"
                 android:orientation="horizontal"
+                android:layout_marginHorizontal="10dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/cast_card" />
+                tools:listitem="@layout/cast_card"
+                android:layout_below="@id/cast" />
 
         </RelativeLayout>
 

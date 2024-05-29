@@ -75,7 +75,7 @@
                             android:text="Accueil"
                             android:textColor="@color/white"
                             android:textAllCaps="true"
-                            android:textSize="14sp" />
+                            android:textSize="16sp" />
 
                         <View
                             android:layout_width="match_parent"
@@ -98,7 +98,7 @@
                     android:nextFocusLeft="@id/Accueil"
                     android:nextFocusRight="@id/Films"
                     android:nextFocusDown="@id/channelsRC"
-                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginHorizontal="20dp"
                     android:foreground="@color/transparent"
                     app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
@@ -116,7 +116,7 @@
                             android:text="Chaines"
                             android:textColor="@color/white"
                             android:textAllCaps="true"
-                            android:textSize="14sp" />
+                            android:textSize="16sp" />
 
                         <View
                             android:layout_width="match_parent"
@@ -140,7 +140,7 @@
                     android:nextFocusLeft="@id/Chaines"
                     android:nextFocusRight="@id/series"
                     android:nextFocusDown="@id/filmChildRC"
-                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginHorizontal="20dp"
                     android:foreground="@color/transparent"
                     app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
@@ -158,7 +158,7 @@
                             android:text="Films"
                             android:textColor="@color/white"
                             android:textAllCaps="true"
-                            android:textSize="14sp" />
+                            android:textSize="16sp" />
 
                         <View
                             android:layout_width="match_parent"
@@ -182,7 +182,7 @@
                     android:nextFocusLeft="@id/Films"
                     android:nextFocusRight="@id/Recherche"
                     android:nextFocusDown="@id/childRC"
-                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginHorizontal="20dp"
                     android:foreground="@color/transparent"
                     app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
@@ -200,7 +200,7 @@
                             android:text="Séries"
                             android:textColor="@color/white"
                             android:textAllCaps="true"
-                            android:textSize="14sp" />
+                            android:textSize="16sp" />
 
                         <View
                             android:layout_width="match_parent"
@@ -224,7 +224,7 @@
                     android:nextFocusLeft="@id/series"
                     android:nextFocusRight="@id/profile"
                     android:nextFocusDown="@id/searchET"
-                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginHorizontal="10dp"
                     android:foreground="@color/transparent"
                     app:cardBackgroundColor="@color/focus"
                     app:cardElevation="0dp"
@@ -242,7 +242,7 @@
                             android:text="Recherche"
                             android:textColor="@color/white"
                             android:textAllCaps="true"
-                            android:textSize="14sp" />
+                            android:textSize="16sp" />
 
                         <View
                             android:layout_width="match_parent"

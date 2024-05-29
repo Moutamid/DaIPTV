@@ -19,7 +19,7 @@
             android:text="Saison 1"
             android:textSize="18sp"
             android:layout_weight="1"
-            android:padding="12dp"
+            android:padding="20dp"
             android:layout_marginEnd="5dp"
             android:id="@+id/seasonNo" />
 
@@ -29,7 +29,7 @@
             android:text="8 Episode"
             android:layout_weight="1"
             android:gravity="end"
-            android:padding="12dp"
+            android:padding="20dp"
             android:layout_marginStart="5dp"
             android:textSize="18sp"
             android:id="@+id/episodeNo" />

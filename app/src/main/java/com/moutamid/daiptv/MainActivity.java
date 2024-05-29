@@ -84,15 +84,9 @@ public class MainActivity extends AppCompatActivity {
         toolbar = binding.toolbar;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
-//        database.epgDAO().Delete();
         List<EPGModel> list = database.epgDAO().getEPG();
         if (list.isEmpty())
             get();
-
-        List<ChannelsSeriesModel> chanel = database.seriesDAO().getAll();
-        List<ChannelsFilmsModel> films = database.filmsDAO().getAll();
-        Log.d("TEST1233", "onCreate: " + chanel.size());
-        Log.d("TEST1233", "onCreate: " + films.size());
 
         binding.Accueil.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
